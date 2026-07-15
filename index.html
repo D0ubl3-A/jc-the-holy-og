@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#07070d">
+  <title>JC The Holy OG</title>
+  <style>
+    :root {
+      --ink: #07070d;
+      --night: #11101e;
+      --cream: #fff9df;
+      --gold: #ffd65a;
+      --sun: #ffad32;
+      --red: #ff3d32;
+      --blood: #7f1025;
+      --violet: #7a38ff;
+      --cyan: #45f4ff;
+      --panel: rgba(10, 9, 19, .83);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 20%, #24162d 0, #090810 52%, #020204 100%);
+      color: var(--cream);
+      font-family: "Arial Narrow", "Franklin Gothic Condensed", sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    button { font: inherit; }
+
+    #stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+      overflow: hidden;
+      background: #08070d;
+      box-shadow: 0 0 80px #000;
+      touch-action: none;
+      isolation: isolate;
+    }
+
+    #game {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    #stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0, rgba(255,255,255,.018) 1px, transparent 1px, transparent 4px),
+        radial-gradient(ellipse at center, transparent 48%, rgba(0,0,0,.64) 100%);
+      mix-blend-mode: screen, normal;
+    }
+
+    #stage::after {
+      content: "";
+      position: absolute;
+      inset: -100%;
+      z-index: 19;
+      pointer-events: none;
+      opacity: .1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      animation: grain .23s steps(2) infinite;
+    }
+
+    @keyframes grain {
+      0% { transform: translate(0,0); }
+      25% { transform: translate(2%,-1%); }
+      50% { transform: translate(-1%,2%); }
+      75% { transform: translate(1%,1%); }
+      100% { transform: translate(-2%,-1%); }
+    }
+
+    .hud {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .hud.active { opacity: 1; }
+
+    .topbar {
+      position: absolute;
+      top: 2.2%;
+      left: 2%;
+      right: 2%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      gap: 14px;
+    }
+
+    .meter-card, .mission-card, .actions {
+      background: linear-gradient(135deg, rgba(7,7,13,.92), rgba(28,17,34,.76));
+      border: 1px solid rgba(255,214,90,.35);
+      box-shadow: 0 8px 30px rgba(0,0,0,.45), inset 0 0 20px rgba(255,214,90,.03);
+      backdrop-filter: blur(8px);
+    }
+
+    .meter-card {
+      width: min(330px, 100%);
+      padding: 10px 13px 11px;
+      clip-path: polygon(0 0, 96% 0, 100% 22%, 100% 100%, 4% 100%, 0 78%);
+    }
+
+    .meter-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 34px;
+      gap: 8px;
+      align-items: center;
+      margin: 4px 0;
+    }
+
+    .meter-label {
+      font-family: Rockwell, "Roboto Slab", serif;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78);
+    }
+
+    .track {
+      height: 8px;
+      background: #18141e;
+      border: 1px solid rgba(255,255,255,.12);
+      overflow: hidden;
+      transform: skewX(-14deg);
+    }
+
+    .fill {
+      height: 100%;
+      width: 100%;
+      transition: width .15s linear;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    #healthFill { color: var(--red); background: linear-gradient(90deg, #9f1727, #ff6954); }
+    #graceFill { color: var(--gold); background: linear-gradient(90deg, #ff9e2e, #fff6a1); }
+
+    .meter-value {
+      text-align: right;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .mission-card {
+      min-width: 338px;
+      padding: 8px 22px 10px;
+      text-align: center;
+      border-top: 2px solid var(--gold);
+      clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+    }
+
+    .mission-kicker {
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .mission-stats {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 18px;
+      margin-top: 1px;
+    }
+
+    .mission-stats strong {
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 24px;
+      letter-spacing: .04em;
+      color: #fff;
+    }
+
+    .mission-stats span {
+      color: rgba(255,255,255,.58);
+      font-size: 10px;
+      letter-spacing: .11em;
+    }
+
+    .actions {
+      justify-self: end;
+      display: flex;
+      gap: 7px;
+      padding: 6px;
+      pointer-events: auto;
+    }
+
+    .mini-btn {
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      padding: 7px 10px;
+      font-weight: 900;
+      font-size: 10px;
+      letter-spacing: .1em;
+      cursor: pointer;
+    }
+
+    .mini-btn:hover, .mini-btn:focus-visible {
+      border-color: var(--gold);
+      color: var(--gold);
+      outline: none;
+    }
+
+    #objective {
+      position: absolute;
+      left: 50%;
+      bottom: 3%;
+      transform: translateX(-50%);
+      min-width: 380px;
+      padding: 8px 18px;
+      text-align: center;
+      color: rgba(255,255,255,.84);
+      background: linear-gradient(90deg, transparent, rgba(5,5,10,.82) 18%, rgba(5,5,10,.82) 82%, transparent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    #objective em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+      display: grid;
+      place-items: center;
+      padding: 3%;
+      background: radial-gradient(circle at center, rgba(8,7,14,.15), rgba(5,4,10,.72));
+      transition: opacity .35s, visibility .35s;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-card {
+      width: min(610px, 80%);
+      text-align: center;
+      padding: 22px 28px 24px;
+      position: relative;
+      background:
+        linear-gradient(135deg, rgba(12,10,20,.88), rgba(26,11,27,.72)),
+        repeating-linear-gradient(90deg, transparent 0 20px, rgba(255,255,255,.02) 20px 21px);
+      border: 1px solid rgba(255,214,90,.42);
+      box-shadow: 0 24px 80px #000, 0 0 45px rgba(255,61,50,.12), inset 0 0 50px rgba(255,214,90,.025);
+      clip-path: polygon(3% 0, 97% 0, 100% 8%, 100% 92%, 97% 100%, 3% 100%, 0 92%, 0 8%);
+    }
+
+    .intro-card::before, .intro-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 22%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+      box-shadow: 0 0 14px var(--gold);
+    }
+
+    .intro-card::before { left: 4%; }
+    .intro-card::after { right: 4%; transform: scaleX(-1); }
+
+    .eyebrow {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .42em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    h1 {
+      margin: 2px 0 0;
+      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size: clamp(50px, 7.1vw, 88px);
+      line-height: .82;
+      letter-spacing: .015em;
+      text-transform: uppercase;
+      text-shadow: 4px 5px 0 #8c1426, 0 0 28px rgba(255,61,50,.4);
+    }
+
+    h1 small {
+      display: block;
+      margin-top: 12px;
+      color: var(--gold);
+      font-size: .32em;
+      letter-spacing: .25em;
+      text-shadow: 2px 3px 0 #6f191d;
+    }
+
+    .holy-word {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      margin: 15px auto 8px;
+      padding: 5px 16px 4px;
+      color: #15151d;
+      background: linear-gradient(180deg, #fff, #e9e5d9);
+      border-radius: 7px 7px 18px 18px;
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 25px;
+      letter-spacing: .05em;
+      transform: rotate(-1deg);
+      box-shadow: 0 4px 0 #aaa69c, 0 0 20px rgba(255,255,255,.18);
+    }
+
+    .halo-i {
+      position: relative;
+      display: inline-block;
+      margin-left: 1px;
+      width: 8px;
+      color: #15151d;
+    }
+
+    .halo-i::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 4px;
+      left: -3px;
+      top: -6px;
+      border: 2px solid #d99b18;
+      border-radius: 50%;
+      box-shadow: 0 0 5px #ffd65a;
+    }
+
+    .crucifix {
+      position: relative;
+      display: inline-block;
+      width: 18px;
+      height: 27px;
+      margin-left: 3px;
+      vertical-align: middle;
+    }
+
+    .crucifix .wood-v, .crucifix .wood-h {
+      position: absolute;
+      background: #181820;
+      border-radius: 1px;
+    }
+
+    .crucifix .wood-v { width: 4px; height: 27px; left: 7px; top: 0; }
+    .crucifix .wood-h { width: 18px; height: 4px; left: 0; top: 6px; }
+    .crucifix .figure-head {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      left: 6.5px;
+      top: 5px;
+      border-radius: 50%;
+      background: #b8462f;
+    }
+    .crucifix .figure-body {
+      position: absolute;
+      width: 3px;
+      height: 12px;
+      left: 7.5px;
+      top: 10px;
+      border-radius: 2px;
+      background: #b8462f;
+    }
+    .crucifix .figure-arms {
+      position: absolute;
+      width: 13px;
+      height: 2px;
+      left: 2.5px;
+      top: 11px;
+      background: #b8462f;
+      transform: rotate(5deg);
+    }
+
+    .story {
+      max-width: 500px;
+      margin: 7px auto 13px;
+      color: rgba(255,255,255,.76);
+      font-family: Rockwell, "Courier New", serif;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .ammo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin: 12px 0 15px;
+    }
+
+    .ammo {
+      min-height: 55px;
+      padding: 8px 7px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .ammo b {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ammo span {
+      color: rgba(255,255,255,.55);
+      font-size: 9px;
+      line-height: 1.2;
+    }
+
+    .ammo.light b { color: var(--gold); }
+    .ammo.soul b { color: #c89cff; }
+    .ammo.havoc b { color: #ff6259; }
+
+    .primary-btn {
+      position: relative;
+      border: 0;
+      min-width: 230px;
+      padding: 13px 25px 12px;
+      background: linear-gradient(180deg, #ffe477, #f3a623);
+      color: #16131a;
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 18px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
+      box-shadow: 0 0 28px rgba(255,214,90,.3);
+      transition: transform .15s, filter .15s;
+    }
+
+    .primary-btn:hover, .primary-btn:focus-visible {
+      transform: translateY(-2px) scale(1.025);
+      filter: brightness(1.12);
+      outline: none;
+    }
+
+    .controls-copy {
+      margin-top: 11px;
+      color: rgba(255,255,255,.48);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    #highScoreLine {
+      margin-top: 8px;
+      color: var(--gold);
+      font-size: 10px;
+      letter-spacing: .13em;
+    }
+
+    .pause-card, .end-card {
+      width: min(500px, 85%);
+      text-align: center;
+      padding: 26px;
+      background: var(--panel);
+      border: 1px solid rgba(255,214,90,.4);
+      box-shadow: 0 24px 80px #000;
+    }
+
+    .pause-card h2, .end-card h2 {
+      margin: 0 0 8px;
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 44px;
+      letter-spacing: .08em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .end-card h2 { font-size: 50px; }
+
+    .end-card p, .pause-card p {
+      margin: 7px 0 18px;
+      color: rgba(255,255,255,.68);
+      font-family: Rockwell, "Courier New", serif;
+      line-height: 1.45;
+    }
+
+    .end-score {
+      margin: 15px 0;
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 28px;
+      letter-spacing: .06em;
+    }
+
+    .touch-ui {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      pointer-events: none;
+    }
+
+    .stick-base {
+      position: absolute;
+      left: 4%;
+      bottom: 7%;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.22);
+      background: rgba(3,3,7,.38);
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .stick-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 48px;
+      height: 48px;
+      margin: -24px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.28);
+      border: 2px solid rgba(255,214,90,.72);
+      box-shadow: 0 0 20px rgba(255,214,90,.22);
+    }
+
+    .touch-btn {
+      position: absolute;
+      right: 5%;
+      bottom: 8%;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      color: #18131a;
+      background: rgba(255,214,90,.82);
+      font-family: Impact, Haettenschweiler, sans-serif;
+      font-size: 14px;
+      letter-spacing: .09em;
+      pointer-events: auto;
+      touch-action: none;
+      box-shadow: 0 0 28px rgba(255,214,90,.25);
+    }
+
+    .touch-btn.grace {
+      right: 20%;
+      bottom: 5%;
+      width: 65px;
+      height: 65px;
+      color: #fff;
+      border-color: var(--cyan);
+      background: rgba(28,130,150,.68);
+      font-size: 10px;
+    }
+
+    .speedometer {
+      position: absolute;
+      right: 2.2%;
+      bottom: 4.2%;
+      min-width: 196px;
+      padding: 9px 13px 10px;
+      color: #fff;
+      text-align: right;
+      background: linear-gradient(135deg,rgba(7,7,13,.9),rgba(31,17,24,.8));
+      border: 1px solid rgba(255,214,90,.45);
+      box-shadow: 0 8px 30px rgba(0,0,0,.5);
+      clip-path: polygon(8% 0,100% 0,100% 100%,0 100%,0 22%);
+    }
+    .speedometer span {
+      display: block;
+      color: #ffd65a;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .14em;
+    }
+    .speedometer strong {
+      font: 900 35px/1 Impact, sans-serif;
+      letter-spacing: .06em;
+    }
+    .speedometer small { color: rgba(255,255,255,.55); font-size: 9px; }
+    .speedometer b {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      margin-left: 10px;
+      color: #17131a;
+      background: #ffd65a;
+      font: 900 17px Impact, sans-serif;
+    }
+    .speedometer i {
+      display: block;
+      color: #45f4ff;
+      font-size: 8px;
+      font-style: normal;
+      letter-spacing: .12em;
+    }
+    .map-credit {
+      position: absolute;
+      left: 1.5%;
+      bottom: 1%;
+      z-index: 14;
+      color: rgba(255,255,255,.52);
+      font-size: 8px;
+      letter-spacing: .05em;
+      pointer-events: auto;
+    }
+    .map-credit a { color: rgba(255,214,90,.78); }
+
+    .touch-btn.ride {
+      right: 31%;
+      bottom: 9%;
+      width: 61px;
+      height: 61px;
+      color: #18131a;
+      border-color: #fff1a2;
+      background: rgba(255,214,90,.78);
+      font-size: 10px;
+    }
+    .touch-btn.miracle {
+      right: 21%;
+      bottom: 20%;
+      width: 62px;
+      height: 62px;
+      color: #fff;
+      border-color: #45f4ff;
+      background: rgba(18,119,141,.75);
+      font-size: 9px;
+    }
+
+    @media (pointer: coarse), (max-width: 780px) {
+      .touch-ui.active { display: block; }
+      #game { cursor: default; }
+      .topbar { grid-template-columns: 1fr auto; }
+      .mission-card {
+        min-width: 215px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .mission-stats { gap: 10px; }
+      .mission-stats strong { font-size: 18px; }
+      .actions { display: none; }
+      .meter-card { width: 245px; }
+      .meter-row { grid-template-columns: 68px 1fr 28px; }
+      .meter-label { font-size: 8px; }
+      #objective { bottom: 1.2%; min-width: 290px; font-size: 8px; }
+      .intro-card { width: 86%; padding: 15px 19px 16px; }
+      .story { font-size: 10px; }
+      .ammo-grid { margin: 8px 0 10px; }
+      .ammo { min-height: 44px; padding: 6px 4px; }
+      .ammo span { display: none; }
+      .controls-copy { display: none; }
+      .holy-word { margin: 9px auto 5px; }
+    }
+
+    @media (max-height: 500px) {
+      .intro-card { padding-top: 12px; padding-bottom: 12px; }
+      h1 { font-size: 48px; }
+      h1 small { margin-top: 8px; }
+      .holy-word { height: 34px; font-size: 20px; margin: 7px auto 4px; }
+      .story { margin: 4px auto 6px; line-height: 1.25; }
+      .ammo-grid { margin: 5px 0 8px; }
+      .ammo { min-height: 36px; padding: 5px; }
+      .primary-btn { padding: 9px 22px 8px; }
+      #highScoreLine { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main id="stage" aria-label="JC The Holy OG arcade game">
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <section id="hud" class="hud" aria-live="polite">
+      <div class="topbar">
+        <div class="meter-card">
+          <div class="meter-row">
+            <span class="meter-label">Halo health</span>
+            <div class="track"><div id="healthFill" class="fill"></div></div>
+            <span id="healthValue" class="meter-value">100</span>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label">Grace wave</span>
+            <div class="track"><div id="graceFill" class="fill"></div></div>
+            <span id="graceValue" class="meter-value">100</span>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label">Miracle dash</span>
+            <div class="track"><div id="miracleFill" class="fill" style="background:linear-gradient(90deg,#168fa3,#9affff);color:#45f4ff"></div></div>
+            <span id="miracleValue" class="meter-value">100</span>
+          </div>
+        </div>
+
+        <div class="mission-card">
+          <div class="mission-kicker">Sin City soul rescue</div>
+          <div class="mission-stats">
+            <div><strong id="restoredStat">0/18</strong><br><span>restored</span></div>
+            <div><strong id="takenStat">0/7</strong><br><span>locked away</span></div>
+            <div><strong id="scoreStat">0</strong><br><span>score</span></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="soundBtn" class="mini-btn" type="button">SOUND: ON</button>
+          <button id="pauseBtn" class="mini-btn" type="button">PAUSE</button>
+        </div>
+      </div>
+      <div id="speedometer" class="speedometer">
+        <span id="districtName">LAS VEGAS STRIP</span>
+        <strong id="speedValue">000</strong><small>MPH</small>
+        <b id="gearValue">P</b>
+        <i id="roadValue">ON FOOT</i>
+      </div>
+      <div class="map-credit">Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a></div>
+      <div id="objective"><em>Real Las Vegas free roam.</em> E enters the SRT. W/S/A/D drive.</div>
+    </section>
+
+    <section id="intro" class="overlay">
+      <div class="intro-card">
+        <div class="eyebrow">A Sin City soul rescue</div>
+        <h1>JC<small>The Holy OG</small></h1>
+        <div class="holy-word" aria-label="White hoodie reading Holy Shit">
+          HOLY SH<span class="halo-i">I</span>
+          <span class="crucifix" aria-hidden="true">
+            <i class="wood-v"></i><i class="wood-h"></i>
+            <i class="figure-head"></i><i class="figure-body"></i><i class="figure-arms"></i>
+          </span>
+        </div>
+        <p class="story">
+          Drive a real Las Vegas road network in JC's white-and-gold Christ Challenger SRT or explore on foot. The bald red Devil hunts souls from a black Dodge Demon while traffic and civilian NPCs live across the Strip, downtown, and the valley.
+        </p>
+        <div class="ammo-grid">
+          <div class="ammo light"><b>Divine Light</b><span>JC restores corrupted citizens.</span></div>
+          <div class="ammo soul"><b>Soul Taker</b><span>The Devil turns citizens purple.</span></div>
+          <div class="ammo havoc"><b>Heaven Havoc</b><span>Crimson rounds damage JC.</span></div>
+        </div>
+        <button id="startBtn" class="primary-btn" type="button">Enter Sin City</button>
+        <div class="controls-copy">On foot: WASD &nbsp; Drive: W throttle / S brake &nbsp; Steer: A/D &nbsp; Handbrake: Shift &nbsp; Enter/exit: E &nbsp; Magic: Q / Space</div>
+        <div id="highScoreLine">HIGH SCORE 000000</div>
+      </div>
+    </section>
+
+    <section id="pauseOverlay" class="overlay hidden">
+      <div class="pause-card">
+        <h2>Time Stands Still</h2>
+        <p>The lost souls are waiting. Return when you are ready.</p>
+        <button id="resumeBtn" class="primary-btn" type="button">Resume Grace</button>
+      </div>
+    </section>
+
+    <section id="endOverlay" class="overlay hidden">
+      <div class="end-card">
+        <div class="eyebrow" id="endEyebrow">Mission complete</div>
+        <h2 id="endTitle">Sin City Saved</h2>
+        <p id="endCopy">The lights came back on, one soul at a time.</p>
+        <div id="endScore" class="end-score">SCORE 000000</div>
+        <button id="restartBtn" class="primary-btn" type="button">Run It Back</button>
+      </div>
+    </section>
+
+    <div id="touchUi" class="touch-ui">
+      <div id="stick" class="stick-base"><div id="knob" class="stick-knob"></div></div>
+      <button id="rideTouch" class="touch-btn ride" type="button">RIDE</button>
+      <button id="miracleTouch" class="touch-btn miracle" type="button">MIRACLE</button>
+      <button id="graceTouch" class="touch-btn grace" type="button">GRACE</button>
+      <button id="fireTouch" class="touch-btn" type="button">LIGHT</button>
+    </div>
+  </main>
+
+  <script src="jc-the-holy-og-assets/vegas-roads.js"></script>
+  <script src="jc-the-holy-og-assets/elevenlabs-sfx.js"></script>
+  <script>
+  (function () {
+    "use strict";
+
+    var W = 1280, H = 720, STEP = 1 / 60;
+    var VEGAS = window.JC_VEGAS_OSM || { width: 16000, height: 20000, roads: [] };
+    var WORLD_W = VEGAS.width || 16000, WORLD_H = VEGAS.height || 20000;
+    var canvas = document.getElementById("game");
+    var ctx = canvas.getContext("2d");
+    var intro = document.getElementById("intro");
+    var hud = document.getElementById("hud");
+    var touchUi = document.getElementById("touchUi");
+    var pauseOverlay = document.getElementById("pauseOverlay");
+    var endOverlay = document.getElementById("endOverlay");
+    var coarse = matchMedia("(pointer:coarse)").matches;
+    var charAtlas = new Image(), carAtlas = new Image();
+    charAtlas.src = "jc-the-holy-og-assets/character-atlas.png";
+    carAtlas.src = "jc-the-holy-og-assets/vehicle-atlas.png";
+
+    var mode = "menu", previousMode = "playing", last = performance.now(), acc = 0;
+    var visualTime = 0, gameTime = 0, seed = 439479, nextId = 1;
+    var keys = {}, mouse = { x: 820, y: 360, down: false, seen: false };
+    var stick = { x: 0, y: 0, id: null }, mobileFire = false;
+    var bullets = [], citizens = [], traffic = [], particles = [], texts = [], rings = [], rifts = [];
+    var roadGrid = {}, roadSegments = [], heat = 0, district = "LAS VEGAS STRIP";
+    var restored = 0, locked = 0, score = 0, combo = 0, comboTimer = 0, wave = 1;
+    var target = 40, lockLimit = 15, messageTimer = 0, shake = 0, flash = 0;
+    var camera = { x: 0, y: 0 };
+    var soundOn = true, audioCtx = null, fileSfx = {};
+    var highScore = loadHighScore();
+
+    var player = {
+      x: 520, y: 560, r: 25, health: 100, grace: 100, miracle: 100,
+      fire: 0, invuln: 0, dash: 0, angle: 0, moveAngle: -1.57, moving: 0, inCar: false,
+      vx: 0, vy: 0, forwardSpeed: 0, throttle: 0, brake: 0, steer: 0,
+      handbrake: false, gear: "P", rpm: 850, vehicleDamage: 0, onRoad: true
+    };
+    var holyCar = { x: 7310, y: 15850, angle: -1.57 };
+    var devil = {
+      x: 7240, y: 12500, angle: 1.57, moveAngle: 1.57,
+      soul: 1.1, havoc: 2.2, inferno: 4.6, warp: 7, flash: 0
+    };
+    var colors = ["#45e5e8", "#ffcc5a", "#ff6b91", "#9be564", "#f5f0e1", "#75a9ff"];
+
+    function rand() {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = seed; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function distance(a, b, c, d) { var x = a - c, y = b - d; return Math.sqrt(x * x + y * y); }
+    function pad(v) { return String(Math.max(0, Math.floor(v))).padStart(6, "0"); }
+    function loadHighScore() { try { return +(localStorage.getItem("jcHolyOGHighScore") || 0); } catch (e) { return 0; } }
+    function saveHighScore() { if (score > highScore) { highScore = score; try { localStorage.setItem("jcHolyOGHighScore", String(score)); } catch (e) {} } }
+
+    function resetGame() {
+      seed = 439479; nextId = 1; gameTime = 0;
+      bullets = []; citizens = []; traffic = []; particles = []; texts = []; rings = []; rifts = []; heat = 0;
+      restored = 0; locked = 0; score = 0; combo = 0; comboTimer = 0; wave = 1;
+      messageTimer = 0; shake = 0; flash = 0;
+      Object.assign(player, { x:7210, y:15880, r:25, health:100, grace:100, miracle:100, fire:0, invuln:0, dash:0, angle:-1.57, moveAngle:-1.57, moving:0, inCar:false, vx:0, vy:0, forwardSpeed:0, throttle:0, brake:0, steer:0, handbrake:false, gear:"P", rpm:850, vehicleDamage:0, onRoad:true });
+      Object.assign(holyCar, { x:7310, y:15850, angle:-1.57 });
+      Object.assign(devil, { x:7240, y:12500, angle:1.57, moveAngle:1.57, soul:1.1, havoc:2.2, inferno:4.6, warp:7, flash:0 });
+      camera.x = clamp(player.x - W / 2, 0, WORLD_W - W); camera.y = clamp(player.y - H / 2, 0, WORLD_H - H);
+      if (!roadSegments.length) buildRoadIndex();
+      for (var i = 0; i < 85; i++) spawnCitizen(i);
+      for (var ti = 0; ti < 34; ti++) spawnTraffic(ti);
+      syncHud();
+    }
+
+    function spawnCitizen(i) {
+      var x = 110 + rand() * (WORLD_W - 220), y = 110 + rand() * (WORLD_H - 220);
+      if (distance(x, y, player.x, player.y) < 220) x += 260;
+      citizens.push({ id:nextId++, x:clamp(x,70,WORLD_W-70), y:clamp(y,70,WORLD_H-70), vx:(rand()-.5)*58, vy:(rand()-.5)*45, color:colors[i%colors.length], phase:rand()*6.28, state:"normal", timer:0 });
+    }
+
+    function startGame() {
+      initAudio(); resetGame(); mode = "playing";
+      intro.classList.add("hidden"); endOverlay.classList.add("hidden"); pauseOverlay.classList.add("hidden");
+      hud.classList.add("active"); if (coarse) touchUi.classList.add("active");
+      showMessage("REAL LAS VEGAS LOADED. WALK TO THE SRT OR START EXPLORING.", "#ffd65a"); sfx("start");
+    }
+
+    function pause(forceResume) {
+      if (mode !== "playing" && mode !== "paused") return;
+      if (forceResume || mode === "paused") { mode = previousMode; pauseOverlay.classList.add("hidden"); }
+      else { previousMode = mode; mode = "paused"; pauseOverlay.classList.remove("hidden"); mouse.down = false; mobileFire = false; }
+      updateEngines();
+    }
+
+    function finish(won) {
+      if (mode !== "playing") return;
+      mode = won ? "won" : "lost"; saveHighScore(); updateEngines(); mouse.down = false; mobileFire = false; touchUi.classList.remove("active");
+      document.getElementById("endEyebrow").textContent = won ? "Mission complete" : "The night got heavy";
+      document.getElementById("endTitle").textContent = won ? "Sin City Saved" : "Halo Down";
+      document.getElementById("endCopy").textContent = won ? "JC restored the block and sent the Dodge Demon running." : (locked >= lockLimit ? "The Devil locked away too many souls." : "Heaven Havoc broke through JC's halo.");
+      document.getElementById("endScore").textContent = "SCORE " + pad(score) + "  |  RESTORED " + restored;
+      endOverlay.classList.remove("hidden"); sfx(won ? "win" : "lose");
+    }
+
+    function showMessage(text, color) {
+      document.getElementById("objective").innerHTML = "<em style='color:" + color + "'>" + text + "</em>"; messageTimer = 2.4;
+    }
+
+    function initAudio() {
+      if (window.JC_ELEVENLABS_SFX && !Object.keys(fileSfx).length) {
+        Object.keys(window.JC_ELEVENLABS_SFX).forEach(function (name) {
+          var a = new Audio(window.JC_ELEVENLABS_SFX[name]); a.preload = "auto"; a.loop = name.indexOf("engine") >= 0; fileSfx[name] = a;
+        });
+      }
+      if (!audioCtx) { try { audioCtx = new (AudioContext || webkitAudioContext)(); } catch (e) { soundOn = false; } }
+      else if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function tone(freq, duration, type, volume, end) {
+      if (!soundOn || !audioCtx) return;
+      var now=audioCtx.currentTime, o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type=type||"sine"; o.frequency.setValueAtTime(freq,now); if(end)o.frequency.exponentialRampToValueAtTime(end,now+duration);
+      g.gain.setValueAtTime(volume||.03,now); g.gain.exponentialRampToValueAtTime(.0001,now+duration);
+      o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now+duration);
+    }
+
+    function sfx(name) {
+      var map={light:"divine_light",soul:"soul_taker",havoc:"heaven_havoc",restore:"soul_restored",hurt:"halo_hit",grace:"grace_wave",miracle:"miracle_dash",inferno:"inferno_rift",start:"holy_start",win:"victory",lose:"defeat",cancel:"havoc_denied"};
+      var clip=fileSfx[map[name]];
+      if(soundOn&&clip){var voice=clip.cloneNode();voice.volume=.72;voice.play().catch(function(){});return;}
+      if(name==="light"){tone(720,.1,"sine",.035,1260);tone(280,.08,"triangle",.018,560);}
+      else if(name==="soul")tone(150,.26,"sawtooth",.026,65);
+      else if(name==="havoc"||name==="inferno")tone(92,.3,"square",.03,42);
+      else if(name==="restore"){tone(440,.25,"sine",.04,880);tone(660,.35,"triangle",.03,1320);}
+      else if(name==="hurt")tone(110,.3,"sawtooth",.04,50);
+      else if(name==="grace"||name==="miracle"){tone(230,.55,"sine",.05,920);tone(360,.65,"triangle",.035,1420);}
+      else if(name==="win")tone(440,.8,"triangle",.05,1760);
+      else if(name==="lose")tone(180,.75,"sawtooth",.04,48);
+      else tone(520,.18,"triangle",.03,980);
+    }
+
+    function updateEngines() {
+      var holy=fileSfx.holy_engine,demon=fileSfx.demon_engine;
+      if(!soundOn||mode!=="playing"){if(holy)holy.pause();if(demon)demon.pause();return;}
+      if(holy){holy.volume=.26;holy.playbackRate=.7+clamp(player.rpm/7000,0,1)*.75;if(player.inCar&&Math.abs(player.forwardSpeed)>4){if(holy.paused)holy.play().catch(function(){});}else holy.pause();}
+      if(demon){demon.volume=.17;demon.playbackRate=.9+wave*.05;if(demon.paused)demon.play().catch(function(){});}
+    }
+
+    function burst(x,y,color,count,speed){
+      for(var i=0;i<count;i++){var a=rand()*6.28,s=speed*(.25+rand()*.75);particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,color:color,size:2+rand()*4,life:.35+rand()*.55,max:.9});}
+      if(particles.length>420)particles.splice(0,particles.length-420);
+    }
+    function floating(text,x,y,color){texts.push({text:text,x:x,y:y,color:color,life:1.1});}
+
+    function fireLight(){
+      if(mode!=="playing"||player.fire>0)return;
+      var a=player.angle,speed=900;
+      bullets.push({type:"light",x:player.x+Math.cos(a)*36,y:player.y+Math.sin(a)*36,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:7,life:1.65,alive:true});
+      player.fire=.13;burst(player.x+Math.cos(a)*30,player.y+Math.sin(a)*30,"#fff2a0",4,90);sfx("light");
+    }
+
+    function soulTaker(){
+      var choices=citizens.filter(function(c){return c.state==="normal"&&distance(c.x,c.y,devil.x,devil.y)<760;});
+      if(!choices.length)choices=citizens.filter(function(c){return c.state==="normal";});if(!choices.length)return;
+      var t=choices[(rand()*choices.length)|0],a=Math.atan2(t.y-devil.y,t.x-devil.x);
+      bullets.push({type:"soul",target:t,x:devil.x,y:devil.y,vx:Math.cos(a)*300,vy:Math.sin(a)*300,r:9,life:6,alive:true});
+      burst(devil.x,devil.y,"#a855ff",8,120);sfx("soul");
+    }
+    function heavenHavoc(){
+      var a=Math.atan2(player.y-devil.y,player.x-devil.x)+(rand()-.5)*.09,speed=320+wave*18;
+      bullets.push({type:"havoc",x:devil.x,y:devil.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:14,life:6,alive:true,phase:rand()*6});
+      burst(devil.x,devil.y,"#ff4138",10,145);sfx("havoc");
+    }
+    function infernoRift(){
+      rifts.push({x:clamp(player.x+(rand()-.5)*180,80,WORLD_W-80),y:clamp(player.y+(rand()-.5)*180,80,WORLD_H-80),r:18,warm:1.05,life:4,hit:false});
+      showMessage("DEVIL MAGIC: INFERNO RIFT. MOVE.","#ff4e3e");sfx("inferno");
+    }
+
+    function corrupt(c){if(c.state!=="normal")return;c.state="lost";c.vx=0;c.vy=0;combo=0;burst(c.x,c.y-15,"#a855ff",18,160);floating("SOUL TAKEN",c.x,c.y-48,"#c985ff");}
+    function restore(c,grace){
+      if(c.state!=="lost")return;c.state="saved";c.timer=1.35;restored++;combo++;comboTimer=3;wave=Math.min(4,1+Math.floor(restored/6));
+      var points=500*combo+(grace?250:0);score+=points;player.grace=clamp(player.grace+20,0,100);player.health=clamp(player.health+3,0,100);
+      burst(c.x,c.y,"#fff19b",26,230);rings.push({x:c.x,y:c.y,r:8,max:76,life:.6,color:"#ffe978"});floating("SOUL RESTORED +"+points,c.x,c.y-48,"#fff19b");sfx("restore");
+      if(restored>=target)finish(true);
+    }
+    function lockSoul(c){if(c.state!=="lost")return;c.state="locked";c.timer=2.2;locked++;combo=0;floating("LOCKED AWAY",devil.x,devil.y-60,"#ff5c72");burst(devil.x,devil.y,"#7c28b4",22,180);if(locked>=lockLimit)finish(false);}
+
+    function graceWave(){
+      if(mode!=="playing")return;if(player.grace<99.5){showMessage("GRACE WAVE "+Math.floor(player.grace)+"% CHARGED.","#65edf7");return;}
+      player.grace=0;rings.push({x:player.x,y:player.y,r:18,max:440,life:.95,color:"#fff4a5"});
+      citizens.forEach(function(c){if(c.state==="lost"&&distance(c.x,c.y,player.x,player.y)<440)restore(c,true);});
+      bullets.forEach(function(b){if(b.type!=="light"&&distance(b.x,b.y,player.x,player.y)<520)b.alive=false;});
+      rifts.forEach(function(r){if(distance(r.x,r.y,player.x,player.y)<520)r.life=0;});shake=14;sfx("grace");showMessage("GRACE WAVE CLEARED THE BLOCK.","#fff4a5");
+    }
+    function miracleDash(){
+      if(mode!=="playing")return;if(player.miracle<99.5){showMessage("MIRACLE DASH "+Math.floor(player.miracle)+"% CHARGED.","#57efff");return;}
+      player.miracle=0;player.dash=.55;player.invuln=Math.max(player.invuln,.65);rings.push({x:player.x,y:player.y,r:8,max:120,life:.55,color:"#66f6ff"});
+      bullets.forEach(function(b){if(b.type!=="light"&&distance(b.x,b.y,player.x,player.y)<155)b.alive=false;});sfx("miracle");showMessage("MIRACLE DASH: INVULNERABLE LIGHT SPEED.","#65f4ff");
+    }
+    function toggleRide(){
+      if(mode!=="playing")return;
+      if(player.inCar){player.inCar=false;player.vx=0;player.vy=0;player.forwardSpeed=0;holyCar.x=player.x+Math.cos(player.moveAngle+1.57)*85;holyCar.y=player.y+Math.sin(player.moveAngle+1.57)*85;player.x-=Math.cos(player.moveAngle)*60;player.y-=Math.sin(player.moveAngle)*60;showMessage("ON FOOT. JC'S HOODIE MAGIC IS LIVE.","#fff4a5");}
+      else if(distance(player.x,player.y,holyCar.x,holyCar.y)<145&&player.vehicleDamage<100){player.inCar=true;player.x=holyCar.x;player.y=holyCar.y;player.moveAngle=holyCar.angle;player.vx=0;player.vy=0;player.forwardSpeed=0;sfx("start");showMessage("REALISTIC DRIVE MODE: W THROTTLE, S BRAKE, SHIFT HANDBRAKE.","#ffd65a");}
+      else showMessage("GET CLOSER TO THE GOLD SRT MARKER.","#ffd65a");
+    }
+    function autoAim(){var best=null,bestD=1e9;citizens.forEach(function(c){if(c.state==="lost"){var d=distance(c.x,c.y,player.x,player.y);if(d<bestD){best=c;bestD=d;}}});if(!best)best=devil;player.angle=Math.atan2(best.y-player.y,best.x-player.x);}
+    function hurt(amount,label){if(player.invuln>0||mode!=="playing")return;player.health=Math.max(0,player.health-amount);if(player.inCar)player.vehicleDamage=clamp(player.vehicleDamage+amount*1.6,0,100);player.invuln=.65;combo=0;shake=16;flash=.36;burst(player.x,player.y,"#ff453d",24,240);floating("-"+amount+" HALO",player.x,player.y-55,"#ff6158");showMessage(label,"#ff6158");sfx("hurt");if(player.vehicleDamage>=100&&player.inCar){player.inCar=false;player.vx=0;player.vy=0;showMessage("THE SRT IS DISABLED. JC IS BACK ON FOOT.","#ff6158");}if(player.health<=0)finish(false);}
+
+    function roadWidth(type){
+      if(type==="motorway"||type==="trunk")return 92;
+      if(type.indexOf("link")>=0)return 58;
+      if(type==="primary")return 76;
+      if(type==="secondary")return 62;
+      return 50;
+    }
+    function buildRoadIndex(){
+      roadGrid={};roadSegments=[];
+      (VEGAS.roads||[]).forEach(function(road){
+        var width=roadWidth(road.t||"tertiary"),pts=road.p||[];
+        for(var i=1;i<pts.length;i++){
+          var a=pts[i-1],b=pts[i],seg={ax:+a[0],ay:+a[1],bx:+b[0],by:+b[1],w:width,t:road.t,n:road.n||"",s:road.s||""},id=roadSegments.length;
+          roadSegments.push(seg);
+          var minX=Math.floor((Math.min(seg.ax,seg.bx)-width)/500),maxX=Math.floor((Math.max(seg.ax,seg.bx)+width)/500);
+          var minY=Math.floor((Math.min(seg.ay,seg.by)-width)/500),maxY=Math.floor((Math.max(seg.ay,seg.by)+width)/500);
+          for(var gx=minX;gx<=maxX;gx++)for(var gy=minY;gy<=maxY;gy++){var key=gx+","+gy;if(!roadGrid[key])roadGrid[key]=[];roadGrid[key].push(id);}
+        }
+      });
+    }
+    function segmentDistance(px,py,s){
+      var vx=s.bx-s.ax,vy=s.by-s.ay,wx=px-s.ax,wy=py-s.ay,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=c2?clamp(c1/c2,0,1):0;
+      var dx=px-(s.ax+t*vx),dy=py-(s.ay+t*vy);return Math.sqrt(dx*dx+dy*dy);
+    }
+    function roadAt(x,y){
+      var gx=Math.floor(x/500),gy=Math.floor(y/500),best=1e9,bestSeg=null,seen={};
+      for(var ix=gx-1;ix<=gx+1;ix++)for(var iy=gy-1;iy<=gy+1;iy++){var list=roadGrid[ix+","+iy]||[];for(var j=0;j<list.length;j++){var id=list[j];if(seen[id])continue;seen[id]=1;var s=roadSegments[id],d=segmentDistance(x,y,s)-s.w*.55;if(d<best){best=d;bestSeg=s;}}}
+      return {on:best<=0,edge:best,road:bestSeg};
+    }
+    function nearestRoadPoint(){
+      if(!roadSegments.length)return{x:WORLD_W/2,y:WORLD_H/2,a:0};
+      var s=roadSegments[(rand()*roadSegments.length)|0],t=rand();
+      return{x:s.ax+(s.bx-s.ax)*t,y:s.ay+(s.by-s.ay)*t,a:Math.atan2(s.by-s.ay,s.bx-s.ax),seg:s};
+    }
+    function spawnTraffic(i){
+      var p=nearestRoadPoint();traffic.push({x:p.x,y:p.y,a:p.a,road:p.seg,speed:115+rand()*145,color:colors[i%colors.length],dir:rand()>.5?1:-1,damage:0});
+    }
+    function updateTraffic(dt){
+      traffic.forEach(function(c){
+        c.x+=Math.cos(c.a)*c.speed*c.dir*dt;c.y+=Math.sin(c.a)*c.speed*c.dir*dt;
+        var surface=roadAt(c.x,c.y);
+        if(!surface.on||c.x<40||c.x>WORLD_W-40||c.y<40||c.y>WORLD_H-40){c.dir*=-1;c.x+=Math.cos(c.a)*c.speed*c.dir*dt*2;c.y+=Math.sin(c.a)*c.speed*c.dir*dt*2;}
+        if(player.inCar&&distance(c.x,c.y,player.x,player.y)<58){
+          var impact=Math.abs(player.forwardSpeed-c.speed)*.025;if(impact>2){player.vehicleDamage=clamp(player.vehicleDamage+impact,0,100);player.vx*=-.28;player.vy*=-.28;c.dir*=-1;heat=clamp(heat+22,0,100);shake=12;burst(player.x,player.y,"#ffb34b",14,170);}
+        }
+      });
+    }
+    function updateCarPhysics(dt,steerInput,throttleInput,brakeInput){
+      player.steer=steerInput;player.throttle=throttleInput;player.brake=brakeInput;player.handbrake=!!(keys.ShiftLeft||keys.ShiftRight);
+      var h=player.moveAngle,fx=Math.cos(h),fy=Math.sin(h),rx=-fy,ry=fx;
+      var forward=player.vx*fx+player.vy*fy,lateral=player.vx*rx+player.vy*ry;
+      var surface=roadAt(player.x,player.y);player.onRoad=surface.on;
+      var engine=player.throttle*(surface.on?560:280)*(1-player.vehicleDamage*.0065);
+      if(player.dash>0)engine+=900;
+      if(player.brake>0){if(forward>8)engine-=player.brake*980;else engine-=player.brake*310;}
+      forward+=engine*dt;
+      var rolling=surface.on?.55:2.4;forward*=Math.exp(-rolling*dt);
+      var top=surface.on?780:280;forward=clamp(forward,-235,top);
+      var grip=player.handbrake?1.1:(surface.on?8.2:2.8);lateral*=Math.exp(-grip*dt);
+      var steerPower=clamp(Math.abs(forward)/145,.08,1),reverseSign=forward>=0?1:-1;
+      player.moveAngle+=player.steer*1.75*steerPower*reverseSign*dt;
+      fx=Math.cos(player.moveAngle);fy=Math.sin(player.moveAngle);rx=-fy;ry=fx;
+      player.vx=fx*forward+rx*lateral;player.vy=fy*forward+ry*lateral;player.forwardSpeed=forward;
+      player.x+=player.vx*dt;player.y+=player.vy*dt;
+      if(player.x<40||player.x>WORLD_W-40){player.x=clamp(player.x,40,WORLD_W-40);player.vx*=-.35;player.vehicleDamage=clamp(player.vehicleDamage+5,0,100);shake=8;}
+      if(player.y<40||player.y>WORLD_H-40){player.y=clamp(player.y,40,WORLD_H-40);player.vy*=-.35;player.vehicleDamage=clamp(player.vehicleDamage+5,0,100);shake=8;}
+      holyCar.x=player.x;holyCar.y=player.y;holyCar.angle=player.moveAngle;player.moving=Math.abs(forward)/top;
+      var mph=Math.abs(forward)*.19;
+      if(forward<-4)player.gear="R";else if(mph<2)player.gear="N";else player.gear=String(clamp(1+Math.floor(mph/27),1,6));
+      var gearNum=player.gear==="R"?1:Math.max(1,+player.gear||1);player.rpm=clamp(900+(mph-(gearNum-1)*27)*190,850,7200);
+      if(player.handbrake&&Math.abs(forward)>180&&rand()<.35)burst(player.x-fx*45,player.y-fy*45,"#9b98a5",2,35);
+    }
+    function updateDevilDrive(dt){
+      var dx=player.x-devil.x,dy=player.y-devil.y,targetAngle=Math.atan2(dy,dx),delta=Math.atan2(Math.sin(targetAngle-devil.moveAngle),Math.cos(targetAngle-devil.moveAngle));
+      devil.moveAngle+=clamp(delta,-1.1*dt,1.1*dt);var speed=210+wave*35;devil.x=clamp(devil.x+Math.cos(devil.moveAngle)*speed*dt,70,WORLD_W-70);devil.y=clamp(devil.y+Math.sin(devil.moveAngle)*speed*dt,70,WORLD_H-70);devil.angle=targetAngle;
+    }
+    function updateDistrict(){
+      if(player.y<6500)district="DOWNTOWN / FREMONT";
+      else if(player.x>7900&&player.y<13000)district="SPHERE DISTRICT";
+      else if(player.y>15000&&player.x>8200)district="HARRY REID AIRPORT";
+      else if(player.y>14500&&player.x<6900)district="ALLEGIANT DISTRICT";
+      else if(player.x>6400&&player.x<8200&&player.y>7000&&player.y<16500)district="LAS VEGAS STRIP";
+      else district="LAS VEGAS VALLEY";
+      var mph=player.inCar?Math.round(Math.abs(player.forwardSpeed)*.19):0;
+      document.getElementById("districtName").textContent=district;
+      document.getElementById("speedValue").textContent=String(mph).padStart(3,"0");
+      document.getElementById("gearValue").textContent=player.inCar?player.gear:"P";
+      document.getElementById("roadValue").textContent=player.inCar?(player.onRoad?"ASPHALT  |  DAMAGE "+Math.round(player.vehicleDamage)+"%":"OFF ROAD  |  LOW GRIP"):"ON FOOT";
+    }
+    function update(dt){
+      gameTime+=dt;player.fire-=dt;player.invuln=Math.max(0,player.invuln-dt);player.dash=Math.max(0,player.dash-dt);player.grace=clamp(player.grace+dt*1.25,0,100);player.miracle=clamp(player.miracle+dt*11,0,100);
+      devil.flash=Math.max(0,devil.flash-dt);shake=Math.max(0,shake-dt*25);flash=Math.max(0,flash-dt);heat=Math.max(0,heat-dt*1.2);if(comboTimer>0&&(comboTimer-=dt)<=0)combo=0;
+      if(messageTimer>0&&(messageTimer-=dt)<=0)document.getElementById("objective").innerHTML=player.inCar?"<em>REALISTIC DRIVE.</em> W throttle, S brake/reverse, A/D steer, Shift handbrake, Q Miracle.":"<em>JC ON FOOT.</em> E enters the SRT. Shift uses Miracle Dash.";
+      var left=(keys.KeyA||keys.ArrowLeft)?1:0,right=(keys.KeyD||keys.ArrowRight)?1:0,up=(keys.KeyW||keys.ArrowUp)?1:0,down=(keys.KeyS||keys.ArrowDown)?1:0;
+      if(player.inCar){
+        var steerInput=clamp(right-left+stick.x,-1,1),throttleInput=clamp(up+Math.max(0,-stick.y),0,1),brakeInput=clamp(down+Math.max(0,stick.y),0,1);
+        updateCarPhysics(dt,steerInput,throttleInput,brakeInput);
+      }else{
+        var mx=right-left+stick.x,my=down-up+stick.y,mag=Math.sqrt(mx*mx+my*my);if(mag>1){mx/=mag;my/=mag;}player.moving=mag;if(mag>.05)player.moveAngle=Math.atan2(my,mx);
+        var walkSpeed=player.dash>0?774:292;player.x=clamp(player.x+mx*walkSpeed*dt,45,WORLD_W-45);player.y=clamp(player.y+my*walkSpeed*dt,45,WORLD_H-45);player.vx=0;player.vy=0;player.forwardSpeed=0;player.gear="P";player.rpm=850;
+      }
+      player.r=player.inCar?36:25;if(player.dash>0&&rand()<.65)burst(player.x,player.y,"#62efff",2,45);
+      camera.x+=(clamp(player.x-W/2,0,WORLD_W-W)-camera.x)*Math.min(1,dt*5);camera.y+=(clamp(player.y-H/2,0,WORLD_H-H)-camera.y)*Math.min(1,dt*5);
+      if(mobileFire)autoAim();if(mouse.down||mobileFire||keys.KeyF)fireLight();
+      updateDevilDrive(dt);updateTraffic(dt);
+      devil.soul-=dt;devil.havoc-=dt;devil.inferno-=dt;devil.warp-=dt;
+      if(devil.soul<=0){soulTaker();devil.soul=Math.max(.65,1.45-wave*.15)+rand()*.3;}if(devil.havoc<=0){heavenHavoc();devil.havoc=Math.max(1.05,2.8-wave*.34)+rand()*.35;}if(devil.inferno<=0){infernoRift();devil.inferno=Math.max(2.5,5.4-wave*.45)+rand();}
+      if(devil.warp<=0||distance(devil.x,devil.y,player.x,player.y)>1900){burst(devil.x,devil.y,"#a442ff",26,210);var rp=nearestRoadPoint();devil.x=rp.x;devil.y=rp.y;devil.moveAngle=rp.a;burst(devil.x,devil.y,"#ff4138",26,210);devil.warp=8+rand()*3;shake=7;}
+      updateCitizens(dt);updateBullets(dt);updateRifts(dt);updateFx(dt);updateEngines();updateDistrict();syncHud();
+    }
+    function updateCitizens(dt){
+      citizens.forEach(function(c){c.phase+=dt*2.2;if(c.state==="normal"){if(rand()<dt*.42){c.vx+=(rand()-.5)*40;c.vy+=(rand()-.5)*34;}c.x+=c.vx*dt;c.y+=c.vy*dt;if(c.x<70||c.x>WORLD_W-70){c.vx*=-1;c.x=clamp(c.x,70,WORLD_W-70);}if(c.y<70||c.y>WORLD_H-70){c.vy*=-1;c.y=clamp(c.y,70,WORLD_H-70);}}
+      else if(c.state==="lost"){var a=Math.atan2(devil.y-c.y,devil.x-c.x),pull=34+wave*6;c.x+=(Math.cos(a)*pull+Math.sin(c.phase*2)*12)*dt;c.y+=Math.sin(a)*pull*dt;if(distance(c.x,c.y,devil.x,devil.y)<65)lockSoul(c);}
+      else{c.timer-=dt;if(c.state==="saved")c.y-=dt*12;if(c.timer<=0){c.state="normal";c.x=100+rand()*(WORLD_W-200);c.y=100+rand()*(WORLD_H-200);c.vx=(rand()-.5)*55;c.vy=(rand()-.5)*42;}}});
+    }
+    function updateBullets(dt){
+      bullets.forEach(function(b){if(!b.alive)return;b.life-=dt;if(b.life<=0){b.alive=false;return;}if(b.type==="soul"&&b.target&&b.target.state==="normal"){var a=Math.atan2(b.target.y-b.y,b.target.x-b.x);b.vx+=(Math.cos(a)*310-b.vx)*dt*2.5;b.vy+=(Math.sin(a)*310-b.vy)*dt*2.5;}if(b.type==="havoc")b.phase+=dt*10;b.x+=b.vx*dt;b.y+=b.vy*dt;});
+      bullets.forEach(function(b){if(!b.alive)return;if(b.type==="light"){for(var i=0;i<citizens.length;i++){var c=citizens[i];if(c.state==="lost"&&distance(b.x,b.y,c.x,c.y)<b.r+23){b.alive=false;restore(c,false);break;}}if(!b.alive)return;bullets.forEach(function(e){if(b.alive&&e.alive&&e.type==="havoc"&&distance(b.x,b.y,e.x,e.y)<b.r+e.r){b.alive=false;e.alive=false;score+=125;burst(e.x,e.y,"#fff2a0",16,190);sfx("cancel");}});if(b.alive&&distance(b.x,b.y,devil.x,devil.y)<52){b.alive=false;score+=20;devil.flash=.12;}}
+      else if(b.type==="soul"&&b.target&&b.target.state==="normal"&&distance(b.x,b.y,b.target.x,b.target.y)<b.r+20){b.alive=false;corrupt(b.target);}else if(b.type==="havoc"&&distance(b.x,b.y,player.x,player.y)<b.r+player.r){b.alive=false;hurt(14,"HEAVEN HAVOC HIT. KEEP MOVING.");}});
+      bullets=bullets.filter(function(b){return b.alive&&b.x>-80&&b.x<WORLD_W+80&&b.y>-80&&b.y<WORLD_H+80;});
+    }
+    function updateRifts(dt){rifts.forEach(function(r){r.warm-=dt;r.life-=dt;if(r.warm<=0)r.r+=(115-r.r)*dt*7;if(r.warm<=0&&!r.hit&&distance(r.x,r.y,player.x,player.y)<r.r+player.r){r.hit=true;hurt(18,"INFERNO RIFT BURNED THE HALO.");burst(r.x,r.y,"#ff542f",26,230);}});rifts=rifts.filter(function(r){return r.life>0;});}
+    function updateFx(dt){particles.forEach(function(p){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.95;p.vy*=.95;});particles=particles.filter(function(p){return p.life>0;});texts.forEach(function(t){t.life-=dt;t.y-=dt*34;});texts=texts.filter(function(t){return t.life>0;});rings.forEach(function(r){r.life-=dt;r.r+=(r.max-r.r)*dt*7;});rings=rings.filter(function(r){return r.life>0;});}
+
+    function syncHud(){document.getElementById("healthFill").style.width=player.health+"%";document.getElementById("graceFill").style.width=player.grace+"%";document.getElementById("miracleFill").style.width=player.miracle+"%";document.getElementById("healthValue").textContent=Math.ceil(player.health);document.getElementById("graceValue").textContent=Math.floor(player.grace);document.getElementById("miracleValue").textContent=Math.floor(player.miracle);document.getElementById("restoredStat").textContent=restored+"/"+target;document.getElementById("takenStat").textContent=locked+"/"+lockLimit;document.getElementById("scoreStat").textContent=pad(score);}
+    function roundPath(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+    function facing(a){var x=Math.cos(a),y=Math.sin(a);if(Math.abs(x)>Math.abs(y))return x<0?2:3;return y>0?0:1;}
+    function drawChar(kind,x,y,scale,angle){if(charAtlas.complete&&charAtlas.naturalWidth){var sw=charAtlas.naturalWidth/4,sh=charAtlas.naturalHeight/2,col=facing(angle),row=kind==="jc"?0:1,dw=116*scale,dh=152*scale;ctx.save();ctx.shadowColor=kind==="jc"?"#ffd65a":"#ff3d32";ctx.shadowBlur=14;ctx.drawImage(charAtlas,col*sw,row*sh,sw,sh,x-dw/2,y-dh+36*scale,dw,dh);ctx.restore();}else{ctx.fillStyle=kind==="jc"?"#f7f4e8":"#a91d2a";ctx.beginPath();ctx.arc(x,y-20,24*scale,0,6.28);ctx.fill();}}
+    function drawCar(kind,x,y,scale,angle){ctx.save();ctx.fillStyle="rgba(0,0,0,.4)";ctx.beginPath();ctx.ellipse(x,y+24*scale,74*scale,18*scale,0,0,6.28);ctx.fill();if(scale<.75){ctx.translate(x,y);ctx.rotate(angle);var holy=kind==="holy";ctx.shadowColor=holy?"#ffd65a":"#ff3028";ctx.shadowBlur=16;ctx.fillStyle=holy?"#f7f4e9":"#08090d";roundPath(-58,-29,116,58,16);ctx.fill();ctx.strokeStyle=holy?"#d9ad35":"#c51d23";ctx.lineWidth=5;ctx.stroke();ctx.fillStyle="#0d1a24";roundPath(-20,-23,48,46,9);ctx.fill();ctx.fillStyle=holy?"#ffe36d":"#ff3a31";ctx.fillRect(48,-18,8,12);ctx.fillRect(48,6,8,12);ctx.fillStyle=holy?"#d9ad35":"#7d1018";ctx.fillRect(-48,-25,8,50);if(holy){ctx.strokeStyle="#ffe36d";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,-47,27,6,0,0,6.28);ctx.stroke();}else{ctx.fillStyle="#ff4a24";ctx.beginPath();ctx.moveTo(-25,28);ctx.lineTo(-5,12);ctx.lineTo(4,28);ctx.closePath();ctx.fill();}ctx.restore();return;}if(carAtlas.complete&&carAtlas.naturalWidth){var sw=carAtlas.naturalWidth/4,sh=carAtlas.naturalHeight/2,col=facing(angle),row=kind==="holy"?0:1,dw=208*scale,dh=134*scale;ctx.shadowColor=kind==="holy"?"#ffd65a":"#ff3d32";ctx.shadowBlur=18;ctx.drawImage(carAtlas,col*sw,row*sh,sw,sh,x-dw/2,y-dh/2,dw,dh);}ctx.restore();}
+    function neon(text,x,y,color){ctx.save();ctx.font="900 22px Impact";ctx.textAlign="center";ctx.fillStyle="#fff";ctx.strokeStyle=color;ctx.lineWidth=2;ctx.shadowColor=color;ctx.shadowBlur=16;ctx.strokeText(text,x,y);ctx.fillText(text,x,y);ctx.restore();}
+
+    function roadDrawWidth(type){return roadWidth(type);}
+    function geo(lon,lat){var b=VEGAS.bbox||[36.05,-115.25,36.22,-115.08];return{x:(lon-b[1])/(b[3]-b[1])*WORLD_W,y:(b[2]-lat)/(b[2]-b[0])*WORLD_H};}
+    function drawLandmark(name,lon,lat,kind){
+      var p=geo(lon,lat);if(p.x<camera.x-300||p.x>camera.x+W+300||p.y<camera.y-300||p.y>camera.y+H+300)return;
+      ctx.save();ctx.translate(p.x,p.y);ctx.shadowBlur=18;
+      if(kind==="sphere"){ctx.fillStyle="#17283b";ctx.strokeStyle="#45f4ff";ctx.shadowColor="#45f4ff";ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,0,72,0,6.28);ctx.fill();ctx.stroke();}
+      else if(kind==="pyramid"){ctx.fillStyle="#4b3a16";ctx.strokeStyle="#ffd65a";ctx.shadowColor="#ffd65a";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,-85);ctx.lineTo(92,64);ctx.lineTo(-92,64);ctx.closePath();ctx.fill();ctx.stroke();}
+      else if(kind==="stadium"){ctx.fillStyle="#171923";ctx.strokeStyle="#ff5b50";ctx.shadowColor="#ff3d32";ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(0,0,112,72,0,0,6.28);ctx.fill();ctx.stroke();}
+      else if(kind==="fountain"){ctx.fillStyle="#17344b";ctx.strokeStyle="#6feaff";ctx.shadowColor="#45f4ff";ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(0,0,130,55,0,0,6.28);ctx.fill();ctx.stroke();}
+      else{ctx.fillStyle="#251526";ctx.strokeStyle="#ff3d32";ctx.shadowColor="#ff3d32";ctx.lineWidth=5;ctx.fillRect(-75,-45,150,90);ctx.strokeRect(-75,-45,150,90);}
+      ctx.shadowBlur=10;ctx.fillStyle="#fff";ctx.font="900 17px Impact";ctx.textAlign="center";ctx.fillText(name,0,kind==="pyramid"?88:105);ctx.restore();
+    }
+    function drawWorld(){
+      ctx.fillStyle="#17110d";ctx.fillRect(0,0,WORLD_W,WORLD_H);
+      var roads=VEGAS.roads||[],viewL=camera.x-160,viewT=camera.y-160,viewR=camera.x+W+160,viewB=camera.y+H+160;
+      for(var pass=0;pass<2;pass++){
+        roads.forEach(function(road){
+          var b=road.b;if(!b||b[2]<viewL||b[0]>viewR||b[3]<viewT||b[1]>viewB)return;
+          var pts=road.p;if(!pts||pts.length<2)return;var width=roadDrawWidth(road.t);
+          ctx.strokeStyle=pass===0?"#07070a":(road.t==="motorway"||road.t==="trunk"?"#3b3030":road.t==="primary"?"#393336":"#2a2930");
+          ctx.lineWidth=width+(pass===0?12:0);ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(+pts[0][0],+pts[0][1]);for(var i=1;i<pts.length;i++)ctx.lineTo(+pts[i][0],+pts[i][1]);ctx.stroke();
+        });
+      }
+      roads.forEach(function(road){
+        if(!road.n||road.t!=="primary")return;var b=road.b;if(!b||b[2]<camera.x||b[0]>camera.x+W||b[3]<camera.y||b[1]>camera.y+H)return;
+        var pts=road.p,mid=pts[(pts.length/2)|0];ctx.save();ctx.fillStyle="rgba(255,255,255,.58)";ctx.font="900 12px Arial Narrow";ctx.textAlign="center";ctx.fillText(road.n,+mid[0],+mid[1]-12);ctx.restore();
+      });
+      drawLandmark("WELCOME TO LAS VEGAS",-115.1727,36.0824,"sign");
+      drawLandmark("LUXOR",-115.1761,36.0955,"pyramid");
+      drawLandmark("BELLAGIO",-115.1767,36.1126,"fountain");
+      drawLandmark("THE SPHERE",-115.1613,36.1209,"sphere");
+      drawLandmark("ALLEGIANT STADIUM",-115.1833,36.0909,"stadium");
+      drawLandmark("FREMONT STREET",-115.1436,36.1699,"sign");
+      drawLandmark("STRATOSPHERE",-115.1554,36.1475,"sign");
+    }
+    function drawTrafficCar(c){
+      ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.a+(c.dir<0?Math.PI:0));ctx.fillStyle="rgba(0,0,0,.35)";ctx.fillRect(-34,-18,68,36);ctx.fillStyle=c.color;roundPath(-31,-15,62,30,9);ctx.fill();ctx.fillStyle="#111b25";ctx.fillRect(-10,-12,23,24);ctx.fillStyle="#fff7b0";ctx.fillRect(25,-10,6,7);ctx.fillRect(25,4,6,7);ctx.restore();
+    }
+    function drawCitizen(c){if(c.state==="locked")return;ctx.save();ctx.translate(c.x,c.y+Math.sin(c.phase)*2);ctx.globalAlpha=c.state==="saved"?clamp(c.timer,0,1):1;var lost=c.state==="lost";if(lost){ctx.fillStyle="rgba(130,55,210,.22)";ctx.shadowColor="#a855ff";ctx.shadowBlur=18;ctx.beginPath();ctx.arc(0,-7,28,0,6.28);ctx.fill();}ctx.shadowBlur=0;ctx.strokeStyle=lost?"#3a2945":"#20222c";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-5,10);ctx.lineTo(-7,22);ctx.moveTo(5,10);ctx.lineTo(8,22);ctx.stroke();ctx.fillStyle=lost?"#54366a":c.color;roundPath(-13,-14,26,28,7);ctx.fill();ctx.fillStyle=lost?"#704b83":"#bd7c5b";ctx.beginPath();ctx.arc(0,-23,9,0,6.28);ctx.fill();ctx.fillStyle=lost?"#c378ff":"#fff";ctx.fillRect(-5,-24,2,1);ctx.fillRect(3,-24,2,1);if(c.state==="saved"){ctx.strokeStyle="#ffe97d";ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-36,12,3,0,0,6.28);ctx.stroke();}ctx.restore();}
+    function drawBullet(b){ctx.save();ctx.translate(b.x,b.y);if(b.type==="light"){ctx.rotate(Math.atan2(b.vy,b.vx));ctx.strokeStyle="#fff5a6";ctx.lineWidth=6;ctx.shadowColor="#ffd65a";ctx.shadowBlur=16;ctx.beginPath();ctx.moveTo(-25,0);ctx.lineTo(7,0);ctx.stroke();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(7,0,5,0,6.28);ctx.fill();}else if(b.type==="soul"){ctx.fillStyle="#321044";ctx.shadowColor="#a855ff";ctx.shadowBlur=18;ctx.beginPath();ctx.arc(0,0,10,0,6.28);ctx.fill();ctx.fillStyle="#c47cff";ctx.beginPath();ctx.arc(0,0,4,0,6.28);ctx.fill();}else{ctx.rotate(b.phase);ctx.fillStyle="#740b13";ctx.shadowColor="#ff3127";ctx.shadowBlur=20;ctx.beginPath();for(var i=0;i<16;i++){var a=i/16*6.28,r=i%2?9:17;if(!i)ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);else ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}ctx.closePath();ctx.fill();}ctx.restore();}
+    function drawFx(){rifts.forEach(function(r){ctx.save();ctx.strokeStyle=r.warm>0?"#ff8a37":"#ff3328";ctx.lineWidth=5;ctx.shadowColor="#ff2c22";ctx.shadowBlur=18;ctx.globalAlpha=.55+Math.sin(visualTime*14)*.2;ctx.beginPath();ctx.arc(r.x,r.y,r.warm>0?45-r.warm*18:r.r,0,6.28);ctx.stroke();ctx.restore();});rings.forEach(function(r){ctx.save();ctx.globalAlpha=clamp(r.life*1.7,0,1);ctx.strokeStyle=r.color;ctx.lineWidth=5;ctx.shadowColor=r.color;ctx.shadowBlur=16;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,6.28);ctx.stroke();ctx.restore();});particles.forEach(function(p){ctx.save();ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,6.28);ctx.fill();ctx.restore();});texts.forEach(function(t){ctx.save();ctx.globalAlpha=clamp(t.life,0,1);ctx.font="900 15px Arial Narrow";ctx.textAlign="center";ctx.fillStyle=t.color;ctx.fillText(t.text,t.x,t.y);ctx.restore();});}
+    function drawMiniMap(){if(coarse||mode==="menu")return;var x=W-202,y=H-142,w=176,h=112;ctx.fillStyle="rgba(5,5,10,.82)";ctx.fillRect(x,y,w,h);ctx.strokeStyle="rgba(255,214,90,.6)";ctx.strokeRect(x,y,w,h);citizens.forEach(function(c){if(c.state==="lost"){ctx.fillStyle="#b35cff";ctx.fillRect(x+c.x/WORLD_W*w-2,y+c.y/WORLD_H*h-2,4,4);}});ctx.fillStyle="#ff4138";ctx.beginPath();ctx.arc(x+devil.x/WORLD_W*w,y+devil.y/WORLD_H*h,4,0,6.28);ctx.fill();ctx.fillStyle="#ffe36a";ctx.beginPath();ctx.arc(x+player.x/WORLD_W*w,y+player.y/WORLD_H*h,5,0,6.28);ctx.fill();if(!player.inCar){ctx.strokeStyle="#fff4a5";ctx.strokeRect(x+holyCar.x/WORLD_W*w-3,y+holyCar.y/WORLD_H*h-3,6,6);}ctx.fillStyle="#fff";ctx.font="900 9px Arial Narrow";ctx.fillText("SIN CITY MAP",x+7,y+12);}
+    function drawMenu(){var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#090815");g.addColorStop(.55,"#45132a");g.addColorStop(1,"#08070d");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);neon("SIN CITY",640,85,"#ff3d32");drawCar("holy",170,615,1.05,0);drawCar("demon",1100,530,1,Math.PI);drawChar("jc",250,520,1.55,0);drawChar("devil",1040,455,1.5,Math.PI);}
+    function render(){ctx.clearRect(0,0,W,H);if(mode==="menu"){drawMenu();return;}var sx=shake?(rand()-.5)*shake:0,sy=shake?(rand()-.5)*shake:0;ctx.save();ctx.translate(sx-camera.x,sy-camera.y);drawWorld();traffic.forEach(drawTrafficCar);if(!player.inCar)drawCar("holy",holyCar.x,holyCar.y,.58,holyCar.angle);var actors=citizens.slice();actors.push({kind:"player",y:player.y});actors.push({kind:"devil",y:devil.y});actors.sort(function(a,b){return a.y-b.y;});actors.forEach(function(a){if(a.kind==="player"){if(player.inCar)drawCar("holy",player.x,player.y,.58,holyCar.angle);else drawChar("jc",player.x,player.y,.72,player.angle);}else if(a.kind==="devil")drawCar("demon",devil.x,devil.y,.6,devil.moveAngle);else drawCitizen(a);});bullets.forEach(drawBullet);drawFx();ctx.restore();drawMiniMap();if(flash){ctx.fillStyle="rgba(255,25,30,"+flash*.42+")";ctx.fillRect(0,0,W,H);}if(mouse.seen&&!coarse&&mode==="playing"){ctx.save();ctx.translate(mouse.x,mouse.y);ctx.strokeStyle="#fff1a0";ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,12,0,6.28);ctx.moveTo(-19,0);ctx.lineTo(-7,0);ctx.moveTo(19,0);ctx.lineTo(7,0);ctx.stroke();ctx.restore();}}
+
+    function point(e){var r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};}
+    canvas.addEventListener("pointermove",function(e){var p=point(e);mouse.x=p.x;mouse.y=p.y;mouse.seen=true;if(!coarse)player.angle=Math.atan2(mouse.y+camera.y-player.y,mouse.x+camera.x-player.x);});
+    canvas.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse"&&e.button!==0)return;var p=point(e);mouse.x=p.x;mouse.y=p.y;mouse.seen=true;if(!coarse){player.angle=Math.atan2(mouse.y+camera.y-player.y,mouse.x+camera.x-player.x);mouse.down=true;fireLight();}});
+    addEventListener("pointerup",function(){mouse.down=false;});canvas.addEventListener("contextmenu",function(e){e.preventDefault();});
+    addEventListener("keydown",function(e){keys[e.code]=true;if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].indexOf(e.code)>=0)e.preventDefault();if(e.code==="Space"&&!e.repeat)graceWave();if(e.code==="KeyQ"&&!e.repeat)miracleDash();if((e.code==="ShiftLeft"||e.code==="ShiftRight")&&!e.repeat&&!player.inCar)miracleDash();if(e.code==="KeyE"&&!e.repeat)toggleRide();if(e.code==="KeyP"&&!e.repeat)pause(false);if(e.code==="Enter"&&mode==="menu")startGame();});
+    addEventListener("keyup",function(e){keys[e.code]=false;});addEventListener("blur",function(){if(mode==="playing")pause(false);});
+    var stickEl=document.getElementById("stick"),knob=document.getElementById("knob");
+    function moveStick(e){if(stick.id!==e.pointerId)return;var r=stickEl.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.34,len=Math.sqrt(dx*dx+dy*dy)||1;if(len>max){dx=dx/len*max;dy=dy/len*max;}stick.x=dx/max;stick.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
+    function releaseStick(e){if(stick.id!==e.pointerId)return;stick.id=null;stick.x=0;stick.y=0;knob.style.transform="translate(0,0)";}
+    stickEl.addEventListener("pointerdown",function(e){stick.id=e.pointerId;stickEl.setPointerCapture(e.pointerId);moveStick(e);});stickEl.addEventListener("pointermove",moveStick);stickEl.addEventListener("pointerup",releaseStick);stickEl.addEventListener("pointercancel",releaseStick);
+    var fireTouch=document.getElementById("fireTouch");fireTouch.addEventListener("pointerdown",function(e){e.preventDefault();mobileFire=true;autoAim();fireLight();});fireTouch.addEventListener("pointerup",function(){mobileFire=false;});fireTouch.addEventListener("pointercancel",function(){mobileFire=false;});
+    document.getElementById("rideTouch").addEventListener("pointerdown",function(e){e.preventDefault();toggleRide();});document.getElementById("miracleTouch").addEventListener("pointerdown",function(e){e.preventDefault();if(player.inCar){keys.ShiftLeft=true;}else miracleDash();});document.getElementById("miracleTouch").addEventListener("pointerup",function(){keys.ShiftLeft=false;});document.getElementById("miracleTouch").addEventListener("pointercancel",function(){keys.ShiftLeft=false;});document.getElementById("graceTouch").addEventListener("pointerdown",function(e){e.preventDefault();graceWave();});
+    document.getElementById("startBtn").addEventListener("click",startGame);document.getElementById("restartBtn").addEventListener("click",startGame);document.getElementById("pauseBtn").addEventListener("click",function(){pause(false);});document.getElementById("resumeBtn").addEventListener("click",function(){pause(true);});
+    document.getElementById("soundBtn").addEventListener("click",function(){soundOn=!soundOn;this.textContent=soundOn?"SOUND: ON":"SOUND: OFF";if(soundOn)initAudio();updateEngines();});
+    function frame(now){var elapsed=Math.min(.05,Math.max(0,(now-last)/1000));last=now;visualTime+=elapsed;if(mode==="playing"){acc+=elapsed;while(acc>=STEP){update(STEP);acc-=STEP;}}else acc=0;render();requestAnimationFrame(frame);}
+
+    window.render_game_to_text=function(){return JSON.stringify({mode:mode,playableCharacter:"JC",npcCharacters:{devil:"AI boss driving Dodge Demon",citizens:citizens.length},player:{x:Math.round(player.x),y:Math.round(player.y),haloHealth:Math.round(player.health),grace:Math.round(player.grace),miracle:Math.round(player.miracle),inChristChallenger:player.inCar},mission:{restored:restored,target:target,lockedAway:locked,lockLimit:lockLimit,wave:wave,score:score},magic:{jc:["Divine Light","Grace Wave","Miracle Dash"],devil:["Soul Taker","Heaven Havoc","Inferno Rift","Shadow Warp"],activeInfernoRifts:rifts.length},world:{name:"Real Las Vegas OSM",width:WORLD_W,height:WORLD_H,roads:(VEGAS.roads||[]).length,district:district,cameraX:Math.round(camera.x),cameraY:Math.round(camera.y)},driving:{mph:Math.round(Math.abs(player.forwardSpeed)*.19),gear:player.gear,rpm:Math.round(player.rpm),onRoad:player.onRoad,vehicleDamage:Math.round(player.vehicleDamage),handbrake:player.handbrake,heat:Math.round(heat),trafficNPCs:traffic.length},vehicles:{christChallenger:{x:Math.round(holyCar.x),y:Math.round(holyCar.y)},dodgeDemon:{x:Math.round(devil.x),y:Math.round(devil.y)}},controls:"On foot WASD; driving W throttle, S brake/reverse, A/D steer, Shift handbrake, E enter/exit, Q Miracle Dash, Space Grace Wave, mouse fire, P pause"});};
+    window.advanceTime=function(ms){var n=Math.max(0,Math.floor(ms/(STEP*1000)));for(var i=0;i<n;i++){if(mode==="playing")update(STEP);visualTime+=STEP;}render();return window.render_game_to_text();};
+    resetGame();document.getElementById("highScoreLine").textContent="HIGH SCORE "+pad(highScore);requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

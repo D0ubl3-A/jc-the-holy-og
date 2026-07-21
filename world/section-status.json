@@ -1,0 +1,35 @@
+{
+  "objective": "section by section recreate Las Vegas in full reality",
+  "current_section": "strip-core",
+  "section_state": "in_progress",
+  "implemented": [
+    "authoritative OSM road geometry",
+    "Strip GLB principal-axis and boulevard anchor alignment",
+    "generated physical building parcels and collision",
+    "96 generated facade materials",
+    "building entrance portal registry",
+    "placeholder interior shell access",
+    "central Strip sidewalks",
+    "crosswalk markings",
+    "streetlight poles",
+    "lane-following traffic",
+    "section streaming metadata"
+  ],
+  "remaining_for_strip_core": [
+    "connected traffic route graph",
+    "traffic signals and right-of-way",
+    "sidewalk pedestrian routing",
+    "parcel-specific landmark geometry",
+    "full building interiors",
+    "service alleys and parking structures",
+    "utility and emergency simulation"
+  ],
+  "planned_sections": [
+    "strip-south",
+    "strip-north",
+    "downtown",
+    "paradise-east",
+    "west-resorts",
+    "outer-vegas"
+  ]
+}

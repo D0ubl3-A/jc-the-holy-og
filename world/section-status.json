@@ -9,27 +9,21 @@
     "96 generated facade materials",
     "building entrance portal registry",
     "placeholder interior shell access",
-    "central Strip sidewalks",
-    "crosswalk markings",
-    "streetlight poles",
-    "lane-following traffic",
+    "central Strip sidewalks and crosswalks",
+    "streetlight and phased traffic signal geometry",
+    "connected endpoint road graph",
+    "intersection-aware traffic routing and red-light stops",
+    "same-lane vehicle following distance",
+    "sidewalk-bound pedestrian routing",
     "section streaming metadata"
   ],
   "remaining_for_strip_core": [
-    "connected traffic route graph",
-    "traffic signals and right-of-way",
-    "sidewalk pedestrian routing",
+    "turn lanes and protected signal phases",
+    "pedestrian crosswalk signal logic",
     "parcel-specific landmark geometry",
     "full building interiors",
     "service alleys and parking structures",
     "utility and emergency simulation"
   ],
-  "planned_sections": [
-    "strip-south",
-    "strip-north",
-    "downtown",
-    "paradise-east",
-    "west-resorts",
-    "outer-vegas"
-  ]
+  "planned_sections": ["strip-south","strip-north","downtown","paradise-east","west-resorts","outer-vegas"]
 }

@@ -1,0 +1,40 @@
+﻿{
+    "objective":  "section by section recreate Las Vegas in full reality",
+    "current_section":  "strip-core",
+    "section_state":  "in_progress",
+    "implemented":  [
+                        "authoritative OSM road geometry",
+                        "Strip GLB principal-axis and boulevard anchor alignment",
+                        "generated physical building parcels and collision",
+                        "96 generated facade materials",
+                        "building entrance portal registry",
+                        "placeholder interior shell access",
+                        "central Strip sidewalks and crosswalks",
+                        "streetlight and phased traffic signal geometry",
+                        "connected endpoint road graph",
+                        "intersection-aware traffic routing and red-light stops",
+                        "same-lane vehicle following distance",
+                        "sidewalk-bound pedestrian routing",
+                        "section streaming metadata",
+                        "JC procedural 360-direction flight pose set separated from legacy Devil atlas",
+                        "Playable Satan alternate mode on G with legacy Devil directional sprites",
+                        "Six original renamed Strip landmark districts: CLOWN TOWN, ROYAL PALACE, NGM, THE WIN, THE PINE, THE PYRAMID"
+                    ],
+    "remaining_for_strip_core":  [
+                                     "turn lanes and protected signal phases",
+                                     "pedestrian crosswalk signal logic",
+                                     "parcel-specific landmark geometry",
+                                     "full building interiors",
+                                     "service alleys and parking structures",
+                                     "utility and emergency simulation"
+                                 ],
+    "planned_sections":  [
+                             "strip-south",
+                             "strip-north",
+                             "downtown",
+                             "paradise-east",
+                             "west-resorts",
+                             "outer-vegas"
+                         ],
+    "updatedAt":  "2026-07-21T03:00:21.6666096Z"
+}

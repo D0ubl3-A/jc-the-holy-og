@@ -11,3 +11,12 @@ window.JC_VEGAS_SECTIONS={
     {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",anchor:"world",offset:[0,0],half:[3450,3450],streamRadius:5000,landmarks:["valley-grid"]}
   ]
 };
+window.JC_RENAMED_LANDMARKS=[
+  {sourceArchetype:"circus resort",name:"CLOWN TOWN",section:"strip-core",status:"implemented"},
+  {sourceArchetype:"classical palace resort",name:"ROYAL PALACE",section:"strip-core",status:"implemented"},
+  {sourceArchetype:"green mega-resort",name:"NGM",section:"strip-core",status:"implemented"},
+  {sourceArchetype:"curved bronze luxury towers",name:"THE WIN",section:"strip-core",status:"implemented"},
+  {sourceArchetype:"twin resort towers",name:"THE PINE",section:"strip-core",status:"implemented"},
+  {sourceArchetype:"pyramid resort",name:"THE PYRAMID",section:"strip-core",status:"implemented"}
+];
+if(window.JC_VEGAS_SECTIONS&&Array.isArray(window.JC_VEGAS_SECTIONS.sections)){const s=window.JC_VEGAS_SECTIONS.sections.find(v=>v.id==="strip-core");if(s)s.landmarks=window.JC_RENAMED_LANDMARKS.map(v=>v.name)}

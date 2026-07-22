@@ -1,22 +1,26 @@
 window.JC_VEGAS_SECTIONS={
-  version:1,
+  version:2,
   coordinateSystem:"strip-anchor-local",
+  fullStrip:true,
   sections:[
-    {id:"strip-core",label:"CENTRAL STRIP",status:"in_progress",anchor:"strip",offset:[0,0],half:[1150,1450],streamRadius:2900,landmarks:["sphere-zone","pyramid-zone","tower-zone"]},
-    {id:"strip-south",label:"SOUTH STRIP",status:"planned",anchor:"strip",offset:[0,2200],half:[1250,850],streamRadius:2600,landmarks:["airport-gateway"]},
-    {id:"strip-north",label:"NORTH STRIP",status:"planned",anchor:"strip",offset:[0,-2200],half:[1250,850],streamRadius:2600,landmarks:["resort-corridor"]},
-    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"planned",anchor:"world",offset:[-250,-2450],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"]},
+    {id:"strip-south",label:"SOUTH STRIP",status:"implemented",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["SOUTH GATE","THE PYRAMID","GOLDEN BAY","KINGDOM CASTLE","SUNSET ARENA","EMERALD CITY"]},
+    {id:"strip-core",label:"CENTRAL STRIP",status:"implemented",anchor:"strip",offset:[0,200],half:[1500,1850],streamRadius:3600,landmarks:["CLOWN TOWN","ROYAL PALACE","NGM","THE WIN","THE PINE","NEON FOUNTAINS"]},
+    {id:"strip-north",label:"NORTH STRIP",status:"implemented",anchor:"strip",offset:[0,-2850],half:[1500,1900],streamRadius:3600,landmarks:["SKY SPIRE","SAHARA CROWN","STRATOS KING","NORTH ARENA","NORTH GATE"]},
+    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"planned",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"]},
     {id:"paradise-east",label:"PARADISE EAST",status:"planned",anchor:"world",offset:[1950,-150],half:[1100,1600],streamRadius:2700,landmarks:["convention-zone"]},
     {id:"west-resorts",label:"WEST RESORTS",status:"planned",anchor:"world",offset:[-1900,-150],half:[1050,1700],streamRadius:2700,landmarks:["resort-belt"]},
-    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",anchor:"world",offset:[0,0],half:[3450,3450],streamRadius:5000,landmarks:["valley-grid"]}
+    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
   ]
 };
-window.JC_RENAMED_LANDMARKS=[
-  {sourceArchetype:"circus resort",name:"CLOWN TOWN",section:"strip-core",status:"implemented"},
-  {sourceArchetype:"classical palace resort",name:"ROYAL PALACE",section:"strip-core",status:"implemented"},
-  {sourceArchetype:"green mega-resort",name:"NGM",section:"strip-core",status:"implemented"},
-  {sourceArchetype:"curved bronze luxury towers",name:"THE WIN",section:"strip-core",status:"implemented"},
-  {sourceArchetype:"twin resort towers",name:"THE PINE",section:"strip-core",status:"implemented"},
-  {sourceArchetype:"pyramid resort",name:"THE PYRAMID",section:"strip-core",status:"implemented"}
-];
-if(window.JC_VEGAS_SECTIONS&&Array.isArray(window.JC_VEGAS_SECTIONS.sections)){const s=window.JC_VEGAS_SECTIONS.sections.find(v=>v.id==="strip-core");if(s)s.landmarks=window.JC_RENAMED_LANDMARKS.map(v=>v.name)}
+window.JC_RENAMED_LANDMARKS=window.JC_VEGAS_SECTIONS.sections
+  .filter(section=>section.id.startsWith("strip-"))
+  .flatMap(section=>section.landmarks.map(name=>({name,section:section.id,status:"implemented"})));
+window.JC_FULL_STRIP={
+  status:"playable",
+  southToNorthWorldSpan:8400,
+  sections:["strip-south","strip-core","strip-north"],
+  features:["full boulevard","sidewalks","crosswalks","streetlights","17 landmark districts","HD model streaming","mobile performance caps"]
+};
+// This module is parser-inserted before the main game module, so it can patch
+// Three.js safely and repair the legacy Strip anchor bug before initialization.
+document.write('<script type="module" src="./jc-the-holy-og-assets/full-strip-runtime.js"><\/script>');

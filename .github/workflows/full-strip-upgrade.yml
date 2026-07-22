@@ -1,4 +1,4 @@
-name: Full Strip Production Upgrade
+name: Deploy JC Full Strip
 
 on:
   workflow_dispatch:
@@ -6,18 +6,22 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/full-strip-upgrade.yml"
+      - "index.html"
+      - "jc-the-holy-og-assets/vegas-sections.js"
+      - "jc-the-holy-og-assets/full-strip-runtime.js"
+      - "jc-the-holy-og-assets/models/**"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: jc-full-strip-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  validate-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -25,21 +29,13 @@ jobs:
     steps:
       - name: Check out production branch
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Apply full Strip expansion
-        run: python tools/run_full_strip_upgrade.py
-
-      - name: Commit production build
+      - name: Validate full Strip runtime
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html jc-the-holy-og-assets/vegas-sections.js vegas-rebuild-status.json tools/expand_full_strip.py
-          if ! git diff --cached --quiet; then
-            git commit -m "Build playable full Las Vegas Strip"
-            git push origin HEAD:main
-          fi
+          node --check jc-the-holy-og-assets/full-strip-runtime.js
+          node --check jc-the-holy-og-assets/vegas-sections.js
+          test -f index.html
+          test -f jc-the-holy-og-assets/models/vegas-strip-lod.glb
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -65,8 +65,18 @@ function deviceTier() {
   return "medium";
 }
 
+function disposeSceneResources(root) {
+  root.traverse(object => {
+    if (!object.isMesh) return;
+    object.geometry?.dispose?.();
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) material?.dispose?.();
+  });
+}
+
 export class QualityPipeline {
   constructor({ scene, camera, mount, quality = "auto" }) {
+    if (!mount) throw new Error("QualityPipeline requires a valid mount element");
     this.scene = scene;
     this.camera = camera;
     this.mount = mount;
@@ -79,17 +89,21 @@ export class QualityPipeline {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x91a9b7, 1);
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, this.settings.pixelRatio));
+    this.currentPixelRatio = Math.min(devicePixelRatio, this.settings.pixelRatio);
+    this.renderer.setPixelRatio(this.currentPixelRatio);
     this.renderer.setSize(innerWidth, innerHeight, false);
     this.renderer.domElement.id = "game-canvas";
     this.mount.appendChild(this.renderer.domElement);
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
+    const room = new RoomEnvironment();
     try {
-      this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      this.environmentRenderTarget = pmrem.fromScene(room, 0.04);
+      this.scene.environment = this.environmentRenderTarget.texture;
       this.scene.environmentIntensity = 0.72;
     } finally {
       pmrem.dispose();
+      disposeSceneResources(room);
     }
 
     this.composer = new EffectComposer(this.renderer);
@@ -101,7 +115,7 @@ export class QualityPipeline {
     this.composer.addPass(this.bloomPass);
 
     this.cinematicPass = new ShaderPass(CINEMATIC_SHADER);
-    this.cinematicPass.uniforms.resolution.value.set(innerWidth * this.renderer.getPixelRatio(), innerHeight * this.renderer.getPixelRatio());
+    this.cinematicPass.uniforms.resolution.value.set(innerWidth * this.currentPixelRatio, innerHeight * this.currentPixelRatio);
     if (this.name === "mobile") {
       this.cinematicPass.uniforms.sharpen.value = 0.06;
       this.cinematicPass.uniforms.vignette.value = 0.11;
@@ -110,7 +124,6 @@ export class QualityPipeline {
     this.outputPass = new OutputPass();
     this.composer.addPass(this.outputPass);
 
-    this.gpuFrame = 0;
     this.lastAutoTune = performance.now();
     this.lowFpsSeconds = 0;
     this.highFpsSeconds = 0;
@@ -123,12 +136,22 @@ export class QualityPipeline {
     this.bloomPass.threshold = threshold;
   }
 
+  applyPixelRatio(ratio) {
+    this.currentPixelRatio = Math.max(1, Math.min(ratio, devicePixelRatio, this.settings.pixelRatio));
+    this.renderer.setPixelRatio(this.currentPixelRatio);
+    this.composer.setPixelRatio(this.currentPixelRatio);
+    this.cinematicPass.uniforms.resolution.value.set(innerWidth * this.currentPixelRatio, innerHeight * this.currentPixelRatio);
+  }
+
   resize(width = innerWidth, height = innerHeight) {
-    const ratio = Math.min(devicePixelRatio, this.settings.pixelRatio);
+    const ratio = this.currentPixelRatio;
     this.renderer.setPixelRatio(ratio);
     this.renderer.setSize(width, height, false);
+    this.composer.setPixelRatio(ratio);
     this.composer.setSize(width, height);
     this.cinematicPass.uniforms.resolution.value.set(width * ratio, height * ratio);
+    this.lowFpsSeconds = 0;
+    this.highFpsSeconds = 0;
   }
 
   render() { this.composer.render(); }
@@ -141,25 +164,22 @@ export class QualityPipeline {
     if (now - this.lastAutoTune < 2500) return;
     this.lastAutoTune = now;
     if (this.lowFpsSeconds > 3.2) {
-      const current = this.renderer.getPixelRatio();
-      const next = Math.max(1, current - 0.15);
-      if (next < current - 0.01) {
-        this.renderer.setPixelRatio(next);
-        this.composer.setPixelRatio(next);
-        this.cinematicPass.uniforms.resolution.value.set(innerWidth * next, innerHeight * next);
-      }
+      const next = Math.max(1, this.currentPixelRatio - 0.15);
+      if (next < this.currentPixelRatio - 0.01) this.applyPixelRatio(next);
       this.lowFpsSeconds = 0;
     } else if (this.highFpsSeconds > 8) {
       const target = Math.min(devicePixelRatio, this.settings.pixelRatio);
-      const current = this.renderer.getPixelRatio();
-      const next = Math.min(target, current + 0.1);
-      if (next > current + 0.01) {
-        this.renderer.setPixelRatio(next);
-        this.composer.setPixelRatio(next);
-        this.cinematicPass.uniforms.resolution.value.set(innerWidth * next, innerHeight * next);
-      }
+      const next = Math.min(target, this.currentPixelRatio + 0.1);
+      if (next > this.currentPixelRatio + 0.01) this.applyPixelRatio(next);
       this.highFpsSeconds = 0;
     }
+  }
+
+  dispose() {
+    this.scene.environment = null;
+    this.environmentRenderTarget?.dispose?.();
+    this.composer?.dispose?.();
+    this.renderer?.dispose?.();
   }
 }
 

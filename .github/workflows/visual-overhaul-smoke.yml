@@ -21,6 +21,7 @@ on:
       - "jc-the-holy-og-assets/materials-v3.js"
       - "jc-the-holy-og-assets/section-zero-v3.js"
       - "tests/smoke.mjs"
+      - ".github/workflows/visual-overhaul-smoke.yml"
 
 permissions:
   contents: read
@@ -60,7 +61,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          node tests/smoke.mjs 2>&1 | tee smoke-test.log
+          xvfb-run -a -s "-screen 0 1440x900x24" node tests/smoke.mjs 2>&1 | tee smoke-test.log
 
       - name: Upload smoke diagnostics
         if: always()
@@ -69,7 +70,6 @@ jobs:
           name: jc-visual-overhaul-smoke
           path: |
             smoke-game.png
-            smoke-game-final.png
             smoke-report.json
             smoke-test.log
             /tmp/jc-http.log

@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 import { writeFile } from "node:fs/promises";
 
 const browser = await chromium.launch({
-  headless: true,
+  headless: false,
   args: [
     "--use-gl=angle",
     "--use-angle=swiftshader",

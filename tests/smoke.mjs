@@ -3,9 +3,24 @@ import { writeFile } from "node:fs/promises";
 
 const browser = await chromium.launch({
   headless: true,
-  args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-webgl", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--disable-dev-shm-usage"],
+  args: [
+    "--use-gl=angle",
+    "--use-angle=swiftshader",
+    "--enable-webgl",
+    "--enable-unsafe-swiftshader",
+    "--ignore-gpu-blocklist",
+    "--disable-dev-shm-usage",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-renderer-backgrounding",
+    "--disable-features=CalculateNativeWinOcclusion",
+  ],
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.bringToFront();
+const cdp = await page.context().newCDPSession(page);
+await cdp.send("Emulation.setFocusEmulationEnabled", { enabled: true });
+
 const consoleMessages = [];
 const pageErrors = [];
 page.on("console", msg => consoleMessages.push(`[${msg.type()}] ${msg.text()}`));
@@ -19,10 +34,12 @@ let flight = null;
 let fatal = null;
 let screenshotError = null;
 let inputEvents = [];
+let animationTicks = null;
 
 try {
   stage = "navigate";
   await page.goto("http://127.0.0.1:8080/", { waitUntil: "domcontentloaded", timeout: 60_000 });
+  await page.bringToFront();
 
   stage = "wait-for-boot";
   await page.waitForSelector("#start", { state: "visible", timeout: 90_000 });
@@ -37,7 +54,22 @@ try {
   stage = "start-game";
   await page.click("#start");
   await page.waitForFunction(() => JSON.parse(window.render_game_to_text()).mode === "playing", null, { timeout: 15_000 });
-  await page.waitForTimeout(1600);
+  await page.waitForTimeout(750);
+
+  animationTicks = await page.evaluate(async () => {
+    let count = 0;
+    await new Promise(resolve => {
+      const started = performance.now();
+      const tick = () => {
+        count++;
+        if (performance.now() - started >= 500) resolve();
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    return count;
+  });
+  if (animationTicks < 8) throw new Error(`requestAnimationFrame is throttled in CI: only ${animationTicks} ticks in 500ms`);
 
   await page.evaluate(() => {
     window.__jcSmokeInputs = [];
@@ -54,7 +86,7 @@ try {
   afterWalk = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
   inputEvents = await page.evaluate(() => window.__jcSmokeInputs || []);
   const moved = Math.hypot(afterWalk.player.x - before.player.x, afterWalk.player.z - before.player.z);
-  if (moved < 1) throw new Error(`Player did not move enough in smoke test: ${moved}; inputs=${JSON.stringify(inputEvents)}; before=${JSON.stringify(before.player)} after=${JSON.stringify(afterWalk.player)}`);
+  if (moved < 1) throw new Error(`Player did not move enough in smoke test: ${moved}; rAF=${animationTicks}; inputs=${JSON.stringify(inputEvents)}; before=${JSON.stringify(before.player)} after=${JSON.stringify(afterWalk.player)}`);
 
   stage = "flight";
   await page.keyboard.press("f");
@@ -70,13 +102,12 @@ try {
 
   stage = "console-errors";
   const serious = [...consoleMessages.filter(e => /^\[error\]/.test(e)), ...pageErrors]
-    .filter(e => !/favicon|Failed to load resource.*404/i.test(e));
+    .filter(e => !/favicon\.ico/i.test(e));
   if (serious.length) throw new Error(`Browser errors:\n${serious.join("\n")}`);
 
   stage = "capture";
   try {
-    const session = await page.context().newCDPSession(page);
-    const result = await session.send("Page.captureScreenshot", { format: "png", fromSurface: true, captureBeyondViewport: false });
+    const result = await cdp.send("Page.captureScreenshot", { format: "png", fromSurface: true, captureBeyondViewport: false });
     await writeFile("smoke-game.png", Buffer.from(result.data, "base64"));
   } catch (error) {
     screenshotError = error?.stack || String(error);
@@ -91,6 +122,7 @@ try {
     stage,
     fatal,
     screenshotError,
+    animationTicks,
     inputEvents,
     pre,
     before,

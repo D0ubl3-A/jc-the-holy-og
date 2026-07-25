@@ -57,7 +57,10 @@ jobs:
           exit 1
 
       - name: Run WebGL gameplay smoke test
-        run: node tests/smoke.mjs 2>&1 | tee smoke-test.log
+        shell: bash
+        run: |
+          set -o pipefail
+          node tests/smoke.mjs 2>&1 | tee smoke-test.log
 
       - name: Upload smoke diagnostics
         if: always()
@@ -66,6 +69,7 @@ jobs:
           name: jc-visual-overhaul-smoke
           path: |
             smoke-game.png
+            smoke-game-final.png
             smoke-report.json
             smoke-test.log
             /tmp/jc-http.log

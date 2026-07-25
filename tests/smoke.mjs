@@ -18,6 +18,7 @@ let afterWalk = null;
 let flight = null;
 let fatal = null;
 let screenshotError = null;
+let inputEvents = [];
 
 try {
   stage = "navigate";
@@ -36,29 +37,31 @@ try {
   stage = "start-game";
   await page.click("#start");
   await page.waitForFunction(() => JSON.parse(window.render_game_to_text()).mode === "playing", null, { timeout: 15_000 });
-  await page.waitForTimeout(2200);
+  await page.waitForTimeout(1600);
 
-  stage = "runtime-screenshot";
-  try {
-    await page.screenshot({ path: "smoke-game.png", fullPage: false, animations: "disabled", timeout: 30_000 });
-  } catch (error) {
-    screenshotError = error?.stack || String(error);
-  }
+  await page.evaluate(() => {
+    window.__jcSmokeInputs = [];
+    window.addEventListener("keydown", e => window.__jcSmokeInputs.push({ type: "down", code: e.code, key: e.key, time: performance.now() }));
+    window.addEventListener("keyup", e => window.__jcSmokeInputs.push({ type: "up", code: e.code, key: e.key, time: performance.now() }));
+  });
 
   stage = "movement";
   before = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
   await page.keyboard.down("w");
   await page.waitForTimeout(1100);
   await page.keyboard.up("w");
+  await page.waitForTimeout(100);
   afterWalk = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
+  inputEvents = await page.evaluate(() => window.__jcSmokeInputs || []);
   const moved = Math.hypot(afterWalk.player.x - before.player.x, afterWalk.player.z - before.player.z);
-  if (moved < 1) throw new Error(`Player did not move enough in smoke test: ${moved}; before=${JSON.stringify(before.player)} after=${JSON.stringify(afterWalk.player)}`);
+  if (moved < 1) throw new Error(`Player did not move enough in smoke test: ${moved}; inputs=${JSON.stringify(inputEvents)}; before=${JSON.stringify(before.player)} after=${JSON.stringify(afterWalk.player)}`);
 
   stage = "flight";
   await page.keyboard.press("f");
   await page.waitForTimeout(350);
   flight = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
-  if (!flight.player.flying) throw new Error(`Flight toggle failed: ${JSON.stringify(flight.player)}`);
+  inputEvents = await page.evaluate(() => window.__jcSmokeInputs || []);
+  if (!flight.player.flying) throw new Error(`Flight toggle failed; inputs=${JSON.stringify(inputEvents)}; state=${JSON.stringify(flight.player)}`);
   await page.keyboard.press("f");
 
   stage = "canvas";
@@ -69,18 +72,26 @@ try {
   const serious = [...consoleMessages.filter(e => /^\[error\]/.test(e)), ...pageErrors]
     .filter(e => !/favicon|Failed to load resource.*404/i.test(e));
   if (serious.length) throw new Error(`Browser errors:\n${serious.join("\n")}`);
+
+  stage = "capture";
+  try {
+    const session = await page.context().newCDPSession(page);
+    const result = await session.send("Page.captureScreenshot", { format: "png", fromSurface: true, captureBeyondViewport: false });
+    await writeFile("smoke-game.png", Buffer.from(result.data, "base64"));
+  } catch (error) {
+    screenshotError = error?.stack || String(error);
+  }
 } catch (error) {
   fatal = error?.stack || String(error);
   throw error;
 } finally {
-  if (!screenshotError) {
-    try { await page.screenshot({ path: "smoke-game-final.png", fullPage: false, animations: "disabled", timeout: 30_000 }); } catch {}
-  }
+  inputEvents = inputEvents.length ? inputEvents : await page.evaluate(() => window.__jcSmokeInputs || []).catch(() => []);
   const report = {
     ok: !fatal,
     stage,
     fatal,
     screenshotError,
+    inputEvents,
     pre,
     before,
     afterWalk,

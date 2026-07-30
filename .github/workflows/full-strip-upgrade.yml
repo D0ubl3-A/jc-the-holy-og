@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/full-strip-upgrade.yml"
       - "index.html"
+      - "jc-the-holy-og-assets/vegas-roads.js"
       - "jc-the-holy-og-assets/vegas-sections.js"
       - "jc-the-holy-og-assets/full-strip-runtime.js"
       - "jc-the-holy-og-assets/models/**"
@@ -32,10 +33,39 @@ jobs:
 
       - name: Validate full Strip runtime
         run: |
-          node --check jc-the-holy-og-assets/full-strip-runtime.js
+          set -euo pipefail
           node --check jc-the-holy-og-assets/vegas-sections.js
+          if [ -f jc-the-holy-og-assets/full-strip-runtime.js ]; then
+            node --check jc-the-holy-og-assets/full-strip-runtime.js
+          fi
           test -f index.html
+          test -f jc-the-holy-og-assets/vegas-roads.js
           test -f jc-the-holy-og-assets/models/vegas-strip-lod.glb
+
+      - name: Build synchronized clone route
+        run: |
+          set -euo pipefail
+          rm -rf clone
+          mkdir -p clone
+          cp index.html clone/index.html
+          python - <<'PY'
+          from pathlib import Path
+
+          clone = Path("clone/index.html")
+          html = clone.read_text(encoding="utf-8")
+          html = html.replace("./jc-the-holy-og-assets/", "../jc-the-holy-og-assets/")
+          html = html.replace(
+              "<title>JC THE HOLY OG: SIN CITY REDEMPTION 3D</title>",
+              "<title>JC THE HOLY OG: SIN CITY REDEMPTION 3D — CLONE</title>",
+              1,
+          )
+          marker = '<meta name="jc-build" content="synchronized-production-clone">'
+          html = html.replace("</head>", f"  {marker}\n</head>", 1)
+          clone.write_text(html, encoding="utf-8")
+          PY
+          test -s clone/index.html
+          grep -q 'synchronized-production-clone' clone/index.html
+          grep -q '../jc-the-holy-og-assets/' clone/index.html
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -214,11 +214,46 @@ if (!window[RUNTIME_KEY]) {
     const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0xa9a398, roughness: 0.96, metalness: 0.01 });
     const medianMaterial = new THREE.MeshStandardMaterial({ color: 0x2e382a, roughness: 0.92 });
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xe9d77b });
-    addBox(root, 31, 0.12, 8400, roadMaterial, 0, 0.015, 0);
-    addBox(root, 2.2, 0.2, 8400, medianMaterial, 0, 0.12, 0);
-    addBox(root, 8, 0.28, 8400, sidewalkMaterial, -21.5, 0.14, 0);
-    addBox(root, 8, 0.28, 8400, sidewalkMaterial, 21.5, 0.14, 0);
-    for (const x of [-7.8, 7.8]) addBox(root, 0.38, 0.05, 8320, stripeMaterial, x, 0.1, 0);
+    // Use the named OSM Boulevard segments as the spine. This keeps the
+    // north/south Strip continuous while preserving bends and gaps in the
+    // source geometry; the straight fallback is only used if the source has
+    // no Boulevard records at all.
+    const data = window.JC_VEGAS_OSM || window.VEGAS_ROADS || { roads: [] };
+    let minX = Infinity, minZ = Infinity, maxX = -Infinity, maxZ = -Infinity;
+    for (const road of data.roads || []) for (const point of road.p || []) {
+      const x = Number(point[0]), z = Number(point[1]);
+      if (Number.isFinite(x) && Number.isFinite(z)) { minX=Math.min(minX,x); maxX=Math.max(maxX,x); minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z); }
+    }
+    const sourceScale = Number.isFinite(minX) && maxX > minX && maxZ > minZ
+      ? (11000 * 0.91) / Math.max(maxX - minX, maxZ - minZ) : 1;
+    const sourceCenterX = (minX + maxX) * 0.5, sourceCenterZ = (minZ + maxZ) * 0.5;
+    const boulevardSegments = [];
+    for (const road of data.roads || []) {
+      if (!/las vegas (boulevard|blvd)|the strip/i.test(road.n || "")) continue;
+      const points = road.p || [];
+      for (let i=0; i<points.length-1; i++) {
+        const a=points[i], b=points[i+1];
+        const x1=(Number(a[0])-sourceCenterX)*sourceScale-anchor.x;
+        const z1=(Number(a[1])-sourceCenterZ)*sourceScale-anchor.z;
+        const x2=(Number(b[0])-sourceCenterX)*sourceScale-anchor.x;
+        const z2=(Number(b[1])-sourceCenterZ)*sourceScale-anchor.z;
+        const dx=x2-x1, dz=z2-z1, length=Math.hypot(dx,dz);
+        if (length < 5 || length > 650) continue;
+        const angle=Math.atan2(dx,dz), cx=(x1+x2)/2, cz=(z1+z2)/2;
+        const segment=addBox(root,31,0.12,length,roadMaterial,cx,0.015,cz); segment.rotation.y=angle;
+        const median=addBox(root,2.2,0.2,length,medianMaterial,cx,0.12,cz); median.rotation.y=angle;
+        for (const side of [-1,1]) { const walk=addBox(root,8,0.28,length,sidewalkMaterial,cx+Math.cos(angle)*side*21.5,0.14,cz-Math.sin(angle)*side*21.5); walk.rotation.y=angle; }
+        for (const side of [-1,1]) { const stripe=addBox(root,0.38,0.05,Math.max(1,length-8),stripeMaterial,cx+Math.cos(angle)*side*7.8,0.1,cz-Math.sin(angle)*side*7.8); stripe.rotation.y=angle; }
+        boulevardSegments.push(segment);
+      }
+    }
+    if (!boulevardSegments.length) {
+      addBox(root,31,0.12,8400,roadMaterial,0,0.015,0);
+      addBox(root,2.2,0.2,8400,medianMaterial,0,0.12,0);
+      addBox(root,8,0.28,8400,sidewalkMaterial,-21.5,0.14,0);
+      addBox(root,8,0.28,8400,sidewalkMaterial,21.5,0.14,0);
+      for (const x of [-7.8,7.8]) addBox(root,0.38,0.05,8320,stripeMaterial,x,0.1,0);
+    }
 
     const crosswalkMaterial = new THREE.MeshBasicMaterial({ color: 0xf3efe0 });
     for (let z = -3900; z <= 3900; z += 450) {

@@ -1,0 +1,15 @@
+{
+  "registry": "BUILDING_REGISTRY",
+  "status": "BLOCKED",
+  "reason": "The repository contains generated parcels/facades and gameplay assets, but no verified complete building-footprint registry with all required provenance and validation artifacts.",
+  "required": [
+    "actual building-footprint inputs",
+    "deterministic IDs",
+    "section ownership",
+    "parcel joins",
+    "provenance",
+    "duplicate detection",
+    "hashes",
+    "validation artifacts"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "contract_version": "jc-sin-city-world-1",
+  "crs": "EPSG:32611",
+  "world": { "width_m": 35000, "height_m": 35000 },
+  "grid": { "columns": 35, "rows": 35, "sections": 1225, "tile_size_m": 1000 },
+  "bounds_utm": {
+    "min_x": 648949.782,
+    "min_y": 3983561.814,
+    "max_x": 683949.782,
+    "max_y": 4018561.814
+  },
+  "building_registry": {
+    "status": "BLOCKED",
+    "completion_claim": false,
+    "required_evidence": [
+      "actual_building_footprint_inputs",
+      "deterministic_building_ids",
+      "section_ownership",
+      "parcel_joins",
+      "source_provenance",
+      "duplicate_detection",
+      "artifact_hashes",
+      "validation_artifacts"
+    ],
+    "acceptance_rule": "Do not expose BUILDING_REGISTRY as complete until every required evidence item exists and passes validation."
+  }
+}

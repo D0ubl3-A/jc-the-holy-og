@@ -19,7 +19,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","17 evidence-tagged landmark districts","HD model streaming","mobile performance caps"],\n  verification:{identity:"supported",geometry:"provisional",exactFootprintsPending:true,seamGapTargetMeters:0.25}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","17 evidence-tagged landmark districts","HD model streaming","mobile performance caps"],
+  verification:{identity:"supported",geometry:"provisional",exactFootprintsPending:true,seamGapTargetMeters:0.25}
 };
 // This module is parser-inserted before the main game module, so it can patch
 // Three.js safely and repair the legacy Strip anchor bug before initialization.

@@ -273,24 +273,26 @@ if (!window[RUNTIME_KEY]) {
       }
     }
 
+    // Corridor identities are real; geometry remains explicitly supported/provisional
+    // until authoritative parcel footprints and height records pass the world gates.
     const specs = [
-      { name: "SOUTH GATE", accent: "#55e8ff", x: -158, z: 4050, profile: "spire" },
-      { name: "THE PYRAMID", accent: "#ffe26f", x: 158, z: 3600, profile: "pyramid" },
-      { name: "GOLDEN BAY", accent: "#ffd25c", x: -158, z: 3150, profile: "tower" },
-      { name: "KINGDOM CASTLE", accent: "#ff7a51", x: 158, z: 2700, profile: "castle" },
-      { name: "SUNSET ARENA", accent: "#ff5b45", x: -158, z: 2250, profile: "arena" },
-      { name: "EMERALD CITY", accent: "#56efa0", x: 158, z: 1800, profile: "twin" },
-      { name: "CLOWN TOWN", accent: "#ffb21c", x: -158, z: 1320, profile: "twin" },
-      { name: "ROYAL PALACE", accent: "#f2c14a", x: 158, z: 880, profile: "castle" },
-      { name: "NGM", accent: "#39ff9b", x: -158, z: 440, profile: "tower" },
-      { name: "THE WIN", accent: "#ff9f43", x: 158, z: 0, profile: "tower" },
-      { name: "THE PINE", accent: "#60e0a1", x: -158, z: -440, profile: "twin" },
-      { name: "NEON FOUNTAINS", accent: "#58d8ff", x: 158, z: -900, profile: "dome" },
-      { name: "SKY SPIRE", accent: "#78e9ff", x: -158, z: -1500, profile: "spire" },
-      { name: "SAHARA CROWN", accent: "#ffc75d", x: 158, z: -2050, profile: "castle" },
-      { name: "STRATOS KING", accent: "#b990ff", x: -158, z: -2600, profile: "spire" },
-      { name: "NORTH ARENA", accent: "#ff6655", x: 158, z: -3100, profile: "arena" },
-      { name: "NORTH GATE", accent: "#60e8ff", x: -158, z: -3700, profile: "twin" },
+      { name: "MANDALAY BAY", accent: "#d9b35f", x: -158, z: 4050, profile: "tower", evidence: "supported" },
+      { name: "LUXOR", accent: "#ffe26f", x: -158, z: 3600, profile: "pyramid", evidence: "supported" },
+      { name: "EXCALIBUR", accent: "#ff7a51", x: -158, z: 3150, profile: "castle", evidence: "supported" },
+      { name: "NEW YORK-NEW YORK", accent: "#55cfff", x: -158, z: 2700, profile: "twin", evidence: "supported" },
+      { name: "PARK MGM", accent: "#56efa0", x: -158, z: 2250, profile: "tower", evidence: "supported" },
+      { name: "ARIA", accent: "#66d6ff", x: 158, z: 1800, profile: "tower", evidence: "supported" },
+      { name: "BELLAGIO", accent: "#58d8ff", x: -158, z: 1320, profile: "dome", evidence: "supported" },
+      { name: "CAESARS PALACE", accent: "#f2c14a", x: -158, z: 880, profile: "castle", evidence: "supported" },
+      { name: "FLAMINGO", accent: "#ff6f91", x: 158, z: 440, profile: "twin", evidence: "supported" },
+      { name: "THE VENETIAN", accent: "#ffcf55", x: 158, z: 0, profile: "tower", evidence: "supported" },
+      { name: "THE SPHERE", accent: "#b778ff", x: 290, z: -440, profile: "dome", evidence: "supported" },
+      { name: "WYNN LAS VEGAS", accent: "#e5a44b", x: 158, z: -900, profile: "tower", evidence: "supported" },
+      { name: "FONTAINEBLEAU", accent: "#78e9ff", x: 158, z: -1500, profile: "tower", evidence: "supported" },
+      { name: "SAHARA", accent: "#ffc75d", x: 158, z: -2050, profile: "tower", evidence: "supported" },
+      { name: "THE STRAT", accent: "#b990ff", x: -158, z: -2600, profile: "spire", evidence: "supported" },
+      { name: "ARTS DISTRICT GATE", accent: "#ff6655", x: 158, z: -3100, profile: "arena", evidence: "provisional" },
+      { name: "DOWNTOWN GATE", accent: "#60e8ff", x: -158, z: -3700, profile: "twin", evidence: "provisional" },
     ];
 
     specs.forEach((spec, index) => {
@@ -301,7 +303,7 @@ if (!window[RUNTIME_KEY]) {
       root.add(district);
     });
 
-    root.userData.landmarks = specs.map((spec) => spec.name);
+    root.userData.landmarks = specs.map((spec) => spec.name);\n    root.userData.landmarkEvidence = Object.fromEntries(specs.map((spec) => [spec.name, spec.evidence || "provisional"]));\n    root.userData.corridorVerification = { identity: "supported", geometry: "provisional", seamGapTargetMeters: 0.25, exactFootprintsPending: true };
     scene.add(root);
     window[RUNTIME_KEY].ready = true;
     window[RUNTIME_KEY].anchor = anchor;

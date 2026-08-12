@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "section_id": "strip-core",
+  "coordinate_system": "strip-anchor-local",
+  "verification_policy": {
+    "verified": "identity and order confirmed from authoritative or first-party public sources",
+    "supported": "identity and approximate corridor relationship supported; exact footprint pending",
+    "provisional": "gameplay placement only; must not be represented as survey-accurate"
+  },
+  "corridor": {
+    "name": "Las Vegas Boulevard South",
+    "continuity_requirement": "no visible or collision gap across strip-south, strip-core, and strip-north seams",
+    "status": "runtime-enforced"
+  },
+  "landmarks": [
+    {"id":"mandalay-bay","name":"Mandalay Bay","side":"west","order_south_to_north":10,"geometry_status":"supported"},
+    {"id":"luxor","name":"Luxor","side":"west","order_south_to_north":20,"geometry_status":"supported"},
+    {"id":"excalibur","name":"Excalibur","side":"west","order_south_to_north":30,"geometry_status":"supported"},
+    {"id":"new-york-new-york","name":"New York-New York","side":"west","order_south_to_north":40,"geometry_status":"supported"},
+    {"id":"park-mgm","name":"Park MGM","side":"west","order_south_to_north":50,"geometry_status":"supported"},
+    {"id":"bellagio","name":"Bellagio","side":"west","order_south_to_north":60,"geometry_status":"supported"},
+    {"id":"caesars-palace","name":"Caesars Palace","side":"west","order_south_to_north":70,"geometry_status":"supported"},
+    {"id":"venetian","name":"The Venetian","side":"east","order_south_to_north":80,"geometry_status":"supported"},
+    {"id":"wynn","name":"Wynn Las Vegas","side":"east","order_south_to_north":90,"geometry_status":"supported"},
+    {"id":"sphere","name":"Sphere","side":"east","order_south_to_north":100,"geometry_status":"supported"}
+  ],
+  "acceptance_gates": {
+    "road_seam_gap_m_max": 0.25,
+    "driveable_continuity": true,
+    "landmark_identity_coverage_min": 1.0,
+    "exact_footprints_required_for_verified_geometry": true,
+    "current_geometry_claim": "supported-not-survey-verified"
+  }
+}

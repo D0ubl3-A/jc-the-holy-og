@@ -1,15 +1,64 @@
 {
   "registry": "BUILDING_REGISTRY",
-  "status": "BLOCKED",
-  "reason": "The repository contains generated parcels/facades and gameplay assets, but no verified complete building-footprint registry with all required provenance and validation artifacts.",
-  "required": [
-    "actual building-footprint inputs",
-    "deterministic IDs",
-    "section ownership",
-    "parcel joins",
-    "provenance",
-    "duplicate detection",
-    "hashes",
-    "validation artifacts"
+  "status": "FOOTPRINT_REGISTRY_BUILT",
+  "canonical_crs": "EPSG:32611",
+  "world_bounds": [648949.782, 3983561.814, 683949.782, 4018561.814],
+  "grid": {
+    "columns": 35,
+    "rows": 35,
+    "tile_size_m": 1000,
+    "tile_count": 1225
+  },
+  "source": {
+    "dataset": "Microsoft GlobalMLBuildingFootprints",
+    "method": "ML_DERIVED_SATELLITE_IMAGERY",
+    "release": "2026-07-24",
+    "license": "CDLA-Permissive-2.0",
+    "quadkeys": ["023013011", "023013013", "023013100", "023013102"]
+  },
+  "validation": {
+    "building_count": 627349,
+    "tiles_with_buildings": 1064,
+    "empty_tiles": 161,
+    "source_lines_processed": 737684,
+    "outside_world_rejected": 101058,
+    "tiny_geometry_rejected": 9277,
+    "geometry_repaired": 4,
+    "height_estimates_present": 627322,
+    "detection_confidence_present": 627311,
+    "synthetic_footprints_created": 0,
+    "parcels_promoted_to_buildings": 0,
+    "unknown_story_counts_filled": 0,
+    "unknown_addresses_filled": 0
+  },
+  "outputs": {
+    "registry_sha256": "868a1b316216cb7bdc0b6528c3f71d1f61308822ea46d07095d8b6abdf3e2902",
+    "index_sha256": "43baafc356a4c1f81bacf5d304bc0dc71c64bbef0f99b771722c306f9555b181",
+    "workflow_run_id": 31776636631,
+    "artifact_id": 9210225859,
+    "artifact_name": "sincity-building-registry-epsg32611",
+    "artifact_sha256": "8a496bbab4d961456661ec2d4ef2aa8664e5d33312a7e744a4da80b66a0da64c"
+  },
+  "evidence_policy": {
+    "footprint_geometry": "SOURCE-CONFIRMED",
+    "height_values": "ESTIMATED",
+    "stories": "UNKNOWN unless separately resolved",
+    "parcel_id": "UNKNOWN until county parcel join",
+    "address": "UNKNOWN until address resolution",
+    "identity": "UNKNOWN until identity resolution",
+    "architecture": "UNKNOWN until architecture resolution"
+  },
+  "generation": {
+    "footprint_geometry_authorized": true,
+    "final_visual_generation_authorized": false,
+    "reason": "Building footprints are resolved, but parcel, address, identity, architecture and context gates remain independent requirements."
+  },
+  "next_required": [
+    "parcel joins against verified Clark County lot/parcel geometry",
+    "address resolution",
+    "property/business identity resolution",
+    "story and architecture evidence",
+    "terrain/ground elevation join",
+    "context validation before sprite or final 3D generation"
   ]
 }

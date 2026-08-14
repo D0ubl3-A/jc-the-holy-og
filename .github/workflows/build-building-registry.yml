@@ -1,0 +1,79 @@
+name: Build Sin City Building Registry
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-building-registry.yml"
+      - "tools/build_citywide_building_registry.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sincity-building-registry
+  cancel-in-progress: false
+
+jobs:
+  build-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GIS runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests shapely pyproj
+
+      - name: Build evidence-gated citywide registry
+        run: |
+          set -euo pipefail
+          python tools/build_citywide_building_registry.py --output work/building-registry
+
+      - name: Validate hard gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('work/building-registry/output/validation_report.json')
+          d=json.loads(p.read_text())
+          assert d['status']=='PASS_FOOTPRINT_REGISTRY_BUILT', d
+          assert d['building_count']>0, d
+          assert d['canonical_world']['crs']=='EPSG:32611', d
+          assert d['canonical_world']['tile_count']==1225, d
+          assert d['hard_rules']['synthetic_footprints_created']==0, d
+          assert d['hard_rules']['parcels_promoted_to_buildings']==0, d
+          assert d['hard_rules']['unknown_story_counts_filled']==0, d
+          assert d['hard_rules']['final_visual_generation_authorized'] is False, d
+          print(json.dumps(d, indent=2))
+          PY
+
+      - name: Add run summary
+        if: always()
+        run: |
+          if [ -f work/building-registry/output/validation_report.json ]; then
+            echo '## Sin City Building Registry' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat work/building-registry/output/validation_report.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload complete registry artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-building-registry-epsg32611
+          path: |
+            work/building-registry/output/
+            work/building-registry/README.md
+            work/building-registry/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6

@@ -1,6 +1,6 @@
 {
   "registry": "BUILDING_REGISTRY",
-  "status": "FOOTPRINT_REGISTRY_BUILT",
+  "status": "PARCEL_JOIN_BUILT",
   "canonical_crs": "EPSG:32611",
   "world_bounds": [648949.782, 3983561.814, 683949.782, 4018561.814],
   "grid": {
@@ -9,21 +9,17 @@
     "tile_size_m": 1000,
     "tile_count": 1225
   },
-  "source": {
+  "building_source": {
     "dataset": "Microsoft GlobalMLBuildingFootprints",
     "method": "ML_DERIVED_SATELLITE_IMAGERY",
     "release": "2026-07-24",
     "license": "CDLA-Permissive-2.0",
     "quadkeys": ["023013011", "023013013", "023013100", "023013102"]
   },
-  "validation": {
+  "building_validation": {
     "building_count": 627349,
     "tiles_with_buildings": 1064,
     "empty_tiles": 161,
-    "source_lines_processed": 737684,
-    "outside_world_rejected": 101058,
-    "tiny_geometry_rejected": 9277,
-    "geometry_repaired": 4,
     "height_estimates_present": 627322,
     "detection_confidence_present": 627311,
     "synthetic_footprints_created": 0,
@@ -31,30 +27,55 @@
     "unknown_story_counts_filled": 0,
     "unknown_addresses_filled": 0
   },
+  "parcel_source": {
+    "dataset": "Clark County GISMO AssessorMap Parcels",
+    "service": "GISMO/AssessorMap/FeatureServer/1",
+    "identity_field": "APN",
+    "parcel_object_ids_returned": 795576,
+    "parcel_polygons_loaded": 779030
+  },
+  "parcel_validation": {
+    "status": "PASS",
+    "buildings_processed": 627349,
+    "buildings_joined": 605058,
+    "buildings_unjoined": 22291,
+    "ambiguous_buildings": 22291,
+    "no_intersection": 0,
+    "unique_primary_apns": 506100,
+    "multi_building_parcels": 35696,
+    "parcels_used_as_building_geometry": 0,
+    "invented_apns": 0,
+    "ambiguous_crossings_forced_to_primary": 0
+  },
   "outputs": {
-    "registry_sha256": "868a1b316216cb7bdc0b6528c3f71d1f61308822ea46d07095d8b6abdf3e2902",
-    "index_sha256": "43baafc356a4c1f81bacf5d304bc0dc71c64bbef0f99b771722c306f9555b181",
-    "workflow_run_id": 31776636631,
-    "artifact_id": 9210225859,
-    "artifact_name": "sincity-building-registry-epsg32611",
-    "artifact_sha256": "8a496bbab4d961456661ec2d4ef2aa8664e5d33312a7e744a4da80b66a0da64c"
+    "footprint_registry_sha256": "868a1b316216cb7bdc0b6528c3f71d1f61308822ea46d07095d8b6abdf3e2902",
+    "parcel_joined_registry_sha256": "29038b9ce9d9cffc13ab3832b3cf4b1e86d3ca0698a33a1dcc7e2082a1826593",
+    "parcel_ambiguity_queue_sha256": "20449824948f236fe038007194a3ec547b8df10825eb859c69f6d25d1e0558bf",
+    "parcel_source_sha256": "4a81883633025f644078ab4ff979f3f1d70a51652b7aa20bbed3cf7aa83374b2",
+    "workflow_run_id": 31914233858,
+    "artifact_id": 9254588562,
+    "artifact_name": "sincity-building-registry-parcel-joined",
+    "artifact_sha256": "f82431a7a4d0746bcbf15223d394a17ecbb3cd8c1377f46faf1289a3011655a2"
   },
   "evidence_policy": {
     "footprint_geometry": "SOURCE-CONFIRMED",
     "height_values": "ESTIMATED",
+    "parcel_id_for_605058_joined_buildings": "SOURCE-CONFIRMED",
+    "parcel_id_for_22291_ambiguous_buildings": "AMBIGUOUS",
     "stories": "UNKNOWN unless separately resolved",
-    "parcel_id": "UNKNOWN until county parcel join",
     "address": "UNKNOWN until address resolution",
     "identity": "UNKNOWN until identity resolution",
     "architecture": "UNKNOWN until architecture resolution"
   },
   "generation": {
     "footprint_geometry_authorized": true,
+    "parcel_relationship_authorized_for_joined_buildings": true,
     "final_visual_generation_authorized": false,
-    "reason": "Building footprints are resolved, but parcel, address, identity, architecture and context gates remain independent requirements."
+    "reason": "Footprints and most parcel relationships are resolved, but 22,291 parcel cases remain ambiguous and address, identity, architecture, terrain-Z and context gates remain independent requirements."
   },
   "next_required": [
-    "parcel joins against verified Clark County lot/parcel geometry",
+    "resolve or preserve the 22,291 ambiguous multi-parcel building cases",
+    "run separate right-of-way control QA",
     "address resolution",
     "property/business identity resolution",
     "story and architecture evidence",

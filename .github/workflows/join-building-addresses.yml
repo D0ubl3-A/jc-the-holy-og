@@ -1,0 +1,83 @@
+name: Join Sin City Buildings to Clark County Addresses
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/join_buildings_to_clark_addresses.py"
+      - ".github/workflows/join-building-addresses.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: sincity-address-join
+  cancel-in-progress: true
+
+jobs:
+  address-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GIS runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests shapely
+
+      - name: Download verified parcel-joined building registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p work/parcel-join
+          gh run download 31914233858 \
+            --repo "${{ github.repository }}" \
+            --name sincity-building-registry-parcel-joined \
+            --dir work/parcel-join
+          python - <<'PY'
+          import json
+          r=json.load(open('work/parcel-join/validation_report.json'))
+          assert r['status']=='PASS', r
+          assert r['buildings_processed']==627349
+          assert r['buildings_joined']==605058
+          assert r['hard_rules']['invented_apns']==0
+          print('verified parcel registry loaded',r['buildings_joined'])
+          PY
+
+      - name: Join official Clark County address points
+        run: |
+          python tools/join_buildings_to_clark_addresses.py \
+            --registry work/parcel-join/building_registry_parcel_joined.geojsonseq.gz \
+            --output work/address-join
+
+      - name: Validate address hard gates
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('work/address-join/validation_report.json'))
+          assert r['status']=='PASS', r
+          assert r['buildings_processed']==627349
+          assert r['address_points_loaded']>0
+          assert r['hard_rules']['parcel_site_address_promoted_to_exact_building_address']==0
+          assert r['hard_rules']['ambiguous_addresses_forced_to_primary']==0
+          assert r['hard_rules']['invented_addresses']==0
+          assert r['hard_rules']['final_visual_generation_authorized'] is False
+          print(json.dumps(r,indent=2))
+          PY
+
+      - name: Upload address-joined registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-building-registry-parcel-address-joined
+          path: work/address-join
+          compression-level: 6
+          retention-days: 30

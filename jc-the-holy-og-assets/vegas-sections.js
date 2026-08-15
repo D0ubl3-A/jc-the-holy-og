@@ -1,20 +1,23 @@
 window.JC_VEGAS_SECTIONS={
-  version:4,
+  version:5,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
   alignment:{
     southStrip:{
-      status:"satellite-supported-v1",
+      status:"satellite-footprints-v2",
       imageryService:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
       bbox4326:[-115.1827,36.0877,-115.1627,36.1083],
       gameCenter:[0,3150],
       debugToggle:"V",
-      geometryEvidence:"supported",
-      exactFootprintsPending:true
+      footprintToggle:"F",
+      geometryEvidence:"SOURCE_CONFIRMED",
+      heightEvidence:"ESTIMATED",
+      exactFootprintsPending:false,
+      architecturePending:true
     }
   },
   sections:[
-    {id:"strip-south",label:"SOUTH STRIP",status:"implemented",alignment:"satellite-supported-v1",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["MANDALAY BAY","LUXOR","EXCALIBUR","NEW YORK-NEW YORK","PARK MGM","ARIA"]},
+    {id:"strip-south",label:"SOUTH STRIP",status:"implemented",alignment:"satellite-footprints-v2",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["MANDALAY BAY","LUXOR","EXCALIBUR","NEW YORK-NEW YORK","PARK MGM","ARIA","MGM GRAND","ALLEGIANT STADIUM"]},
     {id:"strip-core",label:"CENTRAL STRIP",status:"implemented",anchor:"strip",offset:[0,200],half:[1500,1850],streamRadius:3600,landmarks:["BELLAGIO","CAESARS PALACE","FLAMINGO","THE VENETIAN","THE SPHERE","WYNN LAS VEGAS"]},
     {id:"strip-north",label:"NORTH STRIP",status:"implemented",anchor:"strip",offset:[0,-2850],half:[1500,1900],streamRadius:3600,landmarks:["FONTAINEBLEAU","SAHARA","THE STRAT","ARTS DISTRICT GATE","DOWNTOWN GATE"]},
     {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"planned",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"]},
@@ -42,11 +45,11 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","17 evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay"],
-  verification:{identity:"supported",geometry:"provisional",southStripAlignment:"satellite-supported-v1",exactFootprintsPending:true,seamGapTargetMeters:0.25}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints"],
+  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v2",southStripFootprints:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25}
 };
-// These modules are parser-inserted before the main game module. The first
-// builds the continuous Strip; the second adds a fail-soft satellite reference
-// layer and map-derived South Strip anchor corrections for calibration.
+// Parser-inserted modules patch Three.js before the main game module initializes.
+// V toggles satellite calibration. F toggles the source-confirmed Zone 1 footprint layer.
 document.write('<script type="module" src="./jc-the-holy-og-assets/full-strip-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/satellite-alignment-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-footprint-runtime.js"><\/script>');

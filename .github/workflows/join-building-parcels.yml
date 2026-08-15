@@ -1,0 +1,78 @@
+name: Join Sin City Buildings to Clark County Parcels
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/join_buildings_to_clark_parcels.py"
+      - ".github/workflows/join-building-parcels.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sincity-parcel-join
+  cancel-in-progress: true
+
+jobs:
+  parcel-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GIS runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests shapely pyproj
+
+      - name: Rebuild verified building footprint registry
+        run: |
+          python tools/build_citywide_building_registry.py --output work/building-registry
+          python - <<'PY'
+          import json
+          p='work/building-registry/output/validation_report.json'
+          r=json.load(open(p))
+          assert r['status']=='PASS_FOOTPRINT_REGISTRY_BUILT', r
+          assert r['building_count']==627349, r['building_count']
+          assert r['hard_rules']['synthetic_footprints_created']==0
+          assert r['hard_rules']['parcels_promoted_to_buildings']==0
+          print('building registry gate PASS',r['building_count'])
+          PY
+
+      - name: Join to official Clark County parcel polygons
+        run: |
+          python tools/join_buildings_to_clark_parcels.py \
+            --registry work/building-registry/output/building_registry_epsg32611.geojsonseq.gz \
+            --output work/parcel-join
+
+      - name: Validate parcel join hard gates
+        run: |
+          python - <<'PY'
+          import json
+          p='work/parcel-join/validation_report.json'
+          r=json.load(open(p))
+          assert r['status']=='PASS', r
+          assert r['buildings_processed']==627349, r['buildings_processed']
+          assert r['buildings_joined']>0
+          assert r['hard_rules']['parcels_used_as_building_geometry']==0
+          assert r['hard_rules']['invented_apns']==0
+          assert r['hard_rules']['ambiguous_crossings_forced_to_primary']==0
+          assert r['hard_rules']['final_visual_generation_authorized'] is False
+          print(json.dumps(r,indent=2))
+          PY
+
+      - name: Upload parcel-joined registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-building-registry-parcel-joined
+          path: work/parcel-join
+          compression-level: 6
+          retention-days: 30

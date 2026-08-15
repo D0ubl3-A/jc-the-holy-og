@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: sincity-parcel-join
@@ -33,9 +34,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install requests shapely pyproj
 
-      - name: Rebuild verified building footprint registry
+      - name: Download previously verified building registry
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python tools/build_citywide_building_registry.py --output work/building-registry
+          mkdir -p work/building-registry
+          gh run download 31776636631 \
+            --repo "${{ github.repository }}" \
+            --name sincity-building-registry-epsg32611 \
+            --dir work/building-registry
           python - <<'PY'
           import json
           p='work/building-registry/output/validation_report.json'
@@ -44,7 +51,19 @@ jobs:
           assert r['building_count']==627349, r['building_count']
           assert r['hard_rules']['synthetic_footprints_created']==0
           assert r['hard_rules']['parcels_promoted_to_buildings']==0
-          print('building registry gate PASS',r['building_count'])
+          print('verified building registry loaded',r['building_count'])
+          PY
+
+      - name: Patch ArcGIS feature batches to POST transport
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/join_buildings_to_clark_parcels.py')
+          s=p.read_text()
+          old="r=s.get(PARCEL_QUERY,params=params,timeout=(30,180))"
+          new="r=s.post(PARCEL_QUERY,data=params,timeout=(30,180))"
+          assert old in s
+          p.write_text(s.replace(old,new))
           PY
 
       - name: Join to official Clark County parcel polygons

@@ -1,0 +1,107 @@
+name: USGS Sprite Capture Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'sprite_factory_bridge/capture_plan.json'
+
+permissions:
+  contents: read
+
+jobs:
+  capture-real-naip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install image validator
+        run: python -m pip install --quiet pillow
+
+      - name: Download and validate real USGS/USDA NAIP captures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          import hashlib, json, pathlib, time, urllib.request
+          from PIL import Image, ImageStat
+
+          root = pathlib.Path('sprite_factory_bridge')
+          plan = json.loads((root / 'capture_plan.json').read_text())
+          out = root / 'imported_captures'
+          out.mkdir(parents=True, exist_ok=True)
+
+          assert plan.get('mode') == 'production_real_only'
+          assert plan.get('strict_no_synthetic') is True
+          provider = plan['provider']
+          service_url = provider['service_url']
+          if 'imagery.nationalmap.gov' not in service_url:
+              raise SystemExit('Refusing non-USGS provider for this bridge run')
+
+          results = []
+          hashes = set()
+          for cell in plan['cells']:
+              cid = cell['cell_id']
+              url = cell['capture_request']['url']
+              req = urllib.request.Request(url, headers={
+                  'User-Agent': 'jc-las-vegas-sprite-factory/2.0 github-actions-capture-bridge',
+                  'Accept': 'image/png,application/octet-stream'
+              })
+              last = None
+              for attempt in range(5):
+                  try:
+                      with urllib.request.urlopen(req, timeout=90) as r:
+                          data = r.read()
+                          ctype = (r.headers.get('Content-Type') or '').lower()
+                      if not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                          raise RuntimeError(f'{cid}: response is not PNG; content-type={ctype}, bytes={data[:80]!r}')
+                      p = out / f'{cid}.png'
+                      p.write_bytes(data)
+                      with Image.open(p) as im:
+                          if im.size != (528, 528):
+                              raise RuntimeError(f'{cid}: wrong dimensions {im.size}, expected 528x528')
+                          rgb = im.convert('RGB')
+                          stat = ImageStat.Stat(rgb)
+                          std = sum(stat.stddev) / 3.0
+                          if std < 4.0:
+                              raise RuntimeError(f'{cid}: suspiciously blank/flat image stddev={std:.3f}')
+                      sha = hashlib.sha256(data).hexdigest()
+                      if sha in hashes:
+                          raise RuntimeError(f'{cid}: duplicate image hash detected')
+                      hashes.add(sha)
+                      results.append({'cell_id': cid, 'sha256': sha, 'bytes': len(data), 'content_type': ctype})
+                      print(f'OK {cid} {len(data)} bytes sha256={sha[:16]}…')
+                      break
+                  except Exception as e:
+                      last = e
+                      if attempt == 4:
+                          raise
+                      time.sleep(2 ** attempt)
+              else:
+                  raise last
+
+          provenance = {
+              'imagery_is_real': True,
+              'provider_id': provider.get('id', 'usgs_naip'),
+              'source_url': service_url,
+              'attribution': provider.get('attribution', 'USGS, USDA, The National Map: Orthoimagery'),
+              'source_license': provider.get('source_license', 'public_domain'),
+              'captured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+              'capture_plan_schema': plan.get('schema'),
+              'cell_count': len(results),
+              'captures': results,
+              'synthetic_fallback_used': False
+          }
+          (out / 'source_provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
+          print(f'Captured {len(results)} real NAIP tiles with provenance.')
+          PY
+
+      - name: Upload real captures
+        uses: actions/upload-artifact@v4
+        with:
+          name: vegas-real-naip-captures
+          path: sprite_factory_bridge/imported_captures/
+          if-no-files-found: error
+          retention-days: 7

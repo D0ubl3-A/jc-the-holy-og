@@ -1,5 +1,5 @@
 window.JC_VEGAS_SECTIONS={
-  version:6,
+  version:7,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
   alignment:{
@@ -45,8 +45,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint"],
-  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors"],
+  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
 };
 // Parser-inserted modules patch Three.js before the main game module initializes.
 // V toggles satellite calibration. F toggles the main source-confirmed Zone 1 footprint layer.
@@ -54,3 +54,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/full-strip-ru
 document.write('<script type="module" src="./jc-the-holy-og-assets/satellite-alignment-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-footprint-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegiant-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');

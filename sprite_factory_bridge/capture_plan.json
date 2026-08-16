@@ -1,0 +1,41 @@
+{
+  "schema": "overhead-grid-sprite-map/2.0/capture-plan",
+  "mode": "production_real_only",
+  "strict_no_synthetic": true,
+  "generated_at": "2026-08-16T19:42:00Z",
+  "provider": {
+    "id": "usgs_naip",
+    "type": "arcgis_imageserver",
+    "service_url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer",
+    "attribution": "USGS, USDA, The National Map: Orthoimagery",
+    "source_license": "public_domain"
+  },
+  "source_crs": "EPSG:32611",
+  "cell_count": 4,
+  "cells": [
+    {
+      "cell_id": "rp015643_cp002604",
+      "capture_request": {
+        "url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?bbox=666876.000000%2C4004604.000000%2C667140.000000%2C4004868.000000&bboxSR=32611&imageSR=32611&size=528%2C528&format=png32&pixelType=U8&interpolation=RSP_BilinearInterpolation&returnSquarePixels=true&validateExtent=true&f=image&renderingRule=%7B%22rasterFunction%22%3A%22NaturalColor%22%7D"
+      }
+    },
+    {
+      "cell_id": "rp015643_cp002605",
+      "capture_request": {
+        "url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?bbox=667132.000000%2C4004604.000000%2C667396.000000%2C4004868.000000&bboxSR=32611&imageSR=32611&size=528%2C528&format=png32&pixelType=U8&interpolation=RSP_BilinearInterpolation&returnSquarePixels=true&validateExtent=true&f=image&renderingRule=%7B%22rasterFunction%22%3A%22NaturalColor%22%7D"
+      }
+    },
+    {
+      "cell_id": "rp015642_cp002604",
+      "capture_request": {
+        "url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?bbox=666876.000000%2C4004348.000000%2C667140.000000%2C4004612.000000&bboxSR=32611&imageSR=32611&size=528%2C528&format=png32&pixelType=U8&interpolation=RSP_BilinearInterpolation&returnSquarePixels=true&validateExtent=true&f=image&renderingRule=%7B%22rasterFunction%22%3A%22NaturalColor%22%7D"
+      }
+    },
+    {
+      "cell_id": "rp015642_cp002605",
+      "capture_request": {
+        "url": "https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?bbox=667132.000000%2C4004348.000000%2C667396.000000%2C4004612.000000&bboxSR=32611&imageSR=32611&size=528%2C528&format=png32&pixelType=U8&interpolation=RSP_BilinearInterpolation&returnSquarePixels=true&validateExtent=true&f=image&renderingRule=%7B%22rasterFunction%22%3A%22NaturalColor%22%7D"
+      }
+    }
+  ]
+}

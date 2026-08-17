@@ -19,7 +19,10 @@ GRID_ORIGIN_Y = 3965696.0
 CELL_SIZE = 256.0
 ROWS = range(126, 130)
 COLS = range(123, 127)
-WORLD_ORIGIN = [664448.0, 3998336.0]  # center of permanent cell r0127_c0124
+# Same WGS84 anchor used by the newer real-city chunk, transformed into NAD83 / UTM 11N.
+# Keeping one shared origin prevents separately built sectors from overlapping at local (0,0).
+WORLD_ORIGIN_WGS84 = [-115.1398, 36.1699]
+WORLD_ORIGIN = [667304.0470097195, 4004396.3146858704]
 
 
 def cell_id(row, col):
@@ -61,6 +64,11 @@ def main():
     tx_to_wgs84 = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
     tx_from_wgs84 = Transformer.from_crs("EPSG:4326", CRS, always_xy=True)
 
+    # Verify the documented shared WGS84 origin still transforms to the stored projected anchor.
+    ox, oy = tx_from_wgs84.transform(*WORLD_ORIGIN_WGS84)
+    if abs(ox - WORLD_ORIGIN[0]) > 0.05 or abs(oy - WORLD_ORIGIN[1]) > 0.05:
+        raise SystemExit("Shared world-origin transform drifted; refusing misaligned legacy build")
+
     cells = []
     union = None
     for row in ROWS:
@@ -81,7 +89,6 @@ def main():
             })
 
     minx, miny, maxx, maxy = union.bounds
-    # Slight query pad catches roads/fences/buildings crossing the outer boundary.
     pad = 8.0
     west, south = tx_to_wgs84.transform(minx - pad, miny - pad)
     east, north = tx_to_wgs84.transform(maxx + pad, maxy + pad)
@@ -142,7 +149,6 @@ def main():
             centroid = poly.centroid
             cid = owner_cell(centroid)
             if not cid:
-                # A building centered just outside can still cross an outer tile; assign it to the nearest intersecting cell.
                 matches = candidate_cells(poly)
                 cid = matches[0] if matches else None
             if not cid:
@@ -229,7 +235,7 @@ def main():
 
     dataset = {
         "schema": "jc-legacy-real-city-prototype/1.0",
-        "build_revision": "legacy-16-real-climbable-barriers-v1",
+        "build_revision": "legacy-16-real-climbable-barriers-v2-shared-origin",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "source": {
             "geometry": "OpenStreetMap via Overpass API",
@@ -240,6 +246,7 @@ def main():
             "projected_crs": CRS,
             "grid_origin_projected": [GRID_ORIGIN_X, GRID_ORIGIN_Y],
             "cell_size_m": CELL_SIZE,
+            "world_origin_wgs84": WORLD_ORIGIN_WGS84,
             "world_origin_projected": WORLD_ORIGIN,
             "rows": [126, 129],
             "columns": [123, 126],
@@ -253,7 +260,7 @@ def main():
         "gates": gates,
         "accuracy_contract": {
             "legacy_ids": "preserved exactly; r0000_c0000..r0003_c0003 remain aliases for r0126_c0123..r0129_c0126",
-            "xy_geometry": "OSM geometry transformed into EPSG:26911",
+            "xy_geometry": "OSM geometry transformed into EPSG:26911 and expressed relative to the shared game-world WGS84 origin",
             "building_height": "OSM height when tagged, level-derived when tagged, otherwise explicitly estimated",
             "barrier_traversal": "mapped barriers <=1.65m are hoppable; <=2.40m are climbable; taller mapped barriers block",
         },
@@ -270,6 +277,8 @@ def main():
         "climbable_barriers": sum(1 for b in barriers if b["gameplay"]["climbable"]),
         "standable_roofs": len(buildings),
         "wall_climb_buildings": sum(1 for b in buildings if b["climb"]["wall_climb"]),
+        "world_origin_wgs84": WORLD_ORIGIN_WGS84,
+        "world_origin_projected": WORLD_ORIGIN,
         **stats,
     }
 

@@ -1,25 +1,25 @@
 {
   "status": "PASS",
   "build_revision": "real-climbable-barriers-v2",
-  "cells": 8,
-  "buildings": 190,
-  "roads": 548,
-  "barriers": 7,
-  "gates": 10,
-  "vaultable_barriers": 5,
-  "climbable_barriers": 7,
+  "cells": 16,
+  "buildings": 601,
+  "roads": 942,
+  "barriers": 8,
+  "gates": 11,
+  "vaultable_barriers": 6,
+  "climbable_barriers": 8,
   "hard_blocking_barriers": 0,
   "height_sources": {
-    "estimated_missing_osm_height": 159,
-    "derived_from_osm_levels": 21,
+    "estimated_missing_osm_height": 568,
+    "derived_from_osm_levels": 23,
     "osm_height_tag": 10
   },
   "road_width_sources": {
-    "class_default_estimate": 409,
-    "derived_from_osm_lanes": 139
+    "class_default_estimate": 756,
+    "derived_from_osm_lanes": 186
   },
   "barrier_height_sources": {
-    "estimated_missing_osm_height": 7
+    "estimated_missing_osm_height": 8
   },
   "skipped": {
     "open_building_ways": 0,
@@ -29,11 +29,11 @@
   },
   "coverage_wgs84": [
     -115.14452202875033,
-    36.16944121465612,
-    -115.13303250518317,
+    36.16921883633887,
+    -115.1216518434779,
     36.17414328908782
   ],
-  "real_footprints": 190,
-  "climbable_roofs": 190,
-  "wall_climb_enabled": 187
+  "real_footprints": 601,
+  "climbable_roofs": 601,
+  "wall_climb_enabled": 598
 }

@@ -8,7 +8,7 @@
   "scripts": {
     "electron": "electron .",
     "electron:pack": "electron-builder --dir",
-    "electron:win": "electron-builder --win nsis portable"
+    "electron:win": "electron-builder --win nsis --publish never"
   },
   "devDependencies": {
     "electron": "^37.2.6",
@@ -29,8 +29,8 @@
       "package.json"
     ],
     "win": {
-      "artifactName": "JC-The-Holy-OG-${version}-${arch}.${ext}",
-      "target": ["nsis", "portable"]
+      "artifactName": "JC-The-Holy-OG-${version}-${arch}-Setup.${ext}",
+      "target": ["nsis"]
     },
     "nsis": {
       "oneClick": false,

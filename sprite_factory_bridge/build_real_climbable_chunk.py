@@ -14,6 +14,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 DEFAULT_LEVEL_M = 3.2
+BUILD_REVISION = "real-climbable-8-cell-v1"
 
 
 def parse_length(value: Any):
@@ -57,8 +58,6 @@ def bbox_from_plan(plan):
 
 
 def query_osm(west, south, east, north):
-    # This pilot intentionally uses closed OSM building ways plus highway ways.
-    # Multipolygon relation support can be added without changing the output schema.
     q = f'''[out:json][timeout:90];
 (
   way["building"]({south},{west},{north},{east});
@@ -102,7 +101,6 @@ def infer_building_height(tags, area_m2):
         base = 3.2
     else:
         base = 6.4
-    # Area is used only to make the visual estimate less uniform; it is never labeled authoritative.
     if area_m2 > 4000:
         base = max(base, 16.0)
     elif area_m2 > 1500:
@@ -177,103 +175,55 @@ def main():
                 continue
             height, min_height, source, levels = infer_building_height(tags, area)
             height_sources[source] = height_sources.get(source, 0) + 1
-            building = {
-                "osm_id": el.get("id"),
-                "footprint_xz": coords,
-                "height_m": height,
-                "min_height_m": min_height,
-                "height_source": source,
-                "levels": levels,
-                "building": tags.get("building", "yes"),
-                "name": tags.get("name"),
+            buildings.append({
+                "osm_id": el.get("id"), "footprint_xz": coords, "height_m": height,
+                "min_height_m": min_height, "height_source": source, "levels": levels,
+                "building": tags.get("building", "yes"), "name": tags.get("name"),
                 "roof_shape": tags.get("roof:shape", "flat"),
                 "roof_height_m": parse_length(tags.get("roof:height")) or 0.0,
-                "material": tags.get("building:material"),
-                "colour": tags.get("building:colour"),
+                "material": tags.get("building:material"), "colour": tags.get("building:colour"),
                 "area_m2": round(area, 2),
-                "climb": {
-                    "roof_standable": True,
-                    "edge_grab": True,
-                    "wall_climb": height <= 45.0,
-                    "mantle_height_m": 1.45,
-                    "ledge_spacing_m": DEFAULT_LEVEL_M if levels else None,
-                },
-                "tags": {k: v for k, v in tags.items() if k in {
-                    "building", "name", "height", "min_height", "building:levels",
-                    "roof:shape", "roof:height", "building:material", "building:colour"
-                }}
-            }
-            buildings.append(building)
+                "climb": {"roof_standable": True, "edge_grab": True, "wall_climb": height <= 45.0,
+                          "mantle_height_m": 1.45, "ledge_spacing_m": DEFAULT_LEVEL_M if levels else None},
+                "tags": {k: v for k, v in tags.items() if k in {"building", "name", "height", "min_height", "building:levels", "roof:shape", "roof:height", "building:material", "building:colour"}}
+            })
         elif "highway" in tags:
-            if len(pts) < 2:
-                skipped["short_roads"] += 1
-                continue
             width, source = road_width(tags)
             width_sources[source] = width_sources.get(source, 0) + 1
-            roads.append({
-                "osm_id": el.get("id"),
-                "centerline_xz": pts,
-                "highway": tags.get("highway"),
-                "name": tags.get("name"),
-                "width_m": width,
-                "width_source": source,
-                "lanes": parse_num(tags.get("lanes")),
-                "oneway": tags.get("oneway") in {"yes", "1", "true"},
-                "surface": tags.get("surface"),
-                "bridge": tags.get("bridge") not in {None, "no"},
-                "tunnel": tags.get("tunnel") not in {None, "no"},
-            })
+            roads.append({"osm_id": el.get("id"), "centerline_xz": pts, "highway": tags.get("highway"),
+                          "name": tags.get("name"), "width_m": width, "width_source": source,
+                          "lanes": parse_num(tags.get("lanes")), "oneway": tags.get("oneway") in {"yes", "1", "true"},
+                          "surface": tags.get("surface"), "bridge": tags.get("bridge") not in {None, "no"},
+                          "tunnel": tags.get("tunnel") not in {None, "no"}})
 
     chunk = {
-        "schema": "jc-real-climbable-city-chunk/1.0",
+        "schema": "jc-real-climbable-city-chunk/1.0", "build_revision": BUILD_REVISION,
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "source": {
-            "geometry": "OpenStreetMap via Overpass API",
-            "overpass_url": OVERPASS_URL,
-            "license": "ODbL 1.0",
-            "attribution": "© OpenStreetMap contributors",
-            "imagery": "USGS/USDA NAIP tiles are a separate ground-texture layer",
-        },
-        "crs": source_crs,
-        "axis": {"x": "east", "z": "north", "y": "up"},
-        "world_origin_projected": origin,
-        "coverage_wgs84": [west, south, east, north],
+        "source": {"geometry": "OpenStreetMap via Overpass API", "overpass_url": OVERPASS_URL,
+                   "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors",
+                   "imagery": "USGS/USDA NAIP tiles are a separate ground-texture layer"},
+        "crs": source_crs, "axis": {"x": "east", "z": "north", "y": "up"},
+        "world_origin_projected": origin, "coverage_wgs84": [west, south, east, north],
         "cell_count": plan.get("cell_count", len(plan.get("cells", []))),
-        "buildings": buildings,
-        "roads": roads,
-        "accuracy_contract": {
-            "building_footprints": "OSM geometry",
-            "road_centerlines": "OSM geometry",
-            "height_osm_height_tag": "authoritative OSM tag when present",
-            "height_derived_from_osm_levels": "derived at 3.2 m per tagged level plus roof height",
-            "height_estimated_missing_osm_height": "visual/gameplay estimate; not claimed real",
-            "road_width": "OSM width tag, lane-derived width, or explicitly flagged class estimate",
-        },
+        "buildings": buildings, "roads": roads,
+        "accuracy_contract": {"building_footprints": "OSM geometry", "road_centerlines": "OSM geometry",
+                              "height_osm_height_tag": "authoritative OSM tag when present",
+                              "height_derived_from_osm_levels": "derived at 3.2 m per tagged level plus roof height",
+                              "height_estimated_missing_osm_height": "visual/gameplay estimate; not claimed real",
+                              "road_width": "OSM width tag, lane-derived width, or explicitly flagged class estimate"}
     }
-    out_json = OUT / "real_city_chunk.json"
-    out_json.write_text(json.dumps(chunk, separators=(",", ":")))
+    (OUT / "real_city_chunk.json").write_text(json.dumps(chunk, separators=(",", ":")))
     (OUT / "real_city_chunk.pretty.json").write_text(json.dumps(chunk, indent=2))
-    js = "window.JC_REAL_CITY_CHUNK=" + json.dumps(chunk, separators=(",", ":")) + ";\n"
-    (OUT / "real-city-chunk-data.js").write_text(js)
-
-    report = {
-        "status": "PASS" if buildings and roads else "FAIL_EMPTY_GEOMETRY",
-        "cells": chunk["cell_count"],
-        "buildings": len(buildings),
-        "roads": len(roads),
-        "height_sources": height_sources,
-        "road_width_sources": width_sources,
-        "skipped": skipped,
-        "coverage_wgs84": chunk["coverage_wgs84"],
-        "real_footprints": len(buildings),
-        "climbable_roofs": sum(1 for b in buildings if b["climb"]["roof_standable"]),
-        "wall_climb_enabled": sum(1 for b in buildings if b["climb"]["wall_climb"]),
-    }
+    (OUT / "real-city-chunk-data.js").write_text("window.JC_REAL_CITY_CHUNK=" + json.dumps(chunk, separators=(",", ":")) + ";\n")
+    report = {"status": "PASS" if buildings and roads else "FAIL_EMPTY_GEOMETRY", "build_revision": BUILD_REVISION,
+              "cells": chunk["cell_count"], "buildings": len(buildings), "roads": len(roads),
+              "height_sources": height_sources, "road_width_sources": width_sources, "skipped": skipped,
+              "coverage_wgs84": chunk["coverage_wgs84"], "real_footprints": len(buildings),
+              "climbable_roofs": sum(1 for b in buildings if b["climb"]["roof_standable"]),
+              "wall_climb_enabled": sum(1 for b in buildings if b["climb"]["wall_climb"])}
     (OUT / "real_city_chunk_report.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
-    if report["status"] != "PASS":
-        return 2
-    return 0
+    return 0 if report["status"] == "PASS" else 2
 
 
 if __name__ == "__main__":

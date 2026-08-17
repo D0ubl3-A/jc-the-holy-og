@@ -1,9 +1,14 @@
 {
   "status": "PASS",
-  "build_revision": "real-climbable-8-cell-v1",
+  "build_revision": "real-climbable-barriers-v2",
   "cells": 8,
   "buildings": 190,
   "roads": 548,
+  "barriers": 7,
+  "gates": 10,
+  "vaultable_barriers": 5,
+  "climbable_barriers": 7,
+  "hard_blocking_barriers": 0,
   "height_sources": {
     "estimated_missing_osm_height": 159,
     "derived_from_osm_levels": 21,
@@ -13,10 +18,14 @@
     "class_default_estimate": 409,
     "derived_from_osm_lanes": 139
   },
+  "barrier_height_sources": {
+    "estimated_missing_osm_height": 7
+  },
   "skipped": {
     "open_building_ways": 0,
     "invalid_buildings": 1,
-    "short_roads": 0
+    "short_roads": 0,
+    "short_barriers": 0
   },
   "coverage_wgs84": [
     -115.14452202875033,

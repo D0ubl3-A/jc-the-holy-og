@@ -2,6 +2,8 @@ name: USGS Sprite Capture Bridge
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
   push:
     paths:
       - 'sprite_factory_bridge/capture_plan.json'
@@ -11,6 +13,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: usgs-real-city-capture-bridge
+  cancel-in-progress: false
 
 jobs:
   capture-real-naip:
@@ -94,7 +100,7 @@ jobs:
           (out / 'source_provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
           PY
 
-      - name: Build real climbable roads and buildings
+      - name: Build real climbable roads buildings fences and gates
         run: python sprite_factory_bridge/build_real_climbable_chunk.py
 
       - name: Build original 16-cell legacy prototype with real geometry

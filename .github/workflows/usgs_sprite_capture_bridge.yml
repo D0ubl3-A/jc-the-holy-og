@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'sprite_factory_bridge/capture_plan.json'
+      - 'sprite_factory_bridge/build_real_climbable_chunk.py'
 
 permissions:
   contents: read
@@ -17,8 +18,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install image validator
-        run: python -m pip install --quiet pillow
+      - name: Install dependencies
+        run: python -m pip install --quiet pillow requests pyproj shapely
 
       - name: Download and validate real USGS/USDA NAIP captures
         shell: bash
@@ -98,10 +99,21 @@ jobs:
           print(f'Captured {len(results)} real NAIP tiles with provenance.')
           PY
 
+      - name: Build real climbable roads and buildings
+        run: python sprite_factory_bridge/build_real_climbable_chunk.py
+
       - name: Upload real captures
         uses: actions/upload-artifact@v4
         with:
           name: vegas-real-naip-captures
           path: sprite_factory_bridge/imported_captures/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload real playable 3D geometry
+        uses: actions/upload-artifact@v4
+        with:
+          name: vegas-real-climbable-city-chunk
+          path: sprite_factory_bridge/playable_3d/
           if-no-files-found: error
           retention-days: 7

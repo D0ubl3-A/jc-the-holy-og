@@ -14,7 +14,9 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 DEFAULT_LEVEL_M = 3.2
-BUILD_REVISION = "real-climbable-8-cell-v1"
+VAULT_MAX_M = 1.65
+CLIMB_BARRIER_MAX_M = 2.40
+BUILD_REVISION = "real-climbable-barriers-v2"
 
 
 def parse_length(value: Any):
@@ -62,9 +64,11 @@ def query_osm(west, south, east, north):
 (
   way["building"]({south},{west},{north},{east});
   way["highway"]({south},{west},{north},{east});
+  way["barrier"~"^(fence|wall|retaining_wall|hedge)$"]({south},{west},{north},{east});
+  node["barrier"~"^(gate|lift_gate|swing_gate)$"]({south},{west},{north},{east});
 );
 out tags geom;'''
-    headers = {"User-Agent": "jc-las-vegas-real-city-chunk/1.0 (GitHub Actions production build)"}
+    headers = {"User-Agent": "jc-las-vegas-real-city-chunk/2.0 (GitHub Actions production build)"}
     last = None
     for attempt in range(5):
         try:
@@ -127,6 +131,21 @@ def road_width(tags):
     return float(defaults.get(cls, 7)), "class_default_estimate"
 
 
+def barrier_height(tags):
+    tagged = parse_length(tags.get("height"))
+    if tagged and tagged > 0:
+        return round(tagged, 2), "osm_height_tag"
+    kind = str(tags.get("barrier", "fence"))
+    default = {"fence": 1.8, "wall": 1.4, "retaining_wall": 1.2, "hedge": 1.2}.get(kind, 1.5)
+    return default, "estimated_missing_osm_height"
+
+
+def access_open(tags):
+    access = str(tags.get("access", "yes")).lower()
+    locked = str(tags.get("locked", "no")).lower()
+    return access not in {"no", "private"} and locked not in {"yes", "true", "1"}
+
+
 def main():
     plan = json.loads(PLAN_PATH.read_text())
     if plan.get("mode") != "production_real_only" or plan.get("strict_no_synthetic") is not True:
@@ -141,11 +160,9 @@ def main():
     raw = query_osm(west, south, east, north)
     (OUT / "overpass_source.json").write_text(json.dumps(raw))
 
-    buildings = []
-    roads = []
-    skipped = {"open_building_ways": 0, "invalid_buildings": 0, "short_roads": 0}
-    height_sources = {}
-    width_sources = {}
+    buildings, roads, barriers, gates = [], [], [], []
+    skipped = {"open_building_ways": 0, "invalid_buildings": 0, "short_roads": 0, "short_barriers": 0}
+    height_sources, width_sources, barrier_height_sources = {}, {}, {}
 
     def world(lon, lat):
         x, y = tx.transform(float(lon), float(lat))
@@ -153,6 +170,17 @@ def main():
 
     for el in raw.get("elements", []):
         tags = el.get("tags") or {}
+        if el.get("type") == "node" and tags.get("barrier") in {"gate", "lift_gate", "swing_gate"}:
+            if "lon" not in el or "lat" not in el:
+                continue
+            xz = world(el["lon"], el["lat"])
+            gates.append({
+                "osm_id": el.get("id"), "position_xz": xz, "barrier": tags.get("barrier"),
+                "access": tags.get("access"), "locked": tags.get("locked"),
+                "gameplay": {"passable": access_open(tags), "dynamic_gate": True, "blocks_when_locked": True}
+            })
+            continue
+
         geom = el.get("geometry") or []
         if len(geom) < 2:
             continue
@@ -188,6 +216,9 @@ def main():
                 "tags": {k: v for k, v in tags.items() if k in {"building", "name", "height", "min_height", "building:levels", "roof:shape", "roof:height", "building:material", "building:colour"}}
             })
         elif "highway" in tags:
+            if len(pts) < 2:
+                skipped["short_roads"] += 1
+                continue
             width, source = road_width(tags)
             width_sources[source] = width_sources.get(source, 0) + 1
             roads.append({"osm_id": el.get("id"), "centerline_xz": pts, "highway": tags.get("highway"),
@@ -195,9 +226,25 @@ def main():
                           "lanes": parse_num(tags.get("lanes")), "oneway": tags.get("oneway") in {"yes", "1", "true"},
                           "surface": tags.get("surface"), "bridge": tags.get("bridge") not in {None, "no"},
                           "tunnel": tags.get("tunnel") not in {None, "no"}})
+        elif tags.get("barrier") in {"fence", "wall", "retaining_wall", "hedge"}:
+            if len(pts) < 2:
+                skipped["short_barriers"] += 1
+                continue
+            h, hs = barrier_height(tags)
+            barrier_height_sources[hs] = barrier_height_sources.get(hs, 0) + 1
+            vaultable = h <= VAULT_MAX_M and tags.get("barrier") != "hedge"
+            climbable = h <= CLIMB_BARRIER_MAX_M and tags.get("barrier") != "hedge"
+            barriers.append({
+                "osm_id": el.get("id"), "line_xz": pts, "barrier": tags.get("barrier"),
+                "height_m": h, "height_source": hs, "material": tags.get("material"),
+                "fence_type": tags.get("fence_type"), "access": tags.get("access"),
+                "gameplay": {"blocks_player": True, "vaultable": vaultable, "hoppable": vaultable,
+                             "climbable": climbable, "vault_max_height_m": VAULT_MAX_M,
+                             "requires_jump_input": True}
+            })
 
     chunk = {
-        "schema": "jc-real-climbable-city-chunk/1.0", "build_revision": BUILD_REVISION,
+        "schema": "jc-real-climbable-city-chunk/1.1", "build_revision": BUILD_REVISION,
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "source": {"geometry": "OpenStreetMap via Overpass API", "overpass_url": OVERPASS_URL,
                    "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors",
@@ -205,19 +252,26 @@ def main():
         "crs": source_crs, "axis": {"x": "east", "z": "north", "y": "up"},
         "world_origin_projected": origin, "coverage_wgs84": [west, south, east, north],
         "cell_count": plan.get("cell_count", len(plan.get("cells", []))),
-        "buildings": buildings, "roads": roads,
+        "buildings": buildings, "roads": roads, "barriers": barriers, "gates": gates,
         "accuracy_contract": {"building_footprints": "OSM geometry", "road_centerlines": "OSM geometry",
+                              "barrier_lines": "OSM geometry", "gate_points": "OSM geometry",
                               "height_osm_height_tag": "authoritative OSM tag when present",
                               "height_derived_from_osm_levels": "derived at 3.2 m per tagged level plus roof height",
                               "height_estimated_missing_osm_height": "visual/gameplay estimate; not claimed real",
-                              "road_width": "OSM width tag, lane-derived width, or explicitly flagged class estimate"}
+                              "road_width": "OSM width tag, lane-derived width, or explicitly flagged class estimate",
+                              "barrier_traversal": "vaultable only at or below 1.65 m; taller mapped barriers block or require climb"}
     }
     (OUT / "real_city_chunk.json").write_text(json.dumps(chunk, separators=(",", ":")))
     (OUT / "real_city_chunk.pretty.json").write_text(json.dumps(chunk, indent=2))
     (OUT / "real-city-chunk-data.js").write_text("window.JC_REAL_CITY_CHUNK=" + json.dumps(chunk, separators=(",", ":")) + ";\n")
     report = {"status": "PASS" if buildings and roads else "FAIL_EMPTY_GEOMETRY", "build_revision": BUILD_REVISION,
               "cells": chunk["cell_count"], "buildings": len(buildings), "roads": len(roads),
-              "height_sources": height_sources, "road_width_sources": width_sources, "skipped": skipped,
+              "barriers": len(barriers), "gates": len(gates),
+              "vaultable_barriers": sum(1 for b in barriers if b["gameplay"]["vaultable"]),
+              "climbable_barriers": sum(1 for b in barriers if b["gameplay"]["climbable"]),
+              "hard_blocking_barriers": sum(1 for b in barriers if not b["gameplay"]["climbable"]),
+              "height_sources": height_sources, "road_width_sources": width_sources,
+              "barrier_height_sources": barrier_height_sources, "skipped": skipped,
               "coverage_wgs84": chunk["coverage_wgs84"], "real_footprints": len(buildings),
               "climbable_roofs": sum(1 for b in buildings if b["climb"]["roof_standable"]),
               "wall_climb_enabled": sum(1 for b in buildings if b["climb"]["wall_climb"])}

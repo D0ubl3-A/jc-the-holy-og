@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "build_revision": "real-climbable-8-cell-v1",
+  "cells": 8,
+  "buildings": 190,
+  "roads": 548,
+  "height_sources": {
+    "estimated_missing_osm_height": 159,
+    "derived_from_osm_levels": 21,
+    "osm_height_tag": 10
+  },
+  "road_width_sources": {
+    "class_default_estimate": 409,
+    "derived_from_osm_lanes": 139
+  },
+  "skipped": {
+    "open_building_ways": 0,
+    "invalid_buildings": 1,
+    "short_roads": 0
+  },
+  "coverage_wgs84": [
+    -115.14452202875033,
+    36.16944121465612,
+    -115.13303250518317,
+    36.17414328908782
+  ],
+  "real_footprints": 190,
+  "climbable_roofs": 190,
+  "wall_climb_enabled": 187
+}

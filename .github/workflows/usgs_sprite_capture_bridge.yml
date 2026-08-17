@@ -119,7 +119,8 @@ jobs:
             echo 'Generated city data unchanged.'
           else
             git commit -m 'Publish real climbable Las Vegas city chunk data'
-            git push
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
 
       - name: Upload real captures

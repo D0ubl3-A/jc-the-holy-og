@@ -1,0 +1,42 @@
+{
+  "name": "jc-the-holy-og",
+  "version": "0.1.0",
+  "description": "JC The Holy OG: Sin City Redemption 3D",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "electron": "electron .",
+    "electron:pack": "electron-builder --dir",
+    "electron:win": "electron-builder --win nsis portable"
+  },
+  "devDependencies": {
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "tech.illcoai.jctheholyog",
+    "productName": "JC The Holy OG",
+    "asar": true,
+    "directories": {
+      "output": "release-electron"
+    },
+    "files": [
+      "electron/**/*",
+      "index.html",
+      "real-city-climb-demo.html",
+      "jc-the-holy-og-assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "artifactName": "JC-The-Holy-OG-${version}-${arch}.${ext}",
+      "target": ["nsis", "portable"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

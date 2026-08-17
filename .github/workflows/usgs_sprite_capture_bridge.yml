@@ -6,10 +6,10 @@ on:
     paths:
       - 'sprite_factory_bridge/capture_plan.json'
       - 'sprite_factory_bridge/build_real_climbable_chunk.py'
-      - 'sprite_factory_bridge/trigger_real_3d.txt'
+      - '.github/workflows/usgs_sprite_capture_bridge.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   capture-real-naip:
@@ -51,7 +51,6 @@ jobs:
                   'User-Agent': 'jc-las-vegas-sprite-factory/2.0 github-actions-capture-bridge',
                   'Accept': 'image/png,application/octet-stream'
               })
-              last = None
               for attempt in range(5):
                   try:
                       with urllib.request.urlopen(req, timeout=90) as r:
@@ -64,9 +63,7 @@ jobs:
                       with Image.open(p) as im:
                           if im.size != (528, 528):
                               raise RuntimeError(f'{cid}: wrong dimensions {im.size}, expected 528x528')
-                          rgb = im.convert('RGB')
-                          stat = ImageStat.Stat(rgb)
-                          std = sum(stat.stddev) / 3.0
+                          std = sum(ImageStat.Stat(im.convert('RGB')).stddev) / 3.0
                           if std < 4.0:
                               raise RuntimeError(f'{cid}: suspiciously blank/flat image stddev={std:.3f}')
                       sha = hashlib.sha256(data).hexdigest()
@@ -76,13 +73,10 @@ jobs:
                       results.append({'cell_id': cid, 'sha256': sha, 'bytes': len(data), 'content_type': ctype})
                       print(f'OK {cid} {len(data)} bytes sha256={sha[:16]}…')
                       break
-                  except Exception as e:
-                      last = e
+                  except Exception:
                       if attempt == 4:
                           raise
                       time.sleep(2 ** attempt)
-              else:
-                  raise last
 
           provenance = {
               'imagery_is_real': True,
@@ -97,11 +91,28 @@ jobs:
               'synthetic_fallback_used': False
           }
           (out / 'source_provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
-          print(f'Captured {len(results)} real NAIP tiles with provenance.')
           PY
 
       - name: Build real climbable roads and buildings
         run: python sprite_factory_bridge/build_real_climbable_chunk.py
+
+      - name: Publish playable city data into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p jc-the-holy-og-assets/generated
+          cp sprite_factory_bridge/playable_3d/real_city_chunk.json jc-the-holy-og-assets/generated/real_city_chunk.json
+          cp sprite_factory_bridge/playable_3d/real-city-chunk-data.js jc-the-holy-og-assets/generated/real-city-chunk-data.js
+          cp sprite_factory_bridge/playable_3d/real_city_chunk_report.json jc-the-holy-og-assets/generated/real_city_chunk_report.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jc-the-holy-og-assets/generated/
+          if git diff --cached --quiet; then
+            echo 'Generated city data unchanged.'
+          else
+            git commit -m 'Publish real climbable Las Vegas city chunk data'
+            git push
+          fi
 
       - name: Upload real captures
         uses: actions/upload-artifact@v4

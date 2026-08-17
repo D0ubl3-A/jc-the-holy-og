@@ -6,6 +6,7 @@ on:
     paths:
       - 'sprite_factory_bridge/capture_plan.json'
       - 'sprite_factory_bridge/build_real_climbable_chunk.py'
+      - 'sprite_factory_bridge/build_legacy_real_prototype.py'
       - '.github/workflows/usgs_sprite_capture_bridge.yml'
 
 permissions:
@@ -96,14 +97,21 @@ jobs:
       - name: Build real climbable roads and buildings
         run: python sprite_factory_bridge/build_real_climbable_chunk.py
 
+      - name: Build original 16-cell legacy prototype with real geometry
+        run: python sprite_factory_bridge/build_legacy_real_prototype.py
+
       - name: Publish playable city data into repository
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p jc-the-holy-og-assets/generated
+          mkdir -p jc-the-holy-og-assets/generated/legacy-real
           cp sprite_factory_bridge/playable_3d/real_city_chunk.json jc-the-holy-og-assets/generated/real_city_chunk.json
           cp sprite_factory_bridge/playable_3d/real-city-chunk-data.js jc-the-holy-og-assets/generated/real-city-chunk-data.js
           cp sprite_factory_bridge/playable_3d/real_city_chunk_report.json jc-the-holy-og-assets/generated/real_city_chunk_report.json
+          cp sprite_factory_bridge/legacy_playable_3d/legacy_prototype_real_city.json jc-the-holy-og-assets/generated/legacy-real/legacy_prototype_real_city.json
+          cp sprite_factory_bridge/legacy_playable_3d/legacy-prototype-real-city-data.js jc-the-holy-og-assets/generated/legacy-real/legacy-prototype-real-city-data.js
+          cp sprite_factory_bridge/legacy_playable_3d/legacy_prototype_real_city_report.json jc-the-holy-og-assets/generated/legacy-real/legacy_prototype_real_city_report.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add jc-the-holy-og-assets/generated/
@@ -127,5 +135,13 @@ jobs:
         with:
           name: vegas-real-climbable-city-chunk
           path: sprite_factory_bridge/playable_3d/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload original 16-cell real legacy prototype
+        uses: actions/upload-artifact@v4
+        with:
+          name: vegas-real-legacy-16-cell-prototype
+          path: sprite_factory_bridge/legacy_playable_3d/
           if-no-files-found: error
           retention-days: 7

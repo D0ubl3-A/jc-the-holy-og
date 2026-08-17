@@ -6,6 +6,7 @@ on:
     paths:
       - 'sprite_factory_bridge/capture_plan.json'
       - 'sprite_factory_bridge/build_real_climbable_chunk.py'
+      - 'sprite_factory_bridge/trigger_real_3d.txt'
 
 permissions:
   contents: read

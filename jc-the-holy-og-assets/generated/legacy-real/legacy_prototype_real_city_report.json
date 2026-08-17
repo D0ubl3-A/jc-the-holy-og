@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "cells": 16,
+  "buildings": 123,
+  "roads": 895,
+  "barriers": 9,
+  "gates": 21,
+  "hoppable_barriers": 3,
+  "climbable_barriers": 9,
+  "standable_roofs": 123,
+  "wall_climb_buildings": 103,
+  "invalid_buildings": 1,
+  "outside_geometry": 0,
+  "height_sources": {
+    "osm_height_tag": 25,
+    "derived_from_osm_levels": 47,
+    "estimated_missing_osm_height": 51
+  },
+  "road_width_sources": {
+    "class_default_estimate": 787,
+    "derived_from_osm_lanes": 108
+  },
+  "barrier_height_sources": {
+    "estimated_missing_osm_height": 9
+  }
+}

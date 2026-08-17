@@ -1,5 +1,6 @@
 name: Deploy JC Full Strip
 
+# Publishes the current main snapshot, including the latest real neighborhood test data.
 on:
   workflow_dispatch:
   push:

@@ -9,6 +9,14 @@
   "climbable_barriers": 9,
   "standable_roofs": 123,
   "wall_climb_buildings": 103,
+  "world_origin_wgs84": [
+    -115.1398,
+    36.1699
+  ],
+  "world_origin_projected": [
+    667304.0470097195,
+    4004396.3146858704
+  ],
   "invalid_buildings": 1,
   "outside_geometry": 0,
   "height_sources": {

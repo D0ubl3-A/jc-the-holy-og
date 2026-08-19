@@ -1,0 +1,70 @@
+name: Build Sin City Road Registry
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-road-registry.yml"
+      - "tools/build_citywide_road_registry.py"
+      - "world/canonical-world-contract.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sincity-road-registry
+  cancel-in-progress: false
+
+jobs:
+  build-road-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install GIS runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests shapely pyproj
+      - name: Build source-grounded road registry
+        run: python tools/build_citywide_road_registry.py --output work/road-registry/output
+      - name: Validate evidence gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('work/road-registry/output/validation_report.json').read_text())
+          assert d['status']=='PASS_ROAD_REGISTRY_BUILT', d
+          assert d['road_segment_count']>0, d
+          assert d['canonical_world']['crs']=='EPSG:32611', d
+          assert d['canonical_world']['tile_count']==1225, d
+          assert d['duplicate_road_ids']==0, d
+          assert d['bad_geometry_count']==0, d
+          assert d['bad_tile_ids']==0, d
+          assert d['hard_rules']['synthetic_roads_created']==0, d
+          assert d['hard_rules']['unknown_lane_counts_filled']==0, d
+          assert d['hard_rules']['geometry_snapped_or_inferred']==0, d
+          assert d['hard_rules']['final_visual_generation_authorized'] is False, d
+          assert d['source']['source_version'], d
+          assert 'OpenStreetMap' in d['source']['dataset'], d
+          print(json.dumps(d, indent=2))
+          PY
+      - name: Add run summary
+        if: always()
+        run: |
+          if [ -f work/road-registry/output/validation_report.json ]; then
+            echo '## Sin City Road Registry' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat work/road-registry/output/validation_report.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sincity-road-registry-epsg32611
+          path: work/road-registry/output/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6

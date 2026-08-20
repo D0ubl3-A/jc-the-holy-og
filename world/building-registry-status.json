@@ -70,16 +70,22 @@
   "generation": {
     "footprint_geometry_authorized": true,
     "parcel_relationship_authorized_for_joined_buildings": true,
-    "final_visual_generation_authorized": false,
-    "reason": "Footprints and most parcel relationships are resolved, but 22,291 parcel cases remain ambiguous and address, identity, architecture, terrain-Z and context gates remain independent requirements."
+    "playable_procedural_3d_generation_authorized": true,
+    "prototype_sprite_generation_authorized": true,
+    "existing_real_city_chunk_pipeline": "ACTIVE",
+    "existing_real_city_chunk_path": "jc-the-holy-og-assets/generated/real_city_chunk.json",
+    "final_evidence_grade_sprite_generation_authorized": false,
+    "final_evidence_grade_3d_generation_authorized": false,
+    "reason": "Playable/procedural assets may be generated from source-confirmed footprints plus explicitly labeled estimated height/context data. Only final evidence-grade visual fidelity remains gated by unresolved parcel ambiguities, exact address/identity, architecture/material, terrain-Z, and context evidence."
   },
   "next_required": [
+    "continue playable procedural 3D and prototype sprite generation from verified geometry now",
     "resolve or preserve the 22,291 ambiguous multi-parcel building cases",
     "run separate right-of-way control QA",
     "address resolution",
     "property/business identity resolution",
-    "story and architecture evidence",
+    "story and architecture/material evidence",
     "terrain/ground elevation join",
-    "context validation before sprite or final 3D generation"
+    "context validation before promoting assets to final evidence-grade fidelity"
   ]
 }

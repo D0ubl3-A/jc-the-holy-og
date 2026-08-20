@@ -1,0 +1,75 @@
+{
+  "schema": "sincity-online-world-evidence-v4",
+  "status": "PASS",
+  "github_run_id": "32339259200",
+  "github_sha": "742cad6a72eca34a0998bf7764a7ba9e1aa1bd40",
+  "world": {
+    "crs": "EPSG:32611",
+    "bounds_epsg32611": [
+      648949.782,
+      3983561.814,
+      683949.782,
+      4018561.814
+    ],
+    "bounds_wgs84": [
+      -115.34772749444959,
+      35.97916144800393,
+      -114.95149523108,
+      36.300553215303474
+    ],
+    "grid": "35x35 km; 1225 1-km tiles"
+  },
+  "sources": {
+    "clark_county_aoext": {
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/Address/MapServer/2/query",
+      "records": 724395,
+      "unique_apns": 724393,
+      "records_with_address": 714152,
+      "records_with_landuse": 724395,
+      "records_with_construction_year": 682507
+    },
+    "openstreetmap_geofabrik": {
+      "url": "https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf",
+      "license": "ODbL 1.0"
+    },
+    "usgs_3dep": {
+      "url": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",
+      "product": "3DEP Bare Earth DEM dynamic service",
+      "output_crs": "EPSG:32611",
+      "output_size": [
+        3500,
+        3500
+      ],
+      "pixel_size_m": 10
+    }
+  },
+  "outputs": {
+    "aoext_records": {
+      "path": "aoext/clark_aoext_world_records.jsonl.gz",
+      "bytes": 35731335,
+      "sha256": "da51353d3606faf2eb82e07757dca38563e75a1e9ba1b7b52690113817977c46"
+    },
+    "osm_world": {
+      "path": "osm/sincity-world.osm.pbf",
+      "bytes": 28203234,
+      "sha256": "c13f85a006bc3d4b465bc815f4e7c601117cafdc13ad554550594badbf2520b1"
+    },
+    "osm_context": {
+      "path": "osm/sincity-context.osm.pbf",
+      "bytes": 26710822,
+      "sha256": "a2788998edf9409951457203af85d70260448b6c26bb602b3a31e92fd291eb5c"
+    },
+    "terrain": {
+      "path": "terrain/sincity-terrain-10m-epsg32611.tif",
+      "bytes": 24720990,
+      "sha256": "45005ac7f55f64da7f2106e9a204cfcb3e91ea89d7c1adc02ff730a88a17884f"
+    }
+  },
+  "hard_rules": {
+    "synthetic_source_records": 0,
+    "fabricated_addresses": 0,
+    "fabricated_architecture": 0,
+    "fabricated_elevations": 0,
+    "owner_personal_data_ingested": false
+  }
+}

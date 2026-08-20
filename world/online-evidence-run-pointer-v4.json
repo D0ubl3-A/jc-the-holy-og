@@ -1,6 +1,7 @@
 {
-  "status": "RUNNING",
+  "status": "PASS",
   "github_run_id": "32339259200",
   "github_sha": "742cad6a72eca34a0998bf7764a7ba9e1aa1bd40",
-  "workflow": "Acquire Sin City Online World Evidence v4"
+  "workflow": "Acquire Sin City Online World Evidence v4",
+  "manifest": "world/online-evidence-status-v4.json"
 }

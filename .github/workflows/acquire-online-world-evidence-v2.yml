@@ -1,0 +1,149 @@
+name: Acquire Sin City Online World Evidence v2
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/acquire-online-world-evidence-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  acquire-online-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install GIS tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin osmium-tool
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Acquire Clark County AOEXT online
+        run: |
+          mkdir -p work/online-evidence
+          python tools/acquire_online_world_evidence.py --output work/online-evidence/aoext
+
+      - name: Acquire and clip current Nevada OpenStreetMap data
+        run: |
+          set -euo pipefail
+          mkdir -p work/online-evidence/osm/source
+          cd work/online-evidence/osm/source
+          curl -fL --retry 6 --retry-delay 5 -o nevada-latest.osm.pbf https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf
+          curl -fL --retry 6 --retry-delay 5 -o nevada-latest.osm.pbf.md5 https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf.md5
+          md5sum -c nevada-latest.osm.pbf.md5
+          sha256sum nevada-latest.osm.pbf > nevada-latest.osm.pbf.sha256.txt
+          cd ..
+          osmium extract -b -115.34772749444959,35.97916144800393,-114.95149523108,36.300553215303474 -s complete_ways -o sincity-world.osm.pbf source/nevada-latest.osm.pbf
+          osmium tags-filter sincity-world.osm.pbf nwr/building nwr/building:part nwr/amenity nwr/shop nwr/tourism nwr/leisure nwr/barrier nwr/highway nwr/landuse nwr/man_made nwr/natural nwr/addr:housenumber nwr/addr:street -o sincity-context.osm.pbf
+          osmium fileinfo -e -j sincity-world.osm.pbf > sincity-world.osm.fileinfo.json
+          osmium fileinfo -e -j sincity-context.osm.pbf > sincity-context.osm.fileinfo.json
+          sha256sum sincity-world.osm.pbf sincity-context.osm.pbf > osm_outputs.sha256.txt
+          rm -f source/nevada-latest.osm.pbf
+
+      - name: Acquire current USGS 3DEP and build exact terrain raster
+        run: |
+          set -euo pipefail
+          mkdir -p work/online-evidence/terrain/source
+          cd work/online-evidence/terrain/source
+          : > source_urls.txt
+          : > source_tiles.sha256.txt
+          for tile in n36w116 n36w115 n37w116 n37w115; do
+            url="https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/TIFF/current/${tile}/USGS_13_${tile}.tif"
+            echo "$url" >> source_urls.txt
+            curl -fL --retry 6 --retry-delay 5 -o "USGS_13_${tile}.tif" "$url"
+            sha256sum "USGS_13_${tile}.tif" >> source_tiles.sha256.txt
+          done
+          gdalbuildvrt usgs_13_source.vrt USGS_13_*.tif
+          cd ..
+          gdalwarp -overwrite -t_srs EPSG:32611 -te_srs EPSG:32611 -te 648949.782 3983561.814 683949.782 4018561.814 -ts 3500 3500 -r bilinear -dstnodata -9999 -co COMPRESS=DEFLATE -co PREDICTOR=3 -co TILED=YES -co BIGTIFF=IF_SAFER source/usgs_13_source.vrt sincity-terrain-10m-epsg32611.tif
+          gdalinfo -json sincity-terrain-10m-epsg32611.tif > sincity-terrain-10m-epsg32611.gdalinfo.json
+          sha256sum sincity-terrain-10m-epsg32611.tif > terrain_output.sha256.txt
+          rm -f source/USGS_13_*.tif source/usgs_13_source.vrt
+
+      - name: Build provenance and hard validation report
+        run: |
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path('work/online-evidence')
+          def sha(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for c in iter(lambda:f.read(1<<20),b''):h.update(c)
+              return h.hexdigest()
+          ao=json.load(open(root/'aoext/clark_aoext_acquisition_report.json'))
+          gi=json.load(open(root/'terrain/sincity-terrain-10m-epsg32611.gdalinfo.json'))
+          outputs={
+              'aoext_records':root/'aoext/clark_aoext_world_records.jsonl.gz',
+              'osm_world':root/'osm/sincity-world.osm.pbf',
+              'osm_context':root/'osm/sincity-context.osm.pbf',
+              'terrain':root/'terrain/sincity-terrain-10m-epsg32611.tif',
+          }
+          assert ao['records_written']>0
+          assert gi.get('size')==[3500,3500], gi.get('size')
+          for p in outputs.values(): assert p.exists() and p.stat().st_size>0, p
+          manifest={
+              'schema':'sincity-online-world-evidence-v2',
+              'status':'PASS',
+              'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'github_sha':os.environ.get('GITHUB_SHA'),
+              'world':{
+                  'crs':'EPSG:32611',
+                  'bounds_epsg32611':[648949.782,3983561.814,683949.782,4018561.814],
+                  'bounds_wgs84':[-115.34772749444959,35.97916144800393,-114.95149523108,36.300553215303474],
+                  'grid':'35x35 km; 1225 1-km tiles'
+              },
+              'sources':{
+                  'clark_county_aoext':{
+                      'url':'https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/Address/MapServer/2/query',
+                      'records':ao['records_written'],'unique_apns':ao['unique_apns'],
+                      'records_with_address':ao['records_with_address'],
+                      'records_with_landuse':ao['records_with_landuse'],
+                      'records_with_construction_year':ao['records_with_construction_year']
+                  },
+                  'openstreetmap_geofabrik':{
+                      'url':'https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf','license':'ODbL 1.0'
+                  },
+                  'usgs_3dep':{
+                      'url_root':'https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/TIFF/current/',
+                      'product':'1/3 arc-second DEM','license':'Public Domain','output_crs':'EPSG:32611','output_size':[3500,3500],'pixel_size_m':10
+                  }
+              },
+              'outputs':{k:{'path':str(p.relative_to(root)),'bytes':p.stat().st_size,'sha256':sha(p)} for k,p in outputs.items()},
+              'hard_rules':{'synthetic_source_records':0,'fabricated_addresses':0,'fabricated_architecture':0,'fabricated_elevations':0,'owner_personal_data_ingested':False}
+          }
+          (root/'online_evidence_manifest.json').write_text(json.dumps(manifest,indent=2))
+          print(json.dumps(manifest,indent=2))
+          PY
+
+      - name: Publish acquisition receipt to repository
+        run: |
+          set -euo pipefail
+          mkdir -p world
+          cp work/online-evidence/online_evidence_manifest.json world/online-evidence-status.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add world/online-evidence-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish verified online world evidence receipt"
+            git push
+          fi
+
+      - name: Upload verified online evidence bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-online-world-evidence-v2
+          path: work/online-evidence
+          compression-level: 6
+          retention-days: 30

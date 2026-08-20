@@ -1,0 +1,82 @@
+name: Acquire Sin City Online World Evidence v3
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/acquire-online-world-evidence-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  acquire-online-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Publish run pointer
+        run: |
+          set -euo pipefail
+          mkdir -p world
+          cat > world/online-evidence-run-pointer.json <<EOF
+          {
+            "status": "RUNNING",
+            "github_run_id": "${GITHUB_RUN_ID}",
+            "github_sha": "${GITHUB_SHA}",
+            "workflow": "Acquire Sin City Online World Evidence v3"
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add world/online-evidence-run-pointer.json
+          git commit -m "Publish online evidence acquisition run pointer"
+          git push
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install GIS tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin osmium-tool
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Acquire Clark County AOEXT online
+        run: |
+          mkdir -p work/online-evidence
+          python tools/acquire_online_world_evidence.py --output work/online-evidence/aoext
+
+      - name: Acquire OSM and USGS terrain online
+        run: |
+          chmod +x tools/run_online_world_evidence.sh
+          tools/run_online_world_evidence.sh work/online-evidence
+
+      - name: Publish verified acquisition receipt
+        run: |
+          set -euo pipefail
+          cp work/online-evidence/online_evidence_manifest.json world/online-evidence-status.json
+          python - <<'PY'
+          import json, os
+          p='world/online-evidence-run-pointer.json'
+          d=json.load(open(p))
+          d['status']='PASS'
+          d['manifest']='world/online-evidence-status.json'
+          open(p,'w').write(json.dumps(d,indent=2))
+          PY
+          git add world/online-evidence-status.json world/online-evidence-run-pointer.json
+          git commit -m "Publish verified online world evidence receipt"
+          git push
+
+      - name: Upload verified online evidence bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-online-world-evidence-v3
+          path: work/online-evidence
+          compression-level: 6
+          retention-days: 30

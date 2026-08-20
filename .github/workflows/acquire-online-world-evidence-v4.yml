@@ -1,4 +1,5 @@
 name: Acquire Sin City Online World Evidence v4
+# trigger: fast-online-acquisition-2
 
 on:
   workflow_dispatch:

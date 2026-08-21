@@ -55,3 +55,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/satellite-ali
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-footprint-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegiant-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/movement-animation-runtime.js"><\/script>');

@@ -2,7 +2,7 @@
   "status": "PASS",
   "cells": 16,
   "buildings": 123,
-  "roads": 908,
+  "roads": 925,
   "barriers": 9,
   "gates": 21,
   "hoppable_barriers": 3,
@@ -25,7 +25,7 @@
     "estimated_missing_osm_height": 51
   },
   "road_width_sources": {
-    "class_default_estimate": 800,
+    "class_default_estimate": 817,
     "derived_from_osm_lanes": 108
   },
   "barrier_height_sources": {

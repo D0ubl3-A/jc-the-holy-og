@@ -1,0 +1,52 @@
+name: Enable Real Vegas District Collision
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/enable_real_district_collision.py"
+      - ".github/workflows/enable-real-district-collision.yml"
+      - "jc-the-holy-og-assets/real-vegas-collision-runtime.js"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: enable-real-vegas-district-collision
+  cancel-in-progress: true
+
+jobs:
+  patch-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable exact-footprint collision replacement
+        run: python tools/enable_real_district_collision.py
+      - name: Validate collision runtime and wiring
+        run: |
+          node --check jc-the-holy-og-assets/real-vegas-collision-runtime.js
+          python - <<'PY'
+          from pathlib import Path
+          i=Path('index.html').read_text()
+          s=Path('jc-the-holy-og-assets/vegas-sections.js').read_text()
+          assert 'window.JC_REAL_VEGAS_COLLISION' in i
+          assert 'realCollision?.active?.()' in i
+          assert 'return{portal:null,distance:Infinity}' in i
+          assert 'real-vegas-collision-runtime.js' in s
+          print('real footprint collision wiring PASS')
+          PY
+      - name: Publish collision integration
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html jc-the-holy-og-assets/vegas-sections.js
+          if git diff --cached --quiet; then
+            echo "Collision integration already current."
+          else
+            git commit -m "Enable source-grounded real district collision"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

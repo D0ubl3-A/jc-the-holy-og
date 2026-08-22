@@ -1,0 +1,92 @@
+name: JC Visual Overhaul Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - visual-overhaul-v3
+    paths:
+      - "index.html"
+      - "jc-the-holy-og-assets/runtime-v3.js"
+      - "jc-the-holy-og-assets/quality-v3.js"
+      - "jc-the-holy-og-assets/materials-v3.js"
+      - "jc-the-holy-og-assets/section-zero-v3.js"
+      - "tests/smoke.mjs"
+      - ".github/workflows/visual-overhaul-smoke.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "jc-the-holy-og-assets/runtime-v3.js"
+      - "jc-the-holy-og-assets/quality-v3.js"
+      - "jc-the-holy-og-assets/materials-v3.js"
+      - "jc-the-holy-og-assets/section-zero-v3.js"
+      - "tests/smoke.mjs"
+      - ".github/workflows/visual-overhaul-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package visual overhaul source
+        run: |
+          zip -qr /tmp/jc-the-holy-og-visual-overhaul-v3.zip . \
+            -x '.git/*' \
+            -x 'node_modules/*' \
+            -x '*.zip'
+
+      - name: Upload visual overhaul source
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-visual-overhaul-source
+          path: /tmp/jc-the-holy-og-visual-overhaul-v3.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check jc-the-holy-og-assets/runtime-v3.js
+          node --check jc-the-holy-og-assets/quality-v3.js
+          node --check jc-the-holy-og-assets/materials-v3.js
+          node --check jc-the-holy-og-assets/section-zero-v3.js
+          node --check tests/smoke.mjs
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start production static server
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/jc-http.log 2>&1 &
+          echo $! > /tmp/jc-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8080/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/jc-http.log
+          exit 1
+
+      - name: Run WebGL gameplay smoke test
+        shell: bash
+        run: |
+          set -o pipefail
+          xvfb-run -a -s "-screen 0 1440x900x24" node tests/smoke.mjs 2>&1 | tee smoke-test.log
+
+      - name: Upload smoke diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-visual-overhaul-smoke
+          path: |
+            smoke-game.png
+            smoke-report.json
+            smoke-test.log
+            /tmp/jc-http.log
+          if-no-files-found: ignore
+          retention-days: 7

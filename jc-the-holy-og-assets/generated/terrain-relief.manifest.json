@@ -1,0 +1,27 @@
+{
+  "schema": "jc-real-terrain-relief-v1",
+  "generated_at": "2026-08-22T04:43:38.633236+00:00",
+  "crs": "EPSG:32611",
+  "bounds_epsg32611": [
+    648949.782,
+    3983561.814,
+    683949.782,
+    4018561.814
+  ],
+  "width": 176,
+  "height": 176,
+  "source_sha256": "45005ac7f55f64da7f2106e9a204cfcb3e91ea89d7c1adc02ff730a88a17884f",
+  "source_pixel_size_m": 10,
+  "sample_grid": "bilinear downsample for runtime relief",
+  "height_encoding": "decimeters absolute elevation; -32768 nodata",
+  "min_elevation_m": 453.859,
+  "max_elevation_m": 1168.606,
+  "median_elevation_m": 669.727,
+  "gameplay_safe_baseline_m": 625.359,
+  "urban_flatten_radius_m": 11000,
+  "urban_blend_end_m": 14500,
+  "source": "USGS 3DEP Bare Earth DEM",
+  "runtime_file": "terrain-relief.js",
+  "runtime_bytes": 155768,
+  "runtime_sha256": "0b1af851e04c75e3dae29b686b7bee182e992aa923da893c1d17c6fb33493652"
+}

@@ -1,5 +1,5 @@
 window.JC_VEGAS_SECTIONS={
-  version:7,
+  version:8,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
   alignment:{
@@ -20,7 +20,7 @@ window.JC_VEGAS_SECTIONS={
     {id:"strip-south",label:"SOUTH STRIP",status:"implemented",alignment:"satellite-footprints-v3",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["MANDALAY BAY","LUXOR","EXCALIBUR","NEW YORK-NEW YORK","PARK MGM","ARIA","MGM GRAND","ALLEGIANT STADIUM"]},
     {id:"strip-core",label:"CENTRAL STRIP",status:"implemented",anchor:"strip",offset:[0,200],half:[1500,1850],streamRadius:3600,landmarks:["BELLAGIO","CAESARS PALACE","FLAMINGO","THE VENETIAN","THE SPHERE","WYNN LAS VEGAS"]},
     {id:"strip-north",label:"NORTH STRIP",status:"implemented",anchor:"strip",offset:[0,-2850],half:[1500,1900],streamRadius:3600,landmarks:["FONTAINEBLEAU","SAHARA","THE STRAT","ARTS DISTRICT GATE","DOWNTOWN GATE"]},
-    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"planned",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"]},
+    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"implemented",detail:"real-footprints-v1",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"],sourceGrounded:{buildings:601,roads:942,cells:16,crs:"EPSG:32611",runtime:"real-vegas-detail-runtime.js"}},
     {id:"paradise-east",label:"PARADISE EAST",status:"planned",anchor:"world",offset:[1950,-150],half:[1100,1600],streamRadius:2700,landmarks:["convention-zone"]},
     {id:"west-resorts",label:"WEST RESORTS",status:"planned",anchor:"world",offset:[-1900,-150],half:[1050,1700],streamRadius:2700,landmarks:["resort-belt"]},
     {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
@@ -45,8 +45,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors"],
-  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","source-grounded Downtown/Fremont proximity streaming"],
+  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled",downtownRealFootprints:"SOURCE_CONFIRMED",downtownTerrainZ:"PENDING_RUNTIME_GROUND_PROBE"}
 };
 // Parser-inserted modules patch Three.js before the main game module initializes.
 // V toggles satellite calibration. F toggles the main source-confirmed Zone 1 footprint layer.
@@ -56,3 +56,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-footpri
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegiant-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/movement-animation-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-detail-runtime.js"><\/script>');

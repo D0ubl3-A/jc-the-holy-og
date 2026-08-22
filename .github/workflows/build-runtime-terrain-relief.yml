@@ -1,0 +1,80 @@
+name: Build Real USGS Terrain Relief Runtime
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build_runtime_terrain_relief.py"
+      - ".github/workflows/build-runtime-terrain-relief.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: real-usgs-terrain-relief-runtime
+  cancel-in-progress: true
+
+jobs:
+  build-relief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install raster runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy rasterio
+      - name: Download verified online world evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p work/verified-world
+          gh run download 32339259200 \
+            --repo "${{ github.repository }}" \
+            --name sincity-online-world-evidence-v4 \
+            --dir work/verified-world
+          test -f work/verified-world/terrain/sincity-terrain-10m-epsg32611.tif
+          echo "45005ac7f55f64da7f2106e9a204cfcb3e91ea89d7c1adc02ff730a88a17884f  work/verified-world/terrain/sincity-terrain-10m-epsg32611.tif" | sha256sum -c -
+      - name: Build mobile-safe real terrain relief
+        run: |
+          python tools/build_runtime_terrain_relief.py \
+            --source work/verified-world/terrain/sincity-terrain-10m-epsg32611.tif \
+            --output jc-the-holy-og-assets/generated/terrain-relief.js \
+            --size 176
+      - name: Validate relief evidence
+        run: |
+          python - <<'PY'
+          import json
+          p='jc-the-holy-og-assets/generated/terrain-relief.manifest.json'
+          m=json.load(open(p))
+          assert m['source_sha256']=='45005ac7f55f64da7f2106e9a204cfcb3e91ea89d7c1adc02ff730a88a17884f'
+          assert m['width']==176 and m['height']==176
+          assert m['max_elevation_m'] > m['min_elevation_m']
+          assert m['runtime_bytes'] > 10000
+          print(json.dumps(m,indent=2))
+          PY
+      - name: Publish terrain relief runtime
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add jc-the-holy-og-assets/generated/terrain-relief.js jc-the-holy-og-assets/generated/terrain-relief.manifest.json
+          if git diff --cached --quiet; then
+            echo "Terrain relief unchanged."
+          else
+            git commit -m "Publish verified USGS terrain relief runtime"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jc-real-usgs-terrain-relief-runtime
+          path: |
+            jc-the-holy-og-assets/generated/terrain-relief.js
+            jc-the-holy-og-assets/generated/terrain-relief.manifest.json
+          retention-days: 90

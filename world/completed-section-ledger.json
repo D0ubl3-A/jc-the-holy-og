@@ -1,0 +1,56 @@
+{
+  "schema": "jc-completed-section-ledger-v1",
+  "generated_at": "2026-08-22T04:24:12.113442+00:00",
+  "status": "PASS_LEDGER_PRESENT",
+  "objective": "section by section recreate Las Vegas in full reality",
+  "current_section": "strip-core",
+  "sections": [
+    {
+      "section_id": "strip-core",
+      "state": "in_progress",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "strip-south",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "strip-north",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "downtown",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "paradise-east",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "west-resorts",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    },
+    {
+      "section_id": "outer-vegas",
+      "state": "planned",
+      "complete": false,
+      "evidence": "world/section-status.json"
+    }
+  ],
+  "ledger_acceptance": {
+    "artifact_exists": true,
+    "all_known_sections_have_entries": true,
+    "note": "ledger gate proves authoritative tracking exists; it does not falsely mark unfinished sections complete"
+  }
+}

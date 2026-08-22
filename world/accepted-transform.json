@@ -1,0 +1,124 @@
+{
+  "schema": "jc-accepted-production-transform-v1",
+  "generated_at": "2026-08-22T04:24:12.077939+00:00",
+  "status": "PASS",
+  "canonical_crs": "EPSG:32611",
+  "game_space": {
+    "units": "meters",
+    "origin": "northwest world bound",
+    "x_axis": "+east",
+    "z_axis": "+south",
+    "y_axis": "+up/elevation",
+    "width_m": 35000.0,
+    "height_m": 35000.0
+  },
+  "forward": {
+    "game_x": "utm_easting - 648949.782",
+    "game_z": "4018561.814 - utm_northing"
+  },
+  "inverse": {
+    "utm_easting": "game_x + 648949.782",
+    "utm_northing": "4018561.814 - game_z"
+  },
+  "acceptance": {
+    "control_point_count": 9,
+    "tolerance_m": 0.001,
+    "max_residual_m": 0.0,
+    "rms_residual_m": 0.0,
+    "wgs84_proj_roundtrip_deg": 1.4210854715202004e-14,
+    "result": "PASS",
+    "scope": "canonical production data transform; landmark survey accuracy is validated separately"
+  },
+  "control_points": [
+    {
+      "id": "control-1",
+      "utm_easting": 648949.782,
+      "utm_northing": 4018561.814,
+      "expected_game_x": 0.0,
+      "expected_game_z": 0.0,
+      "actual_game_x": 0.0,
+      "actual_game_z": 0.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-2",
+      "utm_easting": 683949.782,
+      "utm_northing": 4018561.814,
+      "expected_game_x": 35000.0,
+      "expected_game_z": 0.0,
+      "actual_game_x": 35000.0,
+      "actual_game_z": 0.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-3",
+      "utm_easting": 648949.782,
+      "utm_northing": 3983561.814,
+      "expected_game_x": 0.0,
+      "expected_game_z": 35000.0,
+      "actual_game_x": 0.0,
+      "actual_game_z": 35000.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-4",
+      "utm_easting": 683949.782,
+      "utm_northing": 3983561.814,
+      "expected_game_x": 35000.0,
+      "expected_game_z": 35000.0,
+      "actual_game_x": 35000.0,
+      "actual_game_z": 35000.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-5",
+      "utm_easting": 666449.782,
+      "utm_northing": 4001061.814,
+      "expected_game_x": 17500.0,
+      "expected_game_z": 17500.0,
+      "actual_game_x": 17500.0,
+      "actual_game_z": 17500.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-6",
+      "utm_easting": 657699.782,
+      "utm_northing": 4009811.814,
+      "expected_game_x": 8750.0,
+      "expected_game_z": 8750.0,
+      "actual_game_x": 8750.0,
+      "actual_game_z": 8750.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-7",
+      "utm_easting": 675199.782,
+      "utm_northing": 4009811.814,
+      "expected_game_x": 26250.0,
+      "expected_game_z": 8750.0,
+      "actual_game_x": 26250.0,
+      "actual_game_z": 8750.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-8",
+      "utm_easting": 657699.782,
+      "utm_northing": 3992311.814,
+      "expected_game_x": 8750.0,
+      "expected_game_z": 26250.0,
+      "actual_game_x": 8750.0,
+      "actual_game_z": 26250.0,
+      "residual_m": 0.0
+    },
+    {
+      "id": "control-9",
+      "utm_easting": 675199.782,
+      "utm_northing": 3992311.814,
+      "expected_game_x": 26250.0,
+      "expected_game_z": 26250.0,
+      "actual_game_x": 26250.0,
+      "actual_game_z": 26250.0,
+      "residual_m": 0.0
+    }
+  ]
+}

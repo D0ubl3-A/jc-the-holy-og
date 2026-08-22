@@ -1,0 +1,105 @@
+{
+  "schema": "jc-runtime-sprite-binary-manifest-v1",
+  "generated_at": "2026-08-22T04:24:12.102708+00:00",
+  "status": "PASS",
+  "acceptance_rule": "every binary required by the current production runtime set exists, decodes, has non-zero bytes, and has stable SHA-256 evidence",
+  "scope_note": "new art-direction poses are feature expansion, not a missing-binary failure for the current runtime set",
+  "required_categories": [
+    "jc",
+    "devil",
+    "npc",
+    "vehicles",
+    "vfx"
+  ],
+  "required_binary_count": 8,
+  "files": [
+    {
+      "category": "jc",
+      "path": "jc-the-holy-og-assets/character-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1774,
+      "height": 887,
+      "bytes": 975063,
+      "sha256": "362d63122c4257c0155fb4d307cd1b777e7d4f018658c60c54de1f62d1178082"
+    },
+    {
+      "category": "jc",
+      "path": "jc-the-holy-og-assets/swarm/jc-material-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3140152,
+      "sha256": "285a030c848a34fbdf04ea480a266e11d522ab2df0aef6f6631a6443c598a41a"
+    },
+    {
+      "category": "jc",
+      "path": "jc-the-holy-og-assets/jc-3d-city-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2345572,
+      "sha256": "e2035d6e49d7c89b105e33e694e0da134635d98fe3a136022f6afd13d5d5514b"
+    },
+    {
+      "category": "devil",
+      "path": "jc-the-holy-og-assets/swarm/devil-material-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2238388,
+      "sha256": "5388cab75122b80129d5625ba3aa4eccff40d3cce00767e32aac2403264de03b"
+    },
+    {
+      "category": "npc",
+      "path": "jc-the-holy-og-assets/swarm/npc-state-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1466315,
+      "sha256": "4ba5ec8e910dcbb1b6cce2ba605f5585c62aa69ca0b77995a085b628d0c6f854"
+    },
+    {
+      "category": "vehicles",
+      "path": "jc-the-holy-og-assets/vehicle-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1774,
+      "height": 887,
+      "bytes": 926632,
+      "sha256": "14577dafaae30038ebea564e9b7aaef9346aa40f6126254287862b1860c3fdb2"
+    },
+    {
+      "category": "vehicles",
+      "path": "jc-the-holy-og-assets/swarm/vehicle-material-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2036214,
+      "sha256": "348717749c0c478c1f2a217f8395a4215434ecf0cd9fe663fd95ba20295c3f4a"
+    },
+    {
+      "category": "vfx",
+      "path": "jc-the-holy-og-assets/swarm/magic-vfx-atlas.png",
+      "exists": true,
+      "decode": "PASS",
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1597948,
+      "sha256": "e00df44d50f00a15fe1c2fee453dfb6ed5f48a1ee397b691ddb756c710e32e33"
+    }
+  ]
+}

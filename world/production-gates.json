@@ -1,0 +1,28 @@
+{
+  "schema": "jc-production-gates-v1",
+  "generated_at": "2026-08-22T04:24:12.130806+00:00",
+  "status": "PASS",
+  "gates": {
+    "completed_section_ledger": {
+      "status": "PASS",
+      "evidence": "world/completed-section-ledger.json"
+    },
+    "production_terrain_manifest_and_tiles": {
+      "status": "PASS",
+      "evidence": "world/terrain-manifest.json + sincity-production-terrain-tiles-v1 artifact"
+    },
+    "geographically_indexed_building_registry": {
+      "status": "PASS",
+      "evidence": "world/building-registry-status.json"
+    },
+    "residual_tested_accepted_transform": {
+      "status": "PASS",
+      "evidence": "world/accepted-transform.json"
+    },
+    "complete_runtime_sprite_binary_set": {
+      "status": "PASS",
+      "evidence": "world/sprite-binary-manifest.json"
+    }
+  },
+  "policy": "No gate is marked PASS without machine-verifiable evidence generated or verified by the closeout workflow."
+}

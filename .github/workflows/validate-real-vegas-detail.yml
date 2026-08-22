@@ -1,0 +1,52 @@
+name: Validate Real Vegas Rendered Playable Detail
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "jc-the-holy-og-assets/vegas-sections.js"
+      - "jc-the-holy-og-assets/real-vegas-district-runtime.js"
+      - "jc-the-holy-og-assets/real-vegas-collision-runtime.js"
+      - "jc-the-holy-og-assets/real-terrain-relief-runtime.js"
+      - "jc-the-holy-og-assets/real-street-context-runtime.js"
+      - "jc-the-holy-og-assets/generated/districts/**"
+      - "jc-the-holy-og-assets/generated/terrain-relief.*"
+      - "tools/build_real_vegas_detail_status.py"
+      - ".github/workflows/validate-real-vegas-detail.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: validate-real-vegas-detail
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax-check runtime modules
+        run: |
+          node --check jc-the-holy-og-assets/real-vegas-district-runtime.js
+          node --check jc-the-holy-og-assets/real-vegas-collision-runtime.js
+          node --check jc-the-holy-og-assets/real-terrain-relief-runtime.js
+          node --check jc-the-holy-og-assets/real-street-context-runtime.js
+      - name: Build and validate consolidated evidence status
+        run: python tools/build_real_vegas_detail_status.py
+      - name: Publish current evidence status
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add world/real-vegas-detail-status.json
+          if git diff --cached --quiet; then
+            echo "Real Vegas detail evidence status unchanged."
+          else
+            git commit -m "Record validated Real Vegas rendered playable detail status"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

@@ -1,0 +1,99 @@
+name: Build Real Vegas Runtime District Packs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build_runtime_district_packs.py"
+      - ".github/workflows/build-runtime-district-packs.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: real-vegas-runtime-district-packs
+  cancel-in-progress: true
+
+jobs:
+  build-packs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install geospatial runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install shapely pyproj
+
+      - name: Download verified 627k building registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p work/building-registry
+          gh run download 31776636631 \
+            --repo "${{ github.repository }}" \
+            --name sincity-building-registry-epsg32611 \
+            --dir work/building-registry
+          python - <<'PY'
+          import json
+          r=json.load(open('work/building-registry/output/validation_report.json'))
+          assert r['status']=='PASS_FOOTPRINT_REGISTRY_BUILT', r
+          assert r['building_count']==627349, r['building_count']
+          assert r['hard_rules']['synthetic_footprints_created']==0
+          print('verified registry',r['building_count'])
+          PY
+
+      - name: Build mobile-safe source-grounded district packs
+        run: |
+          python tools/build_runtime_district_packs.py \
+            --registry work/building-registry/output/building_registry_epsg32611.geojsonseq.gz \
+            --output jc-the-holy-og-assets/generated/districts
+
+      - name: Validate district packs
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('jc-the-holy-og-assets/generated/districts/manifest.json')
+          m=json.load(open(p))
+          assert m['source_records_scanned']==627349, m['source_records_scanned']
+          required={'strip','downtown','paradise-east','henderson','west-vegas','north-vegas'}
+          assert required==set(m['districts'])
+          total=0
+          for key,r in m['districts'].items():
+            assert r['selected_buildings'] >= 500, (key,r['selected_buildings'])
+            assert r['bytes'] > 1000
+            total += r['selected_buildings']
+          assert total >= 15000, total
+          print('district pack buildings',total)
+          PY
+
+      - name: Publish runtime packs and evidence
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "4189828+github-actions[bot]@users.noreply.github.com"
+          git add jc-the-holy-og-assets/generated/districts/
+          if git diff --cached --quiet; then
+            echo "Runtime district packs unchanged."
+          else
+            git commit -m "Publish source-grounded Vegas runtime district packs"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Upload generated district pack bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-real-vegas-runtime-district-packs
+          path: jc-the-holy-og-assets/generated/districts/
+          compression-level: 7
+          retention-days: 90

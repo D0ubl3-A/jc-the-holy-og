@@ -1,0 +1,150 @@
+name: Close JC Production Gates
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/close_production_gates.py"
+      - ".github/workflows/close-production-gates.yml"
+  schedule:
+    - cron: "23 9 * * 1"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: jc-production-gate-closeout
+  cancel-in-progress: true
+
+jobs:
+  close-production-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deterministic GIS and image runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy rasterio pillow pyproj
+
+      - name: Verify live building-registry artifact evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/9254588562" > /tmp/building-artifact.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/building-artifact.json'))
+          assert p['name']=='sincity-building-registry-parcel-joined', p
+          assert p.get('expired') is False, p
+          assert int(p.get('size_in_bytes',0)) > 300_000_000, p
+          assert p.get('digest')=='sha256:f82431a7a4d0746bcbf15223d394a17ecbb3cd8c1377f46faf1289a3011655a2', p
+          print('building registry artifact verified',p['id'],p['size_in_bytes'])
+          PY
+
+      - name: Download verified USGS 3DEP world evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p work/verified-world
+          gh run download 32339259200 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --name sincity-online-world-evidence-v4 \
+            --dir work/verified-world
+          TERRAIN="$(find work/verified-world -type f -name 'sincity-terrain-10m-epsg32611.tif' -print -quit)"
+          test -n "$TERRAIN"
+          echo "TERRAIN_SOURCE=$TERRAIN" >> "$GITHUB_ENV"
+          sha256sum "$TERRAIN"
+
+      - name: Generate and validate every missing gate artifact
+        run: |
+          set -euo pipefail
+          python tools/close_production_gates.py \
+            --terrain "$TERRAIN_SOURCE" \
+            --repo-root . \
+            --tile-root work/production-terrain/tiles
+          python - <<'PY'
+          import json
+          g=json.load(open('world/production-gates.json'))
+          assert g['status']=='PASS', g
+          assert all(v['status']=='PASS' for v in g['gates'].values()), g
+          t=json.load(open('world/terrain-manifest.json'))
+          assert t['validation']['actual_tiles']==1225, t['validation']
+          x=json.load(open('world/accepted-transform.json'))
+          assert x['acceptance']['max_residual_m'] <= x['acceptance']['tolerance_m'], x['acceptance']
+          s=json.load(open('world/sprite-binary-manifest.json'))
+          assert s['status']=='PASS', s
+          print(json.dumps(g,indent=2))
+          PY
+
+      - name: Upload permanent-refresh production terrain tile bundle
+        id: terrain_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: sincity-production-terrain-tiles-v1
+          path: work/production-terrain/
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 90
+
+      - name: Attach artifact identity to committed terrain evidence
+        env:
+          TERRAIN_ARTIFACT_ID: ${{ steps.terrain_upload.outputs.artifact-id }}
+          TERRAIN_ARTIFACT_URL: ${{ steps.terrain_upload.outputs.artifact-url }}
+          TERRAIN_ARTIFACT_DIGEST: ${{ steps.terrain_upload.outputs.artifact-digest }}
+        run: |
+          python - <<'PY'
+          import json,os
+          p='world/terrain-manifest.json'
+          d=json.load(open(p))
+          d['output_contract']['artifact_id']=os.environ.get('TERRAIN_ARTIFACT_ID')
+          d['output_contract']['artifact_url']=os.environ.get('TERRAIN_ARTIFACT_URL')
+          d['output_contract']['artifact_digest']=os.environ.get('TERRAIN_ARTIFACT_DIGEST')
+          d['output_contract']['retention_days']=90
+          d['output_contract']['refresh_policy']='weekly scheduled regeneration plus source/workflow changes'
+          open(p,'w').write(json.dumps(d,indent=2)+'\n')
+          PY
+
+      - name: Commit machine-verifiable gate closeout evidence
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            world/terrain-manifest.json \
+            world/accepted-transform.json \
+            world/sprite-binary-manifest.json \
+            world/completed-section-ledger.json \
+            world/production-gates.json
+          if git diff --cached --quiet; then
+            echo "Production gate evidence unchanged."
+          else
+            git commit -m "Close production gates with verified terrain transform ledger and sprites"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Final fail-closed verification
+        run: |
+          python - <<'PY'
+          import json
+          g=json.load(open('world/production-gates.json'))
+          if g['status']!='PASS':
+              raise SystemExit('production gates are not PASS')
+          print('ALL JC PRODUCTION GATES PASS')
+          for name,gate in g['gates'].items():
+              print('PASS',name,'->',gate['evidence'])
+          PY

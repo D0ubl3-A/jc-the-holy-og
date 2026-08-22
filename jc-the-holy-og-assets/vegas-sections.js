@@ -1,8 +1,8 @@
 window.JC_VEGAS_SECTIONS={
-  version:9,
+  version:10,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
-  realDetailVersion:"district-streaming-v1",
+  realDetailVersion:"district-streaming-v1+usgs-relief-v1",
   runtimeDistrictPacks:{
     status:"ready",
     crs:"EPSG:32611",
@@ -11,6 +11,17 @@ window.JC_VEGAS_SECTIONS={
     districts:{strip:8000,downtown:6500,"paradise-east":6500,henderson:8500,"west-vegas":7000,"north-vegas":7000},
     runtime:"real-vegas-district-runtime.js",
     policy:"proximity load + tile merge; source-grounded footprints; source height retained"
+  },
+  terrainRelief:{
+    status:"ready",
+    source:"USGS 3DEP Bare Earth DEM",
+    crs:"EPSG:32611",
+    runtimeGrid:[176,176],
+    sourcePixelSizeM:10,
+    sourceElevationRangeM:[453.859,1168.606],
+    gameplaySafeUrbanFlattenRadiusM:11000,
+    blendEndM:14500,
+    runtime:"real-terrain-relief-runtime.js"
   },
   alignment:{
     southStrip:{
@@ -33,7 +44,7 @@ window.JC_VEGAS_SECTIONS={
     {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"implemented",detail:"district-pack-v1",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"],sourceGrounded:{buildings:6500,sourceCandidates:21802,tiles:42,crs:"EPSG:32611",runtime:"real-vegas-district-runtime.js"}},
     {id:"paradise-east",label:"PARADISE EAST",status:"planned",realDetail:"runtime-pack-ready-6500",anchor:"world",offset:[1950,-150],half:[1100,1600],streamRadius:2700,landmarks:["convention-zone"]},
     {id:"west-resorts",label:"WEST RESORTS",status:"planned",realDetail:"runtime-pack-ready-7000",anchor:"world",offset:[-1900,-150],half:[1050,1700],streamRadius:2700,landmarks:["resort-belt"]},
-    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",realDetail:"henderson-and-north-packs-ready",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
+    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",realDetail:"henderson-and-north-packs-ready+usgs-relief",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
   ]
 };
 
@@ -55,8 +66,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","8,000-building source-grounded Strip runtime pack","6,500-building Downtown/Fremont runtime pack","proximity-loaded merged 1km detail tiles"],
-  verification:{identity:"supported",geometry:"source-grounded-footprints-plus-provisional-architecture",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",runtimeStripPack:"SOURCE_CONFIRMED_8000",runtimeDowntownPack:"SOURCE_CONFIRMED_6500",runtimeDistrictTotal:"SOURCE_CONFIRMED_43500",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","8,000-building source-grounded Strip runtime pack","6,500-building Downtown/Fremont runtime pack","43,500 source-grounded runtime buildings across six Vegas districts","proximity-loaded merged 1km detail tiles","USGS 3DEP outer-valley terrain relief"],
+  verification:{identity:"supported",geometry:"source-grounded-footprints-plus-provisional-architecture",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",runtimeStripPack:"SOURCE_CONFIRMED_8000",runtimeDowntownPack:"SOURCE_CONFIRMED_6500",runtimeDistrictTotal:"SOURCE_CONFIRMED_43500",terrainSource:"USGS_3DEP_VERIFIED",terrainUrbanMode:"PLAYABILITY_FLATTENED_CORE",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
 };
 // Parser-inserted modules patch Three.js before the main game module initializes.
 // V toggles satellite calibration. F toggles the main source-confirmed Zone 1 footprint layer.
@@ -67,3 +78,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegia
 document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/movement-animation-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/real-terrain-relief-runtime.js"><\/script>');

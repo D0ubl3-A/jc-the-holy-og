@@ -1,5 +1,5 @@
 window.JC_VEGAS_SECTIONS={
-  version:10,
+  version:11,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
   realDetailVersion:"district-streaming-v1+usgs-relief-v1",
@@ -78,4 +78,5 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegia
 document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/movement-animation-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-collision-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-terrain-relief-runtime.js"><\/script>');

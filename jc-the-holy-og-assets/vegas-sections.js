@@ -1,8 +1,8 @@
 window.JC_VEGAS_SECTIONS={
-  version:11,
+  version:12,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
-  realDetailVersion:"district-streaming-v1+usgs-relief-v1",
+  realDetailVersion:"district-streaming-v1+usgs-relief-v1+osm-street-context-v1",
   runtimeDistrictPacks:{
     status:"ready",
     crs:"EPSG:32611",
@@ -10,7 +10,8 @@ window.JC_VEGAS_SECTIONS={
     selectedRuntimeBuildings:43500,
     districts:{strip:8000,downtown:6500,"paradise-east":6500,henderson:8500,"west-vegas":7000,"north-vegas":7000},
     runtime:"real-vegas-district-runtime.js",
-    policy:"proximity load + tile merge; source-grounded footprints; source height retained"
+    collisionRuntime:"real-vegas-collision-runtime.js",
+    policy:"proximity load + tile merge; source-grounded footprints; source height retained; exact-footprint collision replaces procedural collision inside active real districts"
   },
   terrainRelief:{
     status:"ready",
@@ -23,6 +24,7 @@ window.JC_VEGAS_SECTIONS={
     blendEndM:14500,
     runtime:"real-terrain-relief-runtime.js"
   },
+  streetContext:{status:"ready",source:"OpenStreetMap road names",runtime:"real-street-context-runtime.js",policy:"only source road names present in OSM are rendered; proximity culled for mobile"},
   alignment:{
     southStrip:{
       status:"satellite-footprints-v3",
@@ -66,8 +68,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","8,000-building source-grounded Strip runtime pack","6,500-building Downtown/Fremont runtime pack","43,500 source-grounded runtime buildings across six Vegas districts","proximity-loaded merged 1km detail tiles","USGS 3DEP outer-valley terrain relief"],
-  verification:{identity:"supported",geometry:"source-grounded-footprints-plus-provisional-architecture",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",runtimeStripPack:"SOURCE_CONFIRMED_8000",runtimeDowntownPack:"SOURCE_CONFIRMED_6500",runtimeDistrictTotal:"SOURCE_CONFIRMED_43500",terrainSource:"USGS_3DEP_VERIFIED",terrainUrbanMode:"PLAYABILITY_FLATTENED_CORE",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","8,000-building source-grounded Strip runtime pack","6,500-building Downtown/Fremont runtime pack","43,500 source-grounded runtime buildings across six Vegas districts","source-grounded exact-footprint district collision","proximity-loaded merged 1km detail tiles","USGS 3DEP outer-valley terrain relief","source-grounded OSM street-name context"],
+  verification:{identity:"supported",geometry:"source-grounded-footprints-plus-provisional-architecture",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",runtimeStripPack:"SOURCE_CONFIRMED_8000",runtimeDowntownPack:"SOURCE_CONFIRMED_6500",runtimeDistrictTotal:"SOURCE_CONFIRMED_43500",runtimeCollision:"SOURCE_FOOTPRINT_MATCHED",terrainSource:"USGS_3DEP_VERIFIED",terrainUrbanMode:"PLAYABILITY_FLATTENED_CORE",streetNames:"OSM_SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
 };
 // Parser-inserted modules patch Three.js before the main game module initializes.
 // V toggles satellite calibration. F toggles the main source-confirmed Zone 1 footprint layer.
@@ -80,3 +82,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/movement-anim
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-collision-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/real-terrain-relief-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/real-street-context-runtime.js"><\/script>');

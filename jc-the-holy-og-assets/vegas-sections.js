@@ -1,7 +1,17 @@
 window.JC_VEGAS_SECTIONS={
-  version:8,
+  version:9,
   coordinateSystem:"strip-anchor-local",
   fullStrip:true,
+  realDetailVersion:"district-streaming-v1",
+  runtimeDistrictPacks:{
+    status:"ready",
+    crs:"EPSG:32611",
+    sourceRegistryBuildings:627349,
+    selectedRuntimeBuildings:43500,
+    districts:{strip:8000,downtown:6500,"paradise-east":6500,henderson:8500,"west-vegas":7000,"north-vegas":7000},
+    runtime:"real-vegas-district-runtime.js",
+    policy:"proximity load + tile merge; source-grounded footprints; source height retained"
+  },
   alignment:{
     southStrip:{
       status:"satellite-footprints-v3",
@@ -17,13 +27,13 @@ window.JC_VEGAS_SECTIONS={
     }
   },
   sections:[
-    {id:"strip-south",label:"SOUTH STRIP",status:"implemented",alignment:"satellite-footprints-v3",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["MANDALAY BAY","LUXOR","EXCALIBUR","NEW YORK-NEW YORK","PARK MGM","ARIA","MGM GRAND","ALLEGIANT STADIUM"]},
-    {id:"strip-core",label:"CENTRAL STRIP",status:"implemented",anchor:"strip",offset:[0,200],half:[1500,1850],streamRadius:3600,landmarks:["BELLAGIO","CAESARS PALACE","FLAMINGO","THE VENETIAN","THE SPHERE","WYNN LAS VEGAS"]},
-    {id:"strip-north",label:"NORTH STRIP",status:"implemented",anchor:"strip",offset:[0,-2850],half:[1500,1900],streamRadius:3600,landmarks:["FONTAINEBLEAU","SAHARA","THE STRAT","ARTS DISTRICT GATE","DOWNTOWN GATE"]},
-    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"implemented",detail:"real-footprints-v1",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"],sourceGrounded:{buildings:601,roads:942,cells:16,crs:"EPSG:32611",runtime:"real-vegas-detail-runtime.js"}},
-    {id:"paradise-east",label:"PARADISE EAST",status:"planned",anchor:"world",offset:[1950,-150],half:[1100,1600],streamRadius:2700,landmarks:["convention-zone"]},
-    {id:"west-resorts",label:"WEST RESORTS",status:"planned",anchor:"world",offset:[-1900,-150],half:[1050,1700],streamRadius:2700,landmarks:["resort-belt"]},
-    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
+    {id:"strip-south",label:"SOUTH STRIP",status:"implemented",alignment:"satellite-footprints-v3",anchor:"strip",offset:[0,2850],half:[1500,1900],streamRadius:3600,landmarks:["MANDALAY BAY","LUXOR","EXCALIBUR","NEW YORK-NEW YORK","PARK MGM","ARIA","MGM GRAND","ALLEGIANT STADIUM"],realDetail:"strip-pack-8000"},
+    {id:"strip-core",label:"CENTRAL STRIP",status:"implemented",anchor:"strip",offset:[0,200],half:[1500,1850],streamRadius:3600,landmarks:["BELLAGIO","CAESARS PALACE","FLAMINGO","THE VENETIAN","THE SPHERE","WYNN LAS VEGAS"],realDetail:"strip-pack-8000"},
+    {id:"strip-north",label:"NORTH STRIP",status:"implemented",anchor:"strip",offset:[0,-2850],half:[1500,1900],streamRadius:3600,landmarks:["FONTAINEBLEAU","SAHARA","THE STRAT","ARTS DISTRICT GATE","DOWNTOWN GATE"],realDetail:"strip-pack-8000"},
+    {id:"downtown",label:"DOWNTOWN LAS VEGAS",status:"implemented",detail:"district-pack-v1",anchor:"world",offset:[-250,-5200],half:[1350,900],streamRadius:2600,landmarks:["fremont-core"],sourceGrounded:{buildings:6500,sourceCandidates:21802,tiles:42,crs:"EPSG:32611",runtime:"real-vegas-district-runtime.js"}},
+    {id:"paradise-east",label:"PARADISE EAST",status:"planned",realDetail:"runtime-pack-ready-6500",anchor:"world",offset:[1950,-150],half:[1100,1600],streamRadius:2700,landmarks:["convention-zone"]},
+    {id:"west-resorts",label:"WEST RESORTS",status:"planned",realDetail:"runtime-pack-ready-7000",anchor:"world",offset:[-1900,-150],half:[1050,1700],streamRadius:2700,landmarks:["resort-belt"]},
+    {id:"outer-vegas",label:"OUTER LAS VEGAS",status:"planned",realDetail:"henderson-and-north-packs-ready",anchor:"world",offset:[0,0],half:[5200,5200],streamRadius:6200,landmarks:["valley-grid"]}
   ]
 };
 
@@ -45,8 +55,8 @@ window.JC_FULL_STRIP={
   status:"playable",
   southToNorthWorldSpan:8400,
   sections:["strip-south","strip-core","strip-north"],
-  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","evidence-tagged landmark districts","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","source-grounded Downtown/Fremont proximity streaming"],
-  verification:{identity:"supported",geometry:"provisional-overall",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled",downtownRealFootprints:"SOURCE_CONFIRMED",downtownTerrainZ:"PENDING_RUNTIME_GROUND_PROBE"}
+  features:["OSM boulevard spine","continuous collision surface","sidewalks","crosswalks","streetlights","HD model streaming","mobile performance caps","South Strip satellite calibration overlay","260 source-confirmed Zone 1 building footprints","source-confirmed Allegiant Stadium footprint","persistent static grounding anchors","8,000-building source-grounded Strip runtime pack","6,500-building Downtown/Fremont runtime pack","proximity-loaded merged 1km detail tiles"],
+  verification:{identity:"supported",geometry:"source-grounded-footprints-plus-provisional-architecture",southStripAlignment:"satellite-footprints-v3",southStripFootprints:"SOURCE_CONFIRMED",allegiantFootprint:"SOURCE_CONFIRMED",runtimeStripPack:"SOURCE_CONFIRMED_8000",runtimeDowntownPack:"SOURCE_CONFIRMED_6500",runtimeDistrictTotal:"SOURCE_CONFIRMED_43500",southStripHeights:"ESTIMATED",southStripArchitecture:"UNKNOWN",exactFootprintsPending:false,seamGapTargetMeters:0.25,staticGrounding:"enabled"}
 };
 // Parser-inserted modules patch Three.js before the main game module initializes.
 // V toggles satellite calibration. F toggles the main source-confirmed Zone 1 footprint layer.
@@ -56,4 +66,4 @@ document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-footpri
 document.write('<script type="module" src="./jc-the-holy-og-assets/zone1-allegiant-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/static-grounding-runtime.js"><\/script>');
 document.write('<script type="module" src="./jc-the-holy-og-assets/movement-animation-runtime.js"><\/script>');
-document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-detail-runtime.js"><\/script>');
+document.write('<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"><\/script>');

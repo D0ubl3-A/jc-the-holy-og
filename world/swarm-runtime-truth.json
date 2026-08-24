@@ -1,9 +1,9 @@
 {
   "schema": "jc-swarm-runtime-truth-v1",
-  "generated_at": "2026-08-24T14:46:49.153706+00:00",
-  "source_commit_before_repair": "04d417b6870d9348d7a0a453fbffe3285afe75c6",
-  "swarm_run": "runtime-truth-2026-08-24",
-  "status": "REPAIR_APPLIED_PENDING_QA",
+  "generated_at": "2026-08-24T15:59:18.753979+00:00",
+  "source_commit_before_repair": "24bc30ceaf867af5b567789186722ad432d01aec",
+  "swarm_run": "runtime-truth-2026-08-24-wave-2",
+  "status": "REPAIR_APPLIED_PENDING_RUNTIME_QA",
   "production_record": {
     "record_file": "DEPLOYED_RELEASE.md",
     "recorded_sites_version": 67,
@@ -16,43 +16,53 @@
   "patches": [
     {
       "id": "full-strip-literal-newline-1",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "full-strip-literal-newline-2",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "disable-provisional-strip-overlay-when-real-packs-ready",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "hide-procedural-city-after-real-city-load",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "disable-renamed-landmark-fallback-with-real-packs",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "repair-fallback-strip-anchor-shape",
       "status": "PATCHED",
       "matches": 1
     },
     {
       "id": "stop-satan-from-using-jc-legacy-atlas",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "flight-space-no-longer-triggers-grace-wave",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
       "id": "devil-prioritizes-population-until-jc-interferes",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
+    },
+    {
+      "id": "deduplicate-makeTrafficVehicle-es-module-declaration",
+      "status": "PATCHED",
+      "matches": 2
     }
   ],
   "acceptance_rule": "Exists -> loads -> visible -> positioned -> interactive -> performant -> verified in production"

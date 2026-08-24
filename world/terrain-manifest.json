@@ -1,6 +1,6 @@
 {
   "schema": "jc-production-terrain-manifest-v1",
-  "generated_at": "2026-08-22T04:24:12.076582+00:00",
+  "generated_at": "2026-08-24T10:08:28.168406+00:00",
   "status": "PASS",
   "canonical_crs": "EPSG:32611",
   "world_bounds": [
@@ -29,9 +29,9 @@
     "artifact_name": "sincity-production-terrain-tiles-v1",
     "artifact_contains": "terrain-manifest.json plus all 1225 GeoTIFF tiles",
     "tile_root": "tiles/",
-    "artifact_id": "9470203281",
-    "artifact_url": "https://github.com/D0ubl3-A/jc-the-holy-og/actions/runs/32551590974/artifacts/9470203281",
-    "artifact_digest": "c37036344571a2b9a18b141da5bcc04ed07c6235c2c5dd41c6ec175ac7dbe888",
+    "artifact_id": "9515629828",
+    "artifact_url": "https://github.com/D0ubl3-A/jc-the-holy-og/actions/runs/32715195900/artifacts/9515629828",
+    "artifact_digest": "b3ac5978e1fcb0bdfdbc50d458fb1142a3a902238a036486438bd81e1ebb250d",
     "retention_days": 90,
     "refresh_policy": "weekly scheduled regeneration plus source/workflow changes"
   },

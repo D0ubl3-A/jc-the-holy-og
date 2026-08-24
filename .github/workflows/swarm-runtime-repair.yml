@@ -1,0 +1,66 @@
+name: JC Swarm Runtime Repair
+
+on:
+  push:
+    branches:
+      - swarm/runtime-truth-2026-08-24
+    paths:
+      - scripts/swarm_runtime_repair.py
+      - .github/workflows/swarm-runtime-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: swarm/runtime-truth-2026-08-24
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply deterministic swarm repairs
+        run: python scripts/swarm_runtime_repair.py
+      - name: Validate no literal escaped newlines remain in full-strip statements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('jc-the-holy-og-assets/full-strip-runtime.js')
+          s=p.read_text()
+          assert 'spec.name);\\n    root.userData.landmarkEvidence' not in s
+          assert 'provisional"]));\\n    root.userData.corridorVerification' not in s
+          print('full-strip runtime syntax repair checks PASS')
+          PY
+      - name: Validate runtime repair markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          index=Path('index.html').read_text()
+          checks={
+            'real city hides procedural fallback':'cityLayer=prepareGlb(g.scene,"city");proceduralCity.visible=false;' in index,
+            'flight space does not grace wave':'if(e.code==="Space"&&!flying)graceWave();' in index,
+            'satan uses devil atlas':'if(assetAtlases.devil){for(let i=0;i<8;i++)' in index,
+            'jc interference gates havoc':'jcInterfering=nearDevil||protectingTarget' in index,
+          }
+          for name,ok in checks.items():
+            print(name, 'PASS' if ok else 'FAIL')
+          assert all(checks.values())
+          truth=json.loads(Path('world/swarm-runtime-truth.json').read_text())
+          assert truth['status']=='REPAIR_APPLIED_PENDING_QA'
+          PY
+      - name: Commit repair output
+        run: |
+          if git diff --quiet; then
+            echo 'No repair diff produced.'
+            exit 0
+          fi
+          git config user.name 'jc-swarm[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html jc-the-holy-og-assets/full-strip-runtime.js world/swarm-runtime-truth.json
+          git commit -m 'Apply JC swarm runtime truth repairs'
+          git push origin HEAD:swarm/runtime-truth-2026-08-24

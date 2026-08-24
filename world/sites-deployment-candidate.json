@@ -1,0 +1,21 @@
+{
+  "schema": "jc-sites-deployment-candidate-v1",
+  "candidate_commit": "c6dfa319bc878e79efd5e34e8f139b43d3c78d3e",
+  "source_pr": 6,
+  "target_site": "jc-the-holy-og-game.illcoai-tech.chatgpt.site",
+  "target_slug": "jc-the-holy-og",
+  "previous_recorded_sites_version": 67,
+  "status": "READY_FOR_SITES_PUBLISH",
+  "production_sync_verified": false,
+  "required_post_publish_checks": [
+    "boot without module syntax error",
+    "real city GLB visible and procedural city suppressed",
+    "real district runtime activates near Strip",
+    "real collision reports active inside district",
+    "JC flight Space does not fire Grace Wave",
+    "Satan uses devil atlas",
+    "Devil prioritizes civilians until JC interferes",
+    "runtime text reports playableMode, proceduralCityVisible, realDistrict and realCollisionActive"
+  ],
+  "note": "This file pins the exact build to publish. It is not evidence that ChatGPT Sites has already deployed it."
+}

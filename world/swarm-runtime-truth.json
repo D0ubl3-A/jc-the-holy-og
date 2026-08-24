@@ -1,0 +1,59 @@
+{
+  "schema": "jc-swarm-runtime-truth-v1",
+  "generated_at": "2026-08-24T14:46:49.153706+00:00",
+  "source_commit_before_repair": "04d417b6870d9348d7a0a453fbffe3285afe75c6",
+  "swarm_run": "runtime-truth-2026-08-24",
+  "status": "REPAIR_APPLIED_PENDING_QA",
+  "production_record": {
+    "record_file": "DEPLOYED_RELEASE.md",
+    "recorded_sites_version": 67,
+    "deployment_sync_verified": false,
+    "note": "GitHub repair does not claim a Sites deployment occurred."
+  },
+  "world_gate_status": "PASS",
+  "current_section": "strip-core",
+  "current_section_state": "in_progress",
+  "patches": [
+    {
+      "id": "full-strip-literal-newline-1",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "full-strip-literal-newline-2",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "disable-provisional-strip-overlay-when-real-packs-ready",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "hide-procedural-city-after-real-city-load",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "disable-renamed-landmark-fallback-with-real-packs",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "stop-satan-from-using-jc-legacy-atlas",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "flight-space-no-longer-triggers-grace-wave",
+      "status": "PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "devil-prioritizes-population-until-jc-interferes",
+      "status": "PATCHED",
+      "matches": 1
+    }
+  ],
+  "acceptance_rule": "Exists -> loads -> visible -> positioned -> interactive -> performant -> verified in production"
+}

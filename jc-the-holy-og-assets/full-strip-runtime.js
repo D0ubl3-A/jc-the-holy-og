@@ -303,7 +303,9 @@ if (!window[RUNTIME_KEY]) {
       root.add(district);
     });
 
-    root.userData.landmarks = specs.map((spec) => spec.name);\n    root.userData.landmarkEvidence = Object.fromEntries(specs.map((spec) => [spec.name, spec.evidence || "provisional"]));\n    root.userData.corridorVerification = { identity: "supported", geometry: "provisional", seamGapTargetMeters: 0.25, exactFootprintsPending: true };
+    root.userData.landmarks = specs.map((spec) => spec.name);
+    root.userData.landmarkEvidence = Object.fromEntries(specs.map((spec) => [spec.name, spec.evidence || "provisional"]));
+    root.userData.corridorVerification = { identity: "supported", geometry: "provisional", seamGapTargetMeters: 0.25, exactFootprintsPending: true };
     scene.add(root);
     window[RUNTIME_KEY].ready = true;
     window[RUNTIME_KEY].anchor = anchor;
@@ -337,7 +339,7 @@ if (!window[RUNTIME_KEY]) {
   if (!THREE.WebGLRenderer.prototype.__jcFullStripRenderPatch) {
     Object.defineProperty(THREE.WebGLRenderer.prototype, "__jcFullStripRenderPatch", { value: true });
     THREE.WebGLRenderer.prototype.render = function renderWithFullStrip(scene, camera) {
-      if (scene?.isScene) buildFullStrip(scene);
+      if (scene?.isScene && window.JC_VEGAS_SECTIONS?.runtimeDistrictPacks?.status !== "ready") buildFullStrip(scene);
       wrapTextRenderer();
       return originalRender.call(this, scene, camera);
     };

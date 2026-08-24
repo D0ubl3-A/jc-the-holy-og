@@ -1,0 +1,95 @@
+name: JC Swarm Runtime Repair
+
+on:
+  push:
+    branches:
+      - swarm/runtime-truth-2026-08-24
+    paths:
+      - scripts/swarm_runtime_repair.py
+      - scripts/swarm_wave3_patch.py
+      - .github/workflows/swarm-runtime-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: swarm/runtime-truth-2026-08-24
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply deterministic swarm repairs
+        run: python scripts/swarm_runtime_repair.py
+      - name: Apply wave 3 runtime integration repairs
+        run: python scripts/swarm_wave3_patch.py
+      - name: Validate runtime module syntax
+        run: |
+          node --check jc-the-holy-og-assets/full-strip-runtime.js
+          node --check jc-the-holy-og-assets/real-vegas-district-runtime.js
+          node --check jc-the-holy-og-assets/real-vegas-collision-runtime.js
+      - name: Validate inline game module syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('index.html').read_text()
+          start=html.index('<script type="module">')+len('<script type="module">')
+          end=html.index('</script>', start)
+          Path('/tmp/jc-main-module.mjs').write_text(html[start:end])
+          PY
+          node --check /tmp/jc-main-module.mjs
+      - name: Validate runtime repair markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          index=Path('index.html').read_text()
+          full=Path('jc-the-holy-og-assets/full-strip-runtime.js').read_text()
+          district=Path('jc-the-holy-og-assets/real-vegas-district-runtime.js').read_text()
+          checks={
+            'real city hides procedural fallback':'cityLayer=prepareGlb(g.scene,"city");proceduralCity.visible=false;' in index,
+            'generic landmarks disabled with real packs':'runtimeDistrictPacks?.status==="ready"' in index,
+            'fallback Strip anchor repaired':'root.position.set(stripAnchor.x,0,stripAnchor.z);root.rotation.y=stripAnchor.a||0;' in index,
+            'flight space does not grace wave':'if(e.code==="Space"&&!flying)graceWave();' in index,
+            'satan uses devil atlas':'if(assetAtlases.devil){for(let i=0;i<8;i++)' in index,
+            'jc interference gates havoc':'jcInterfering=nearDevil||protectingTarget' in index,
+            'one traffic factory only':len(re.findall(r'function makeTrafficVehicle\(index\)',index))==1,
+            'full Strip fallback disabled with real packs':'runtimeDistrictPacks?.status !== "ready"' in full,
+            'playable mode notice uses showNotice':'typeof showNotice==="function"' in index,
+            'runtime introspection includes real district':'realDistrict:window.__JC_REAL_VEGAS_DISTRICTS_V1__?.activeDistrict||null' in index,
+            'real city prevents fallback re-enable':'fallback.visible=on?false:!realCity' in district,
+            'inactive district status clears':'JC_REAL_VEGAS_DISTRICT_STATUS={active:false,district:null' in district,
+          }
+          for name,ok in checks.items(): print(name, 'PASS' if ok else 'FAIL')
+          assert all(checks.values())
+          truth=json.loads(Path('world/swarm-runtime-truth.json').read_text())
+          assert truth['status']=='REPAIR_APPLIED_PENDING_RUNTIME_QA'
+          PY
+      - name: Validate required runtime files exist
+        run: |
+          test -s jc-the-holy-og-assets/vegas-roads.js
+          test -s jc-the-holy-og-assets/vegas-sections.js
+          test -s jc-the-holy-og-assets/real-vegas-district-runtime.js
+          test -s jc-the-holy-og-assets/real-vegas-collision-runtime.js
+          test -s jc-the-holy-og-assets/real-terrain-relief-runtime.js
+          test -s jc-the-holy-og-assets/swarm/jc-material-atlas.png
+          test -s jc-the-holy-og-assets/swarm/devil-material-atlas.png
+      - name: Commit repair output
+        run: |
+          if git diff --quiet; then
+            echo 'No repair diff produced.'
+            exit 0
+          fi
+          git config user.name 'jc-swarm[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html jc-the-holy-og-assets/full-strip-runtime.js jc-the-holy-og-assets/real-vegas-district-runtime.js world/swarm-runtime-truth.json
+          git commit -m 'Apply JC swarm wave 3 runtime repairs'
+          git push origin HEAD:swarm/runtime-truth-2026-08-24

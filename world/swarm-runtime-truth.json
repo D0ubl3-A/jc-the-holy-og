@@ -1,0 +1,69 @@
+{
+  "schema": "jc-swarm-runtime-truth-v1",
+  "generated_at": "2026-08-24T16:13:05.874033+00:00",
+  "source_commit_before_repair": "1332eb2fd237545d82b107387e04f9be2d9358a5",
+  "swarm_run": "runtime-truth-2026-08-24-wave-2",
+  "status": "REPAIR_APPLIED_PENDING_RUNTIME_QA",
+  "production_record": {
+    "record_file": "DEPLOYED_RELEASE.md",
+    "recorded_sites_version": 67,
+    "deployment_sync_verified": false,
+    "note": "GitHub repair does not claim a Sites deployment occurred."
+  },
+  "world_gate_status": "PASS",
+  "current_section": "strip-core",
+  "current_section_state": "in_progress",
+  "patches": [
+    {
+      "id": "full-strip-literal-newline-1",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "full-strip-literal-newline-2",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "disable-provisional-strip-overlay-when-real-packs-ready",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "hide-procedural-city-after-real-city-load",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "disable-renamed-landmark-fallback-with-real-packs",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "repair-fallback-strip-anchor-shape",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "stop-satan-from-using-jc-legacy-atlas",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "flight-space-no-longer-triggers-grace-wave",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "devil-prioritizes-population-until-jc-interferes",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    },
+    {
+      "id": "deduplicate-makeTrafficVehicle-es-module-declaration",
+      "status": "ALREADY_PATCHED",
+      "matches": 1
+    }
+  ],
+  "acceptance_rule": "Exists -> loads -> visible -> positioned -> interactive -> performant -> verified in production"
+}

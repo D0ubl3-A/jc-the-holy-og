@@ -113,7 +113,7 @@ if (!window[KEY]) {
   }
 
   function setProceduralSuppressed(on) {
-    const fallback=state.scene?.getObjectByName("Generated city fallback");if(fallback)fallback.visible=!on;
+    const fallback=state.scene?.getObjectByName("Generated city fallback"),realCity=state.scene?.getObjectByName("Las Vegas city LOD");if(fallback)fallback.visible=on?false:!realCity;
     const renamed=state.scene?.getObjectByName("Renamed Strip Landmark Districts");if(renamed)renamed.visible=!(on&&state.activeDistrict==="strip");
   }
 
@@ -125,7 +125,7 @@ if (!window[KEY]) {
     const activeRadius=mobile?1300:1800;const d=nearest&&nearest.d2<activeRadius*activeRadius?state.districts.get(nearest.m.id):null;
     for(const x of state.districts.values())x.root.visible=x===d;
     state.active=!!d;state.activeDistrict=d?.meta.id||null;state.visibleTiles=0;
-    if(!d){setProceduralSuppressed(false);return}
+    if(!d){setProceduralSuppressed(false);window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,district:null,visibleTiles:0,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};return}
     const ranked=[];for(const tile of d.tiles.values()){const c=tile.center||d.center;ranked.push({tile,d2:(camera.position.x-c.x)**2+(camera.position.z-c.z)**2})}ranked.sort((a,b)=>a.d2-b.d2);
     const maxTiles=mobile?4:10;const tileRadius=mobile?720:1150;let builds=0;
     for(let i=0;i<ranked.length;i++){

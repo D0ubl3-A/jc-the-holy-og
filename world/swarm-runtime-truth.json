@@ -1,7 +1,7 @@
 {
   "schema": "jc-swarm-runtime-truth-v1",
-  "generated_at": "2026-08-24T15:59:18.753979+00:00",
-  "source_commit_before_repair": "24bc30ceaf867af5b567789186722ad432d01aec",
+  "generated_at": "2026-08-24T16:13:05.874033+00:00",
+  "source_commit_before_repair": "1332eb2fd237545d82b107387e04f9be2d9358a5",
   "swarm_run": "runtime-truth-2026-08-24-wave-2",
   "status": "REPAIR_APPLIED_PENDING_RUNTIME_QA",
   "production_record": {
@@ -41,7 +41,7 @@
     },
     {
       "id": "repair-fallback-strip-anchor-shape",
-      "status": "PATCHED",
+      "status": "ALREADY_PATCHED",
       "matches": 1
     },
     {
@@ -61,8 +61,8 @@
     },
     {
       "id": "deduplicate-makeTrafficVehicle-es-module-declaration",
-      "status": "PATCHED",
-      "matches": 2
+      "status": "ALREADY_PATCHED",
+      "matches": 1
     }
   ],
   "acceptance_rule": "Exists -> loads -> visible -> positioned -> interactive -> performant -> verified in production"

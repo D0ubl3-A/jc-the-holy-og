@@ -1,6 +1,6 @@
 {
   "schema": "jc-runtime-sprite-binary-manifest-v1",
-  "generated_at": "2026-08-24T10:08:28.194057+00:00",
+  "generated_at": "2026-08-31T17:07:25.322257+00:00",
   "status": "PASS",
   "acceptance_rule": "every binary required by the current production runtime set exists, decodes, has non-zero bytes, and has stable SHA-256 evidence",
   "scope_note": "new art-direction poses are feature expansion, not a missing-binary failure for the current runtime set",

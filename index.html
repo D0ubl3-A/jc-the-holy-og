@@ -11,14 +11,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07090d;col
 </head>
 <body>
 <div id="boot"><div class="card"><h1>JC <b>THE HOLY OG</b></h1><p id="bootText">Starting low-spec runtime…</p></div></div>
-<div id="menu" style="display:none"><div class="card"><h1>JC <b>SIN CITY</b></h1><p>Low-spec mode loads the playable world first. Las Vegas detail streams only after the game is running.</p><button id="start">ENTER SIN CITY</button><p style="font-size:11px">WASD / arrows to move · mouse or touch to look</p></div></div>
+<div id="menu" style="display:none"><div class="card"><h1>JC <b>SIN CITY</b></h1><p>Low-spec mode loads the playable world first. Las Vegas detail and JC City Partners stream only after the game is running.</p><button id="start">ENTER SIN CITY</button><p style="font-size:11px">WASD / arrows to move · mouse or touch to look</p></div></div>
 <div id="fatal" style="display:none"><div class="card"><h1>JC <b>SAFE MODE</b></h1><p id="fatalText"></p><button onclick="location.reload()">RETRY</button></div></div>
 <div id="hud"><div class="tag">JC • LOW SPEC <span id="stream">BOOT CELL</span></div><div class="stats">FPS <b id="fps">--</b><br>CELLS <b id="cells">1</b><br>DETAIL <b id="detail">LOW</b></div><div class="help">WASD MOVE • SHIFT RUN • DRAG MOUSE TO LOOK</div></div>
 <div class="mobile"><div class="pad"><button class="up" data-key="KeyW">▲</button><button class="left" data-key="KeyA">◀</button><button class="down" data-key="KeyS">▼</button><button class="right" data-key="KeyD">▶</button></div></div>
 <script type="module">
 import * as THREE from 'three';
 const $=id=>document.getElementById(id);const keys={};let playing=false,yaw=0,pitch=-.18,lastX=0,lastY=0,drag=false;
-const lowCPU=(navigator.hardwareConcurrency||4)<=4;const lowRAM=('deviceMemory'in navigator?(navigator.deviceMemory||4)<=4:true);const coarse=matchMedia('(pointer:coarse)').matches;const LOW=lowCPU||lowRAM||coarse;
+const lowCPU=(navigator.hardwareConcurrency||4)<=4;const lowRAM=('deviceMemory'in navigator?(navigator.deviceMemory||4)<=4:true);const coarse=matchMedia('(pointer:coarse)').matches;const LOW=lowCPU||lowRAM||coarse;window.JC_LOW_SPEC=LOW;
 try{
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x91aec2);scene.fog=new THREE.Fog(0x91aec2,220,LOW?1250:1900);
  const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.3,LOW?1800:2600);
@@ -32,6 +32,7 @@ try{
  const COUNT=LOW?70:140;for(let i=0;i<COUNT;i++){const side=i%2?1:-1;const w=18+Math.random()*34,h=18+Math.random()*(LOW?80:140),d=18+Math.random()*42;const b=new THREE.Mesh(geo,mats[i%mats.length]);b.scale.set(w,h,d);b.position.set(side*(115+Math.random()*500),h/2,-1050+Math.random()*2100);city.add(b)}
  const player=new THREE.Group();const robe=new THREE.Mesh(new THREE.CylinderGeometry(.55,.9,2.2,8),new THREE.MeshLambertMaterial({color:0xf0eee4}));robe.position.y=1.1;player.add(robe);const head=new THREE.Mesh(new THREE.SphereGeometry(.48,10,8),new THREE.MeshLambertMaterial({color:0xc58a66}));head.position.y=2.65;player.add(head);const halo=new THREE.Mesh(new THREE.TorusGeometry(.55,.06,6,16),new THREE.MeshBasicMaterial({color:0xffd45a}));halo.rotation.x=Math.PI/2;halo.position.y=3.35;player.add(halo);scene.add(player);
  player.position.set(0,0,120);camera.position.set(0,5.7,132);
+ window.JC_GAME={scene,camera,renderer,player,keys,version:'replit-combined-v1'};
  const vel=new THREE.Vector3(),forward=new THREE.Vector3(),right=new THREE.Vector3();let prev=performance.now(),frames=0,fpsTime=prev;
  function update(dt){if(!playing)return;const speed=(keys.ShiftLeft?24:12)*dt;forward.set(Math.sin(yaw),0,-Math.cos(yaw));right.set(Math.cos(yaw),0,Math.sin(yaw));vel.set(0,0,0);if(keys.KeyW||keys.ArrowUp)vel.add(forward);if(keys.KeyS||keys.ArrowDown)vel.sub(forward);if(keys.KeyD||keys.ArrowRight)vel.add(right);if(keys.KeyA||keys.ArrowLeft)vel.sub(right);if(vel.lengthSq())player.position.addScaledVector(vel.normalize(),speed);camera.position.lerp(new THREE.Vector3(player.position.x-Math.sin(yaw)*11,5.8,player.position.z+Math.cos(yaw)*11),.12);camera.lookAt(player.position.x,2.1,player.position.z);}
  function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-prev)/1000);prev=now;update(dt);renderer.render(scene,camera);frames++;if(now-fpsTime>1000){$('fps').textContent=frames;frames=0;fpsTime=now}}
@@ -40,9 +41,9 @@ try{
  renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY});addEventListener('pointerup',()=>drag=false);addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-lastX)*.004;pitch=Math.max(-.8,Math.min(.3,pitch-(e.clientY-lastY)*.003));lastX=e.clientX;lastY=e.clientY});
  document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true});b.addEventListener('pointerup',()=>keys[k]=false);b.addEventListener('pointercancel',()=>keys[k]=false)});
  $('detail').textContent=LOW?'LOW':'BALANCED';$('bootText').textContent='Playable cell ready';setTimeout(()=>{$('boot').style.display='none';$('menu').style.display='grid'},120);
- $('start').onclick=()=>{playing=true;$('menu').style.display='none';$('hud').style.display='block';setTimeout(()=>{$('stream').textContent='CITY STREAM READY'},500)};
- // Heavy JC world data is intentionally NOT loaded during boot. Future streaming modules
- // may be dynamically imported here only after gameplay is stable and memory budget permits.
+ $('start').onclick=()=>{playing=true;$('menu').style.display='none';$('hud').style.display='block';$('stream').textContent='CITY STREAM STARTING';import('./jc-the-holy-og-assets/replit-combined-runtime.js').then(()=>{$('stream').textContent=LOW?'CITY PARTNERS READY':'STRIP + PARTNERS STREAMING'}).catch(err=>{console.warn('Combined runtime stayed optional',err);$('stream').textContent='BASE CITY READY'});};
+ // Heavy JC world data is intentionally NOT loaded during boot. The combined
+ // Replit/current bridge is dynamically imported only after gameplay is stable.
 }catch(err){console.error(err);$('boot').style.display='none';$('fatal').style.display='grid';$('fatalText').textContent='WebGL started in safe mode but hit: '+(err?.message||err)}
 </script>
 </body>

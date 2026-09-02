@@ -1,0 +1,31 @@
+{
+  "schema": "jc-city-partners-v1",
+  "program_name": "JC City Partners",
+  "policy": {
+    "default_mode": "fictional_branding",
+    "real_business_branding_requires_authorization": true,
+    "sponsored_location_disclosure": "OFFICIAL JC CITY PARTNER",
+    "barter_allowed": true,
+    "barter_value_must_be_documented": true,
+    "expired_sponsorship_reverts_to_fictional_branding": true
+  },
+  "placements": [
+    {"id":"STRIP_001","default_brand":"GOLDEN GATEWAY","district":"south-strip","sponsor":null},
+    {"id":"STRIP_002","default_brand":"PHARAOH'S FALL","district":"south-strip","sponsor":null},
+    {"id":"STRIP_003","default_brand":"REDEMPTION CASTLE","district":"south-strip","sponsor":null},
+    {"id":"STRIP_004","default_brand":"SIN CITY SKYLINE","district":"south-strip","sponsor":null},
+    {"id":"STRIP_005","default_brand":"SAINTS PARK","district":"south-strip","sponsor":null},
+    {"id":"STRIP_006","default_brand":"ARC LIGHT","district":"central-strip","sponsor":null},
+    {"id":"STRIP_007","default_brand":"MIRACLE WATERS","district":"central-strip","sponsor":null},
+    {"id":"STRIP_008","default_brand":"EMPIRE OF GRACE","district":"central-strip","sponsor":null},
+    {"id":"STRIP_009","default_brand":"NEON FLAME","district":"central-strip","sponsor":null},
+    {"id":"STRIP_010","default_brand":"SERAPHIM PALACE","district":"central-strip","sponsor":null},
+    {"id":"STRIP_011","default_brand":"ORACLE DOME","district":"central-strip","sponsor":null},
+    {"id":"STRIP_012","default_brand":"CROWN OF LIGHT","district":"north-strip","sponsor":null},
+    {"id":"STRIP_013","default_brand":"AZURE TOWER","district":"north-strip","sponsor":null},
+    {"id":"STRIP_014","default_brand":"SAHARA REBORN","district":"north-strip","sponsor":null},
+    {"id":"STRIP_015","default_brand":"ASCENSION SPIRE","district":"north-strip","sponsor":null},
+    {"id":"STRIP_016","default_brand":"ARTS DISTRICT GATE","district":"arts-district","sponsor":null},
+    {"id":"STRIP_017","default_brand":"DOWNTOWN REDEMPTION","district":"downtown","sponsor":null}
+  ]
+}

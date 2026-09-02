@@ -1,0 +1,79 @@
+{
+  "schema": "jc-replit-donor-manifest-v1",
+  "source": "https://jc-las-vegas--thebigostreets.replit.app",
+  "role": "donor_runtime_and_public_evidence_only",
+  "canonical_world": {
+    "authority": "JC current repository world contract",
+    "crs": "EPSG:32611",
+    "world_size_km": [35, 35],
+    "tile_size_m": 1000,
+    "tile_count": 1225
+  },
+  "verified_donor_release": {
+    "cells_generated": 43158,
+    "generation_jobs_completed": 43158,
+    "layers_per_cell": 16,
+    "layer_declarations": 690528,
+    "cells_validated": 43158,
+    "seam_pairs_inspected": 85854,
+    "checks_run": 776844,
+    "failure_count": 0,
+    "automated_tests": "12 passed",
+    "district_counts": {
+      "central-las-vegas": 14634,
+      "desert-edge": 6902,
+      "henderson-residential": 5711,
+      "industrial": 3302,
+      "north-las-vegas": 4882,
+      "strip": 1076,
+      "summerlin": 6651
+    },
+    "truth_note": "These are coordinate-grounded procedural streaming cells, not 43,158 unique authoritative real-world building reconstructions."
+  },
+  "donor_gameplay_claims_from_public_runtime": {
+    "source_road_records": 13729,
+    "road_coverage_km_approx": [16, 20],
+    "real_world_meter_scale": true,
+    "systems": [
+      "driving",
+      "walking",
+      "flight",
+      "combat",
+      "missions",
+      "day_night",
+      "minimap",
+      "touch_controls",
+      "collisions",
+      "progressive_streaming",
+      "recovery_states"
+    ],
+    "reality_audit_score": 68,
+    "building_geometry_state": "inference_based",
+    "orthophoto_state": "validation_input_needed"
+  },
+  "merge_policy": {
+    "keep_from_current": [
+      "canonical EPSG:32611 world coordinates",
+      "35x35 km world contract",
+      "1225 permanent 1 km tiles",
+      "accepted real-road and building evidence pipeline",
+      "terrain/building/parcel production gates",
+      "low-spec boot path",
+      "existing gameplay that is already stable"
+    ],
+    "adopt_from_donor": [
+      "publicly proven gameplay feature targets",
+      "progressive-loading pattern",
+      "world-factory presentation",
+      "visual-library references where rights permit",
+      "runtime UX concepts"
+    ],
+    "never_promote_as_geographic_truth": [
+      "procedural donor building boxes",
+      "generated parcels",
+      "unverified facades",
+      "synthetic terrain",
+      "concept-board geometry"
+    ]
+  }
+}

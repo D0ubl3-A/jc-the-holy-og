@@ -46,6 +46,8 @@ def main():
  assert 'supportHeight(' in mission_runtime
  assert 'updateMission(' in mission_runtime
  assert 'toggleFlight(' in mission_runtime
+ assert 'SAFE_SPAWN=new THREE.Vector3(-10,0,-10)' in mission_runtime
+ assert 'if(trapped)player.pos.y=trapped.data.height_m+3' in mission_runtime
  assert 'requestPointerLock' in mission_runtime
  assert 'updateSolar(' in mission_runtime
  assert 'selectDestination(' in mission_runtime

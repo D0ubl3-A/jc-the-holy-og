@@ -9,6 +9,8 @@ DISTRICT_MANIFEST=ROOT/'jc-the-holy-og-assets/generated/districts/manifest.json'
 TERRAIN_MANIFEST=ROOT/'jc-the-holy-og-assets/generated/terrain-relief.manifest.json'
 SECTIONS=ROOT/'jc-the-holy-og-assets/vegas-sections.js'
 INDEX=ROOT/'index.html'
+MISSION_PAGE=ROOT/'real-city-climb-demo.html'
+MISSION_RUNTIME=ROOT/'jc-the-holy-og-assets/real-city-climb-demo.js'
 REQUIRED_MODULES=[
  'jc-the-holy-og-assets/real-vegas-district-runtime.js',
  'jc-the-holy-og-assets/real-vegas-collision-runtime.js',
@@ -21,7 +23,7 @@ EXPECTED_REGISTRY='868a1b316216cb7bdc0b6528c3f71d1f61308822ea46d07095d8b6abdf3e2
 def now():return datetime.now(timezone.utc).isoformat()
 
 def main():
- d=json.load(open(DISTRICT_MANIFEST));t=json.load(open(TERRAIN_MANIFEST));sections=SECTIONS.read_text();index=INDEX.read_text()
+ d=json.load(open(DISTRICT_MANIFEST));t=json.load(open(TERRAIN_MANIFEST));sections=SECTIONS.read_text();index=INDEX.read_text();mission_page=MISSION_PAGE.read_text();mission_runtime=MISSION_RUNTIME.read_text()
  assert d['source_records_scanned']==627349
  assert d['source_registry_sha256']==EXPECTED_REGISTRY
  counts={k:v['selected_buildings'] for k,v in d['districts'].items()}
@@ -35,8 +37,13 @@ def main():
  assert 'real-vegas-collision-runtime.js' in sections
  assert 'real-terrain-relief-runtime.js' in sections
  assert 'real-street-context-runtime.js' in sections
- assert 'realCollision?.active?.()' in index
- assert 'return{portal:null,distance:Infinity}' in index
+ assert "location.href='./real-city-climb-demo.html'" in index
+ assert 'LOW-SPEC FALLBACK' in index
+ assert 'real-city-climb-demo.js' in mission_page
+ assert 'blockedBuilding(' in mission_runtime
+ assert 'blockedBarrier(' in mission_runtime
+ assert 'supportHeight(' in mission_runtime
+ assert 'updateMission(' in mission_runtime
  status={
   'schema':'jc-real-vegas-rendered-playable-detail-v1','generated_at':now(),'status':'PASS',
   'evidence_classification':{

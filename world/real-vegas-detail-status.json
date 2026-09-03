@@ -1,6 +1,6 @@
 {
   "schema": "jc-real-vegas-rendered-playable-detail-v1",
-  "generated_at": "2026-09-03T15:26:34.007647+00:00",
+  "generated_at": "2026-09-03T15:54:28.103797+00:00",
   "status": "PASS",
   "evidence_classification": {
     "building_footprints": "VERIFIED_SOURCE_GROUNDED",
@@ -44,6 +44,14 @@
     "procedural_building_visuals_suppressed_in_active_real_district": true,
     "procedural_collision_suppressed_in_active_real_district": true,
     "procedural_interior_portals_suppressed_in_active_real_district": true
+  },
+  "deadline_vertical_slice": {
+    "status": "PASS",
+    "buildings_loaded_and_finalized": 601,
+    "roads": 942,
+    "jc_character": "four-direction transparent atlas sprite in 3D world",
+    "flight_controls": "F toggle; WASD horizontal; Space ascend; C/Ctrl descend; Shift boost",
+    "building_finish": "deterministic procedural facade, windows and roof treatment on every loaded building"
   },
   "remaining_major_realism_work": [
     "exact facade/architecture evidence per building",

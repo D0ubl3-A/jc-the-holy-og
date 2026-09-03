@@ -46,6 +46,13 @@ def main():
  assert 'supportHeight(' in mission_runtime
  assert 'updateMission(' in mission_runtime
  assert 'toggleFlight(' in mission_runtime
+ assert 'requestPointerLock' in mission_runtime
+ assert 'updateSolar(' in mission_runtime
+ assert 'selectDestination(' in mission_runtime
+ assert 'beginHyperspeed(' in mission_runtime
+ assert 'destinationHyperspeed:true' in mission_runtime
+ assert 'data-solar-charge' in mission_page
+ assert 'data-hyper-launch' in mission_page
  assert 'character-atlas.png' in mission_runtime
  assert 'allLoadedBuildingsFinalized:true' in mission_runtime
  assert mission['buildings']==601 and mission['roads']==942
@@ -57,7 +64,7 @@ def main():
   'world':{'crs':'EPSG:32611','source_registry_buildings':627349,'runtime_selected_buildings':total,'runtime_districts':counts,'runtime_district_count':len(counts)},
   'terrain':{'source':'USGS 3DEP Bare Earth DEM','source_sha256':t['source_sha256'],'runtime_grid':[t['width'],t['height']],'source_elevation_range_m':[t['min_elevation_m'],t['max_elevation_m']],'urban_core_mode':'flattened for stable driving; real relief blended outside core'},
   'playability':{'mobile_strategy':'lazy district loading, 1km tile grouping, merged footprint geometry, proximity culling','procedural_building_visuals_suppressed_in_active_real_district':True,'procedural_collision_suppressed_in_active_real_district':True,'procedural_interior_portals_suppressed_in_active_real_district':True},
-  'deadline_vertical_slice':{'status':'PASS','buildings_loaded_and_finalized':mission['buildings'],'roads':mission['roads'],'jc_character':'four-direction transparent atlas sprite in 3D world','flight_controls':'F toggle; WASD horizontal; Space ascend; C/Ctrl descend; Shift boost','building_finish':'deterministic procedural facade, windows and roof treatment on every loaded building'},
+  'deadline_vertical_slice':{'status':'PASS','buildings_loaded_and_finalized':mission['buildings'],'roads':mission['roads'],'jc_character':'four-direction transparent atlas sprite in 3D world','flight_controls':'F toggle; mouse/pointer-lock crosshair aim; camera-relative WASD; Space ascend; C/Ctrl descend; Shift boost','solar_flight':'hold left mouse, R, or mobile CHARGE to absorb sunlight into a persistent 0-100 meter','destination_hyperspeed':'Q/mobile TARGET cycles named source landmarks; right mouse/H/mobile HYPER consumes 40 solar and launches to the selected rooftop','building_finish':'deterministic procedural facade, windows and roof treatment on every loaded building'},
   'remaining_major_realism_work':['exact facade/architecture evidence per building','property/business identity and address resolution','real entrances and interiors','lane-level/right-of-way/sidewalk/signals citywide','urban terrain-Z join for roads/buildings/actors','expand runtime selection beyond 43,500 while preserving mobile frame budget'],
   'estimated_rendered_playable_real_las_vegas_detail_percent':47,
   'score_note':'ESTIMATED whole-area rendered/playable detail score, not a claim that 47% of every Las Vegas building is photoreal or fully explorable.'

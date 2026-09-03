@@ -1,6 +1,6 @@
 {
   "schema": "jc-real-vegas-rendered-playable-detail-v1",
-  "generated_at": "2026-09-03T15:55:19.543253+00:00",
+  "generated_at": "2026-09-03T16:43:05.250248+00:00",
   "status": "PASS",
   "evidence_classification": {
     "building_footprints": "VERIFIED_SOURCE_GROUNDED",
@@ -50,7 +50,9 @@
     "buildings_loaded_and_finalized": 601,
     "roads": 942,
     "jc_character": "four-direction transparent atlas sprite in 3D world",
-    "flight_controls": "F toggle; WASD horizontal; Space ascend; C/Ctrl descend; Shift boost",
+    "flight_controls": "F toggle; mouse/pointer-lock crosshair aim; camera-relative WASD; Space ascend; C/Ctrl descend; Shift boost",
+    "solar_flight": "hold left mouse, R, or mobile CHARGE to absorb sunlight into a persistent 0-100 meter",
+    "destination_hyperspeed": "Q/mobile TARGET cycles named source landmarks; right mouse/H/mobile HYPER consumes 40 solar and launches to the selected rooftop",
     "building_finish": "deterministic procedural facade, windows and roof treatment on every loaded building"
   },
   "remaining_major_realism_work": [

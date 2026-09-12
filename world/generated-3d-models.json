@@ -1,41 +1,20 @@
 {
   "schema": "jc-generated-3d-models-v1",
-  "updated_at": "2026-09-12T22:07:00Z",
+  "updated_at": "2026-09-12T23:35:00Z",
   "purpose": "Runtime asset manifest for generated 3D replacements in JC the Holy OG.",
   "models": {
-    "jc": {
-      "role": "player_character_candidate",
-      "glb": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_model.glb",
-      "proof_image": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_image.png",
-      "proof_video": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_video.mp4",
-      "validation": "generated_pending_independent_mesh_validation"
-    },
-    "vehicle": {
-      "role": "vehicle_candidate",
-      "glb": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_model.glb",
-      "proof_image": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_image.png",
-      "proof_video": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_video.mp4",
-      "validation": "generated_pending_independent_mesh_validation"
-    },
-    "devil": {
-      "role": "devil_character_candidate",
-      "glb": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_model.glb",
-      "proof_image": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_image.png",
-      "proof_video": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_video.mp4",
-      "validation": "generated_pending_independent_mesh_validation"
-    },
-    "npc": {
-      "role": "npc_character_candidate",
-      "glb": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_model.glb",
-      "proof_image": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_image.png",
-      "proof_video": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_video.mp4",
-      "validation": "generated_pending_independent_mesh_validation"
-    }
+    "jc": {"role":"player_character_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "vehicle": {"role":"vehicle_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "devil": {"role":"devil_character_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "npc": {"role":"npc_character_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-06-park-meridian": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_9c4d0649-40a1-454a-91ff-afbb6d2031f4_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_9c4d0649-40a1-454a-91ff-afbb6d2031f4_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_9c4d0649-40a1-454a-91ff-afbb6d2031f4_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-07-prism-resort": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_e9458716-acc9-4043-9686-258174691c25_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_e9458716-acc9-4043-9686-258174691c25_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_e9458716-acc9-4043-9686-258174691c25_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-08-skyglass-tower": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_e5ab7212-af7d-41f2-ac55-c6ca7ba11489_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_e5ab7212-af7d-41f2-ac55-c6ca7ba11489_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_e5ab7212-af7d-41f2-ac55-c6ca7ba11489_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-09-starlight-boulevard": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_5a659d98-d7e7-4563-9cbd-4800141f2b04_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_5a659d98-d7e7-4563-9cbd-4800141f2b04_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_5a659d98-d7e7-4563-9cbd-4800141f2b04_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-10-eiffel-royale": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_ac041aa9-a121-4ae0-8d96-eb25215a97ce_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_ac041aa9-a121-4ae0-8d96-eb25215a97ce_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_ac041aa9-a121-4ae0-8d96-eb25215a97ce_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-11-jubilee-hall": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_2ba613dc-0659-42fb-8c0c-1574edddcb6e_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_2ba613dc-0659-42fb-8c0c-1574edddcb6e_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_2ba613dc-0659-42fb-8c0c-1574edddcb6e_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-12-azure-lago": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_0135da70-dbc3-4412-b273-a04ef8790b41_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_0135da70-dbc3-4412-b273-a04ef8790b41_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_0135da70-dbc3-4412-b273-a04ef8790b41_video.mp4","validation":"generated_pending_independent_mesh_validation"},
+    "strip-13-velvet-clover": {"role":"strip_building_candidate","glb":"https://storage.to3d.app/generated-3d/models/2026-09-12/task_57c3f2eb-c5de-49b4-b8ca-296d005bf7ae_model.glb","proof_image":"https://storage.to3d.app/generated-3d/images/2026-09-12/task_57c3f2eb-c5de-49b4-b8ca-296d005bf7ae_image.png","proof_video":"https://storage.to3d.app/generated-3d/videos/2026-09-12/task_57c3f2eb-c5de-49b4-b8ca-296d005bf7ae_video.mp4","validation":"generated_pending_independent_mesh_validation"}
   },
-  "runtime_policy": {
-    "prefer_3d_when_validated": true,
-    "fallback_to_existing_sprite": true,
-    "never_block_boot_on_remote_model_failure": true,
-    "cache_after_successful_load": true
-  }
+  "runtime_policy": {"prefer_3d_when_validated":true,"fallback_to_existing_sprite":true,"never_block_boot_on_remote_model_failure":true,"cache_after_successful_load":true}
 }

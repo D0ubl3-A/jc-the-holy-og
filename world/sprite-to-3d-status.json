@@ -1,9 +1,10 @@
 {
   "schema": "jc-sprite-to-3d-status-v1",
-  "updated_at": "2026-09-12T21:12:30Z",
+  "updated_at": "2026-09-12T21:31:45Z",
   "source_manifest": "world/sprite-binary-manifest.json",
   "acceptance_rule": "Count an asset as converted only after a genuine volumetric GLB is generated, re-opened, geometry is confirmed non-empty, and a proof render is produced from that exact GLB. Billboards, cards, flat extrusions, relief meshes, and concept images do not count.",
   "source_atlas_count": 8,
+  "generated_3d_job_count": 4,
   "verified_3d_converted_count": 0,
   "verified_conversion_percent": 0,
   "source_categories": ["jc", "devil", "npc", "vehicles", "vfx"],
@@ -12,7 +13,7 @@
       "batch": 1,
       "priority": "JC character",
       "source": "jc-the-holy-og-assets/character-atlas.png",
-      "status": "GLB_GENERATED_VALIDATION_PENDING",
+      "status": "GLB_GENERATED_PROOF_BACKED_VALIDATION_PENDING",
       "source_strategy": "single-frame crop served from repository atlas through image proxy",
       "job_id": "a1906b72-ed8e-4243-b311-b6d0d8df7549",
       "model_url": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_model.glb",
@@ -23,16 +24,32 @@
       "batch": 2,
       "priority": "vehicles",
       "source": "jc-the-holy-og-assets/vehicle-atlas.png",
-      "status": "QUEUED_SINGLE_FRAME_CROP"
+      "status": "GLB_GENERATED_PROOF_BACKED_VALIDATION_PENDING",
+      "job_id": "6e853a84-8186-4ff5-8132-b2764f60c7b0",
+      "model_url": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_model.glb",
+      "proof_image_url": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_image.png",
+      "proof_video_url": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6e853a84-8186-4ff5-8132-b2764f60c7b0_video.mp4"
     },
     {
       "batch": 3,
       "priority": "devil and NPC",
-      "sources": [
-        "jc-the-holy-og-assets/swarm/devil-material-atlas.png",
-        "jc-the-holy-og-assets/swarm/npc-state-atlas.png"
-      ],
-      "status": "QUEUED_SINGLE_FRAME_CROP"
+      "status": "GLBS_GENERATED_PROOF_BACKED_VALIDATION_PENDING",
+      "assets": [
+        {
+          "source": "jc-the-holy-og-assets/swarm/devil-material-atlas.png",
+          "job_id": "6ae02985-1e68-4454-aed2-4fefb56b766c",
+          "model_url": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_model.glb",
+          "proof_image_url": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_image.png",
+          "proof_video_url": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_6ae02985-1e68-4454-aed2-4fefb56b766c_video.mp4"
+        },
+        {
+          "source": "jc-the-holy-og-assets/swarm/npc-state-atlas.png",
+          "job_id": "4e7d55d7-0d59-49e0-a67f-57b1a751b50d",
+          "model_url": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_model.glb",
+          "proof_image_url": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_image.png",
+          "proof_video_url": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_4e7d55d7-0d59-49e0-a67f-57b1a751b50d_video.mp4"
+        }
+      ]
     },
     {
       "batch": 4,
@@ -55,13 +72,13 @@
     "required_input_rule": "one isolated subject/frame per generation; never submit a full multi-pose atlas"
   },
   "validation": {
-    "backend_job_completed": true,
-    "model_url_returned": true,
-    "same_job_proof_image_returned": true,
-    "same_job_proof_video_returned": true,
+    "completed_backend_jobs": 4,
+    "model_urls_returned": 4,
+    "same_job_proof_images_returned": 4,
+    "same_job_proof_videos_returned": 4,
     "independent_local_glb_reopen": false,
     "independent_geometry_nonempty_check": false,
-    "reason_pending": "Current runtime cannot directly download the returned storage URL for independent GLB parsing, so it is not yet counted as verified conversion."
+    "reason_pending": "Generator output URLs are valid and same-job proof artifacts exist, but this runtime cannot resolve storage.to3d.app for an independent binary GLB download/reopen test. Generated assets therefore remain pending strict verification."
   },
-  "next_action": "Use the working single-frame crop -> to3D path for the vehicle batch while retaining strict validation gating."
+  "next_action": "Process remaining JC material/city and vehicle-material atlases one isolated subject at a time; treat magic VFX separately because volumetric 3D conversion is only appropriate for effects that should exist as mesh/volume assets."
 }

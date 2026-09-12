@@ -1,0 +1,52 @@
+{
+  "schema": "jc-sprite-to-3d-status-v1",
+  "updated_at": "2026-09-12T20:33:36Z",
+  "source_manifest": "world/sprite-binary-manifest.json",
+  "acceptance_rule": "Count an asset as converted only after a genuine volumetric GLB is generated, re-opened, geometry is confirmed non-empty, and a proof render is produced from that exact GLB. Billboards, cards, flat extrusions, relief meshes, and concept images do not count.",
+  "source_atlas_count": 8,
+  "verified_3d_converted_count": 0,
+  "verified_conversion_percent": 0,
+  "source_categories": ["jc", "devil", "npc", "vehicles", "vfx"],
+  "planned_batches": [
+    {
+      "batch": 1,
+      "priority": "JC character",
+      "source": "jc-the-holy-og-assets/character-atlas.png",
+      "status": "BLOCKED_BACKEND_BALANCE"
+    },
+    {
+      "batch": 2,
+      "priority": "vehicles",
+      "source": "jc-the-holy-og-assets/vehicle-atlas.png",
+      "status": "QUEUED"
+    },
+    {
+      "batch": 3,
+      "priority": "devil and NPC",
+      "sources": [
+        "jc-the-holy-og-assets/swarm/devil-material-atlas.png",
+        "jc-the-holy-og-assets/swarm/npc-state-atlas.png"
+      ],
+      "status": "QUEUED"
+    },
+    {
+      "batch": 4,
+      "priority": "remaining JC material/city atlases and VFX review",
+      "sources": [
+        "jc-the-holy-og-assets/swarm/jc-material-atlas.png",
+        "jc-the-holy-og-assets/jc-3d-city-atlas.png",
+        "jc-the-holy-og-assets/swarm/vehicle-material-atlas.png",
+        "jc-the-holy-og-assets/swarm/magic-vfx-atlas.png"
+      ],
+      "status": "QUEUED"
+    }
+  ],
+  "generation_backend": {
+    "selected_model": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d",
+    "target_face_count": 80000,
+    "pbr": true,
+    "output": "GLB",
+    "current_blocker": "Fal queue rejected generation because the connected Fal account balance is exhausted."
+  },
+  "next_action": "Restore Fal generation balance or provide another connected image-to-3D backend, then run Batch 1 and validate the resulting GLB before incrementing converted_count."
+}

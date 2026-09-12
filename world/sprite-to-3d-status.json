@@ -1,6 +1,6 @@
 {
   "schema": "jc-sprite-to-3d-status-v1",
-  "updated_at": "2026-09-12T20:33:36Z",
+  "updated_at": "2026-09-12T21:12:30Z",
   "source_manifest": "world/sprite-binary-manifest.json",
   "acceptance_rule": "Count an asset as converted only after a genuine volumetric GLB is generated, re-opened, geometry is confirmed non-empty, and a proof render is produced from that exact GLB. Billboards, cards, flat extrusions, relief meshes, and concept images do not count.",
   "source_atlas_count": 8,
@@ -12,13 +12,18 @@
       "batch": 1,
       "priority": "JC character",
       "source": "jc-the-holy-og-assets/character-atlas.png",
-      "status": "BLOCKED_BACKEND_BALANCE"
+      "status": "GLB_GENERATED_VALIDATION_PENDING",
+      "source_strategy": "single-frame crop served from repository atlas through image proxy",
+      "job_id": "a1906b72-ed8e-4243-b311-b6d0d8df7549",
+      "model_url": "https://storage.to3d.app/generated-3d/models/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_model.glb",
+      "proof_image_url": "https://storage.to3d.app/generated-3d/images/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_image.png",
+      "proof_video_url": "https://storage.to3d.app/generated-3d/videos/2026-09-12/task_a1906b72-ed8e-4243-b311-b6d0d8df7549_video.mp4"
     },
     {
       "batch": 2,
       "priority": "vehicles",
       "source": "jc-the-holy-og-assets/vehicle-atlas.png",
-      "status": "QUEUED"
+      "status": "QUEUED_SINGLE_FRAME_CROP"
     },
     {
       "batch": 3,
@@ -27,7 +32,7 @@
         "jc-the-holy-og-assets/swarm/devil-material-atlas.png",
         "jc-the-holy-og-assets/swarm/npc-state-atlas.png"
       ],
-      "status": "QUEUED"
+      "status": "QUEUED_SINGLE_FRAME_CROP"
     },
     {
       "batch": 4,
@@ -38,15 +43,25 @@
         "jc-the-holy-og-assets/swarm/vehicle-material-atlas.png",
         "jc-the-holy-og-assets/swarm/magic-vfx-atlas.png"
       ],
-      "status": "QUEUED"
+      "status": "QUEUED_REVIEW"
     }
   ],
   "generation_backend": {
-    "selected_model": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d",
-    "target_face_count": 80000,
-    "pbr": true,
+    "primary_failed_backend": "fal-ai/hunyuan-3d/v3.1/pro/image-to-3d",
+    "primary_failure": "connected Fal account balance exhausted",
+    "fallback_backend": "to3D",
+    "fallback_status": "WORKING",
     "output": "GLB",
-    "current_blocker": "Fal queue rejected generation because the connected Fal account balance is exhausted."
+    "required_input_rule": "one isolated subject/frame per generation; never submit a full multi-pose atlas"
   },
-  "next_action": "Restore Fal generation balance or provide another connected image-to-3D backend, then run Batch 1 and validate the resulting GLB before incrementing converted_count."
+  "validation": {
+    "backend_job_completed": true,
+    "model_url_returned": true,
+    "same_job_proof_image_returned": true,
+    "same_job_proof_video_returned": true,
+    "independent_local_glb_reopen": false,
+    "independent_geometry_nonempty_check": false,
+    "reason_pending": "Current runtime cannot directly download the returned storage URL for independent GLB parsing, so it is not yet counted as verified conversion."
+  },
+  "next_action": "Use the working single-frame crop -> to3D path for the vehicle batch while retaining strict validation gating."
 }

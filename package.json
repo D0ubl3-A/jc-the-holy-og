@@ -1,7 +1,7 @@
 {
   "name": "jc-the-holy-og",
-  "version": "0.1.0",
-  "description": "JC The Holy OG: Sin City Redemption 3D",
+  "version": "0.2.0",
+  "description": "JC The Holy OG: Sin City Redemption 3D desktop edition",
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -26,6 +26,7 @@
       "index.html",
       "real-city-climb-demo.html",
       "jc-the-holy-og-assets/**/*",
+      "world/**/*",
       "package.json"
     ],
     "win": {

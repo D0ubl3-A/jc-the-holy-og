@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: sincity-road-registry
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-road-registry:
@@ -23,6 +23,14 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            tools
+            world
+            jc-map
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

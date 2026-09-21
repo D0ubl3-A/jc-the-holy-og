@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: sincity-road-registry
@@ -29,8 +30,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install requests shapely pyproj
-      - name: Build source-grounded road registry
-        run: python tools/build_citywide_road_registry.py --output work/road-registry/output
+      - name: Restore latest successful citywide road registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p work/road-registry/output
+          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          if [ -n "$RUN_ID" ]; then
+            echo "Reusing successful road registry from run $RUN_ID"
+            gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D work/road-registry/output
+          else
+            echo "No prior successful registry artifact; querying OSM"
+            python tools/build_citywide_road_registry.py --output work/road-registry/output
+          fi
       - name: Validate evidence gates
         run: |
           python - <<'PY'

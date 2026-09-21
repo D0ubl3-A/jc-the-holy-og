@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -72,6 +73,108 @@ jobs:
               f.write("\n")
           print("Indexed", len(tiles), "JC GLB tiles")
           PY
+
+      - name: Build deployed road layers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p _road_artifact
+          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful road registry artifact available; continuing without roads"
+            exit 0
+          fi
+          echo "Using road registry run $RUN_ID"
+          gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D _road_artifact
+
+          python - <<'PY'
+          import json, re, shutil
+          from pathlib import Path
+
+          registry=Path('_road_artifact/road_registry.geojson')
+          tile_manifest=Path('_site/jc-map/tile-manifest.json')
+          if not registry.exists() or not tile_manifest.exists():
+              print('Road inputs missing; skipping')
+              raise SystemExit(0)
+
+          glb_manifest=json.loads(tile_manifest.read_text())
+          wanted={(int(t['col']),int(t['row'])) for t in glb_manifest.get('tiles',[])}
+          if not wanted:
+              print('No GLB tiles found; skipping detailed road packs')
+          fc=json.loads(registry.read_text())
+
+          # Canonical JC world contract: 35x35 1 km tiles, GLB runtime scale 0.1.
+          min_x=648949.782
+          min_y=3983561.814
+          tile_size=1000.0
+          scale=0.1
+          origin_col=8
+          origin_row=8
+          major={'motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link'}
+          out=Path('_site/jc-map/roads')
+          tiles_dir=out/'tiles'
+          if out.exists():
+              shutil.rmtree(out)
+          tiles_dir.mkdir(parents=True,exist_ok=True)
+
+          by_tile={}
+          overview=[]
+
+          def width_m(props):
+              raw=props.get('width')
+              if raw is not None:
+                  try:
+                      return max(2.0,float(str(raw).split()[0]))
+                  except Exception:
+                      pass
+              h=props.get('highway') or ''
+              if h in ('motorway','trunk','motorway_link','trunk_link'): return 18.0
+              if h in ('primary','primary_link','secondary','secondary_link'): return 12.0
+              if h=='tertiary': return 9.0
+              if h in ('residential','unclassified','service'): return 7.0
+              return 5.0
+
+          for feat in fc.get('features',[]):
+              p=feat.get('properties',{})
+              tid=p.get('tile_id','')
+              m=re.fullmatch(r'r(\d+)_c(\d+)',tid)
+              if not m:
+                  continue
+              row=int(m.group(1)); col=int(m.group(2))
+              coords=feat.get('geometry',{}).get('coordinates') or []
+              if len(coords)<2:
+                  continue
+              h=p.get('highway') or ''
+              w=round(width_m(p)*scale,3)
+
+              if (col,row) in wanted:
+                  x0=min_x+col*tile_size
+                  y0=min_y+row*tile_size
+                  local=[[round((float(x)-x0)*scale,3),round(-(float(y)-y0)*scale,3)] for x,y in coords]
+                  by_tile.setdefault((col,row),[]).append({
+                      'n':p.get('name'),'h':h,'w':w,'p':local
+                  })
+
+              if h in major:
+                  world=[[round((float(x)-(min_x+origin_col*tile_size))*scale,2),
+                          round(-(float(y)-(min_y+origin_row*tile_size))*scale,2)] for x,y in coords]
+                  overview.append({'n':p.get('name'),'h':h,'w':w,'p':world})
+
+          manifest={'version':1,'scale':scale,'origin':{'col':origin_col,'row':origin_row},'tiles':[]}
+          for col,row in sorted(wanted):
+              roads=by_tile.get((col,row),[])
+              name=f'C{col:02d}_R{row:02d}.json'
+              (tiles_dir/name).write_text(json.dumps({'col':col,'row':row,'roads':roads},separators=(',',':')))
+              manifest['tiles'].append({'col':col,'row':row,'file':'./tiles/'+name,'count':len(roads)})
+
+          (out/'manifest.json').write_text(json.dumps(manifest,separators=(',',':')))
+          (out/'major-roads.json').write_text(json.dumps({'roads':overview},separators=(',',':')))
+          print('GLB road tiles',len(manifest['tiles']))
+          print('Detailed road segments',sum(t['count'] for t in manifest['tiles']))
+          print('Major road overview segments',len(overview))
+          PY
+
+          rm -rf _road_artifact
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

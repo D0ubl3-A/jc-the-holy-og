@@ -353,7 +353,6 @@ function updateHud(){
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
 async function boot(){
-  if(missionEl)missionEl.innerHTML="MISSION: explore the <b>real uploaded GLB Las Vegas map</b> · nearby tiles stream automatically<br><span id=\"progress\"></span> · <span id=\"location\"></span>";
   if(creditEl)creditEl.textContent="JC Map • streaming C##_R## GLB tiles from the GitHub repository";
   await loadManifest();
   rebuildDestinations();

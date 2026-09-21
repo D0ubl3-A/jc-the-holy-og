@@ -349,6 +349,238 @@ flightRing.position.y=0.12;
 player.root.add(flightRing);
 scene.add(player.root);
 
+// --- JC vs Satan power runtime ------------------------------------------------
+const satanRoot=new THREE.Group();
+satanRoot.name="SATAN";
+const satanTex=new THREE.TextureLoader().load("./jc-the-holy-og-assets/swarm/devil-material-atlas.png");
+satanTex.colorSpace=THREE.SRGBColorSpace;
+const satanMat=new THREE.SpriteMaterial({map:satanTex,transparent:true,depthWrite:false,toneMapped:false});
+const satanSprite=new THREE.Sprite(satanMat);
+satanSprite.center.set(0.5,0);
+satanSprite.scale.set(6.2,6.2,1);
+satanRoot.add(satanSprite);
+const satanGlow=new THREE.PointLight(0xff2200,8,45,2);
+satanGlow.position.y=2.6;
+satanRoot.add(satanGlow);
+satanRoot.position.copy(player.pos).add(new THREE.Vector3(14,0,10));
+scene.add(satanRoot);
+
+const powerState={
+  controller:"JC",
+  divine:100,
+  infernal:100,
+  divineShield:0,
+  secondComing:0,
+  hellOnEarth:0,
+  cooldowns:{}
+};
+const powerFx=[];
+const powerHud=document.createElement("div");
+powerHud.id="powerHud";
+powerHud.style.cssText="position:fixed;right:14px;top:14px;z-index:7;min-width:240px;padding:10px 12px;background:rgba(5,5,9,.82);border-right:3px solid #ffd45a;font:12px/1.45 Arial,sans-serif;color:white;pointer-events:none";
+document.body.appendChild(powerHud);
+
+function powerOrigin(){
+  return player.pos.clone().add(new THREE.Vector3(0,2.2,0));
+}
+function addFx(obj,life,update){
+  scene.add(obj);
+  powerFx.push({obj:obj,life:life,maxLife:life,update:update});
+  return obj;
+}
+function disposeFx(obj){
+  scene.remove(obj);
+  obj.traverse?.(function(o){
+    if(o.geometry&&o.geometry.dispose)o.geometry.dispose();
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(function(m){if(m&&m.dispose)m.dispose();});
+  });
+}
+function radialRing(color,radius,life,y){
+  const g=new THREE.RingGeometry(Math.max(0.5,radius*0.82),radius,72);
+  const m=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.95,side:THREE.DoubleSide,depthWrite:false});
+  const ring=new THREE.Mesh(g,m);
+  ring.rotation.x=-Math.PI/2;
+  ring.position.copy(powerOrigin());
+  ring.position.y=(y??player.pos.y)+0.4;
+  ring.scale.setScalar(0.08);
+  return addFx(ring,life,function(f,dt){
+    const t=1-f.life/f.maxLife;
+    f.obj.scale.setScalar(0.08+t*5.5);
+    f.obj.material.opacity=(1-t)*0.9;
+  });
+}
+function verticalBeam(color,height,life){
+  const g=new THREE.CylinderGeometry(2.4,5.5,height,24,1,true);
+  const m=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.78,side:THREE.DoubleSide,depthWrite:false});
+  const beam=new THREE.Mesh(g,m);
+  beam.position.copy(powerOrigin());
+  beam.position.y+=height/2-2;
+  return addFx(beam,life,function(f){
+    const t=1-f.life/f.maxLife;
+    f.obj.material.opacity=(1-t)*0.78;
+    f.obj.scale.x=f.obj.scale.z=1+t*1.8;
+  });
+}
+function orbBurst(color,count,radius,life,center){
+  const group=new THREE.Group();
+  const geom=new THREE.SphereGeometry(0.45,8,6);
+  const mat=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.95});
+  for(let i=0;i<count;i++){
+    const m=new THREE.Mesh(geom,mat.clone());
+    const a=Math.random()*Math.PI*2;
+    const r=Math.random()*radius;
+    m.position.set(Math.cos(a)*r,Math.random()*8,Math.sin(a)*r);
+    m.userData.v=new THREE.Vector3((Math.random()-.5)*18,8+Math.random()*25,(Math.random()-.5)*18);
+    group.add(m);
+  }
+  group.position.copy(center||powerOrigin());
+  return addFx(group,life,function(f,dt){
+    const t=1-f.life/f.maxLife;
+    f.obj.children.forEach(function(m){
+      m.position.addScaledVector(m.userData.v,dt);
+      m.userData.v.y-=16*dt;
+      m.material.opacity=1-t;
+    });
+  });
+}
+function canUse(key,cost,meter){
+  if((powerState.cooldowns[key]||0)>0)return false;
+  if(powerState[meter]<cost)return false;
+  powerState[meter]-=cost;
+  powerState.cooldowns[key]=0.8;
+  return true;
+}
+function holyShockwave(){
+  if(!canUse("jc1",18,"divine"))return;
+  radialRing(0xffe783,7,0.9);
+  orbBurst(0xfff3b0,18,4,0.8,powerOrigin());
+  const delta=satanRoot.position.clone().sub(player.pos);
+  if(delta.length()<80)satanRoot.position.add(delta.normalize().multiplyScalar(20));
+}
+function divineShield(){
+  if(!canUse("jc2",25,"divine"))return;
+  powerState.divineShield=7;
+  const g=new THREE.SphereGeometry(5.2,24,18);
+  const m=new THREE.MeshBasicMaterial({color:0xffe58a,transparent:true,opacity:0.24,wireframe:false,side:THREE.DoubleSide,depthWrite:false});
+  const shield=new THREE.Mesh(g,m);
+  shield.position.copy(powerOrigin());
+  addFx(shield,7,function(f){
+    f.obj.position.copy(powerOrigin());
+    f.obj.material.opacity=0.16+Math.sin(performance.now()*0.01)*0.08;
+  });
+}
+function judgmentBeam(){
+  if(!canUse("jc3",32,"divine"))return;
+  verticalBeam(0xfff0a8,220,1.5);
+  radialRing(0xffffff,12,1.2);
+}
+function secondComing(){
+  if(!canUse("jc4",100,"divine"))return;
+  powerState.secondComing=12;
+  radialRing(0xffe26f,24,2.2);
+  verticalBeam(0xfff6c8,420,3);
+  orbBurst(0xffffff,80,35,3,powerOrigin());
+}
+function hellfireStorm(){
+  if(!canUse("sat1",18,"infernal"))return;
+  radialRing(0xff3b12,9,1.1);
+  orbBurst(0xff2b00,42,16,2.4,powerOrigin().add(new THREE.Vector3(0,16,0)));
+}
+function realityTear(){
+  if(!canUse("sat2",28,"infernal"))return;
+  const g=new THREE.TorusGeometry(6,1.25,18,56);
+  const m=new THREE.MeshBasicMaterial({color:0x9c28ff,transparent:true,opacity:0.9,side:THREE.DoubleSide,depthWrite:false});
+  const portal=new THREE.Mesh(g,m);
+  portal.position.copy(powerOrigin()).add(new THREE.Vector3(0,5,-12));
+  portal.rotation.y=Math.PI/2;
+  addFx(portal,4,function(f,dt){
+    f.obj.rotation.z+=dt*3.5;
+    f.obj.scale.multiplyScalar(1+dt*0.08);
+    f.obj.material.opacity=Math.max(0,f.life/f.maxLife);
+  });
+}
+function fearWave(){
+  if(!canUse("sat3",22,"infernal"))return;
+  radialRing(0x7c00ff,13,1.5);
+  orbBurst(0x5b00b8,24,8,1.2,powerOrigin());
+}
+function hellOnEarth(){
+  if(!canUse("sat4",100,"infernal"))return;
+  powerState.hellOnEarth=12;
+  radialRing(0xff2200,28,2.4);
+  verticalBeam(0xff2600,340,2.6);
+  orbBurst(0xff3b00,95,45,4,powerOrigin().add(new THREE.Vector3(0,20,0)));
+}
+function usePower(slot){
+  if(powerState.controller==="JC"){
+    if(slot===1)holyShockwave();
+    if(slot===2)divineShield();
+    if(slot===3)judgmentBeam();
+    if(slot===4)secondComing();
+  }else{
+    if(slot===1)hellfireStorm();
+    if(slot===2)realityTear();
+    if(slot===3)fearWave();
+    if(slot===4)hellOnEarth();
+  }
+}
+function togglePowerController(){
+  powerState.controller=powerState.controller==="JC"?"SATAN":"JC";
+  const satanActive=powerState.controller==="SATAN";
+  player.root.visible=!satanActive;
+  satanRoot.visible=satanActive;
+  if(satanActive)satanRoot.position.copy(player.pos);
+  else player.root.position.copy(player.pos);
+}
+function updatePowers(dt){
+  powerState.divine=Math.min(100,powerState.divine+6*dt);
+  powerState.infernal=Math.min(100,powerState.infernal+6*dt);
+  powerState.divineShield=Math.max(0,powerState.divineShield-dt);
+  powerState.secondComing=Math.max(0,powerState.secondComing-dt);
+  powerState.hellOnEarth=Math.max(0,powerState.hellOnEarth-dt);
+  Object.keys(powerState.cooldowns).forEach(function(k){powerState.cooldowns[k]=Math.max(0,powerState.cooldowns[k]-dt);});
+
+  for(let i=powerFx.length-1;i>=0;i--){
+    const f=powerFx[i];
+    f.life-=dt;
+    if(f.update)f.update(f,dt);
+    if(f.life<=0){
+      disposeFx(f.obj);
+      powerFx.splice(i,1);
+    }
+  }
+
+  if(powerState.secondComing>0){
+    scene.background.lerp(new THREE.Color(0x3b4868),0.07);
+    hemi.intensity=Math.max(hemi.intensity,4.5);
+    glow.intensity=Math.max(glow.intensity,14);
+  }
+  if(powerState.hellOnEarth>0){
+    scene.background.lerp(new THREE.Color(0x390400),0.09);
+    satanGlow.intensity=14;
+  }else satanGlow.intensity=8;
+
+  if(powerState.controller==="SATAN"){
+    satanRoot.position.copy(player.pos);
+    satanRoot.visible=true;
+    player.root.visible=false;
+  }else{
+    player.root.visible=true;
+    satanRoot.visible=false;
+  }
+
+  const meter=powerState.controller==="JC"?powerState.divine:powerState.infernal;
+  const names=powerState.controller==="JC"
+    ?["1 HOLY SHOCKWAVE","2 DIVINE SHIELD","3 JUDGMENT BEAM","4 SECOND COMING"]
+    :["1 HELLFIRE STORM","2 REALITY TEAR","3 FEAR WAVE","4 HELL ON EARTH"];
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%<br>"+names.join("<br>")+"<br><span style='opacity:.75'>T = switch JC / Satan</span>";
+}
+function syncControlledAvatar(){
+  if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
+}
+// -----------------------------------------------------------------------------
+
 const keys={};
 let camYaw=Math.PI,camPitch=0.28,targetYaw=Math.PI,targetPitch=0.28,camDist=14,drag=false,lx=0,ly=0;
 let solarCharge=100,solarHolding=false;
@@ -421,6 +653,11 @@ addEventListener("keydown",function(e){
   if(e.code==="KeyF"&&!e.repeat)toggleFlight();
   if(e.code==="KeyQ"&&!e.repeat)selectDestination(1);
   if(e.code==="KeyH"&&!e.repeat)beginHyperspeed();
+  if(e.code==="KeyT"&&!e.repeat)togglePowerController();
+  if(e.code==="Digit1"&&!e.repeat)usePower(1);
+  if(e.code==="Digit2"&&!e.repeat)usePower(2);
+  if(e.code==="Digit3"&&!e.repeat)usePower(3);
+  if(e.code==="Digit4"&&!e.repeat)usePower(4);
   if(e.code==="Space")e.preventDefault();
 });
 addEventListener("keyup",function(e){keys[e.code]=false;});
@@ -684,7 +921,10 @@ async function boot(){
     get mach(){return player.mach},
     get flightMode(){return player.flightMode},
     get worldLodReady(){return worldLodReady},
-    get worldLodBounds(){return worldLodBounds}
+    get worldLodBounds(){return worldLodBounds},
+    powers:powerState,
+    usePower:usePower,
+    togglePowerController:togglePowerController
   };
   requestAnimationFrame(frame);
 }
@@ -695,6 +935,8 @@ function frame(){
   const dt=Math.min(0.033,clock.getDelta());
   updateLook(dt);
   updatePlayer(dt);
+  syncControlledAvatar();
+  updatePowers(dt);
   updateWorldLod();
   updateAtmosphere();
   updateCamera(dt);

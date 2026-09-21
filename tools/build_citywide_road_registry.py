@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Runtime road-layer integration trigger
 """Build an evidence-gated Las Vegas road registry from OpenStreetMap/Overpass.
 
 Authoritative boundary:

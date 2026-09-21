@@ -107,8 +107,10 @@ const MAX_COLLIDERS_PER_TILE=lowSpec?220:420;
 const gltfLoader=new GLTFLoader();
 
 const STRIP_WALLPAPER_URL="./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg";
-const STRIP_MIN_COL=6;
-const STRIP_MAX_COL=12;
+const STRIP_MIN_COL=15;
+const STRIP_MAX_COL=16;
+const STRIP_MIN_ROW=12;
+const STRIP_MAX_ROW=15;
 const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?4:9;
 const wallpaperTextureLoader=new THREE.TextureLoader();
 const stripWallpaperAtlas=wallpaperTextureLoader.load(STRIP_WALLPAPER_URL,function(tex){
@@ -166,7 +168,8 @@ const wallpaperBottomMaterial=new THREE.MeshBasicMaterial({
   colorWrite:false
 });
 function isStripWallpaperTile(rec){
-  return rec.col>=STRIP_MIN_COL&&rec.col<=STRIP_MAX_COL;
+  return rec.col>=STRIP_MIN_COL&&rec.col<=STRIP_MAX_COL&&
+    rec.row>=STRIP_MIN_ROW&&rec.row<=STRIP_MAX_ROW;
 }
 function wallpaperProfileIndex(rec,center,slot){
   const h=(rec.col*17+rec.row*31+Math.round(center.x*0.11)+Math.round(center.z*0.07)+slot*13);
@@ -919,9 +922,10 @@ async function streamTiles(force){
   }
 }
 
+const STRIP_SPAWN=new THREE.Vector3(752.6,4,-630.0);
 const player={
   root:new THREE.Group(),
-  pos:new THREE.Vector3(50,4,-50),
+  pos:STRIP_SPAWN.clone(),
   flying:true,
   yaw:Math.PI,
   velocity:new THREE.Vector3(),
@@ -1733,7 +1737,11 @@ function updateHud(){
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
 async function boot(){
-  if(creditEl)creditEl.textContent="JC Map • streaming C##_R## GLB tiles from the GitHub repository";
+  player.pos.copy(STRIP_SPAWN);
+  player.velocity.set(0,0,0);
+  player.yaw=Math.PI;
+  if(locationEl)locationEl.textContent="LAS VEGAS STRIP";
+  if(creditEl)creditEl.textContent="JC Map • START: Las Vegas Strip • streaming C##_R## GLB tiles";
   await loadManifest();
   rebuildDestinations();
   loadWorldLod();
@@ -1750,6 +1758,7 @@ async function boot(){
     roadTileGroup:roadTileGroup,
     majorRoadGroup:majorRoadGroup,
     player:player,
+    stripSpawn:STRIP_SPAWN.clone(),
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
     tileGroundY:TILE_GROUND_Y,

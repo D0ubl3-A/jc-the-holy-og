@@ -302,9 +302,17 @@ async function streamRoadTiles(force){
   if(!roadRuntimeReady||player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
   const plan=streamPlan();
   const radius=player.pos.y<MIXED_DETAIL_ALTITUDE?LOAD_RADIUS+1:LOAD_RADIUS;
-  const wanted=roadManifest
+  let wanted=roadManifest
     .filter(function(t){return tileNearStreamCorridor(t,plan,radius);})
     .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
+
+  const currentRoad=roadManifestByKey.get(tileKey(plan.current.col,plan.current.row));
+  if(currentRoad&&!loadedRoadTiles.has(tileKey(currentRoad.col,currentRoad.row))){
+    await loadRoadTile(currentRoad);
+    wanted=wanted.filter(function(t){
+      return !(t.col===currentRoad.col&&t.row===currentRoad.row);
+    });
+  }
 
   for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
     await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadRoadTile));
@@ -687,12 +695,22 @@ function tileNearStreamCorridor(rec,plan,radius){
   return false;
 }
 function streamPriority(rec,plan){
-  let best=Infinity;
+  let bestDistance=Infinity;
+  let bestStep=0;
+
+  // Match this tile to the closest point in the predicted flight corridor.
+  // Then deliberately give FARTHER AHEAD corridor steps higher priority.
   for(const c of plan.cells){
-    const d=Math.abs(rec.col-c.col)+Math.abs(rec.row-c.row)+c.step*0.16;
-    if(d<best)best=d;
+    const distance=Math.abs(rec.col-c.col)+Math.abs(rec.row-c.row);
+    if(distance<bestDistance||(distance===bestDistance&&c.step>bestStep)){
+      bestDistance=distance;
+      bestStep=c.step;
+    }
   }
-  return best;
+
+  // Negative step means sorting ascending loads the horizon first,
+  // then progressively fills the world backward toward JC.
+  return (-bestStep*100)+bestDistance;
 }
 
 async function streamTiles(force){
@@ -710,11 +728,21 @@ async function streamTiles(force){
 
   try{
     const dynamicRadius=plan.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?Math.max(1,LOAD_RADIUS-1):LOAD_RADIUS;
-    const wanted=manifest
+    let wanted=manifest
       .filter(function(t){return tileNearStreamCorridor(t,plan,dynamicRadius);})
       .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
 
-    // Load current neighborhood first, then the forward corridor in parallel batches.
+    // Safety only: if JC's exact current tile has never loaded, get that one first.
+    // Once the local tile exists, every new preload starts at the far horizon
+    // and works backward toward JC.
+    const currentRec=manifestByKey.get(tileKey(plan.current.col,plan.current.row));
+    if(currentRec&&!loadedTiles.has(tileKey(currentRec.col,currentRec.row))){
+      await loadOneTile(currentRec);
+      wanted=wanted.filter(function(t){
+        return !(t.col===currentRec.col&&t.row===currentRec.row);
+      });
+    }
+
     for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
       await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadOneTile));
     }
@@ -1543,7 +1571,7 @@ function updateHud(){
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
   const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"");
   const plan=streamPlan();
-  const aheadText=plan.aheadTiles>0?" · PRELOAD +"+plan.aheadTiles+" TILES":"";
+  const aheadText=plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"";
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";

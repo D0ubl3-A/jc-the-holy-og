@@ -106,6 +106,151 @@ const FULL_DETAIL_ALTITUDE=900;
 const MIXED_DETAIL_ALTITUDE=6000;
 const LOW_DETAIL_ONLY_ALTITUDE=14000;
 
+const roadTileGroup=new THREE.Group();
+roadTileGroup.name="JC_ROAD_TILE_LAYER";
+scene.add(roadTileGroup);
+const majorRoadGroup=new THREE.Group();
+majorRoadGroup.name="JC_MAJOR_ROAD_OVERVIEW";
+scene.add(majorRoadGroup);
+
+let roadManifest=[];
+let roadManifestByKey=new Map();
+const loadedRoadTiles=new Map();
+const loadingRoadTiles=new Set();
+let roadRuntimeReady=false;
+let majorRoadReady=false;
+
+const roadMats={
+  highway:new THREE.MeshBasicMaterial({color:0x2f3438,side:THREE.DoubleSide}),
+  arterial:new THREE.MeshBasicMaterial({color:0x303438,side:THREE.DoubleSide}),
+  local:new THREE.MeshBasicMaterial({color:0x25282b,side:THREE.DoubleSide}),
+  majorOverview:new THREE.MeshBasicMaterial({color:0x59616a,transparent:true,opacity:0.78,side:THREE.DoubleSide,depthWrite:false})
+};
+function roadMaterialFor(highway){
+  if(/motorway|trunk/.test(highway||""))return roadMats.highway;
+  if(/primary|secondary|tertiary/.test(highway||""))return roadMats.arterial;
+  return roadMats.local;
+}
+function roadQuadGeometry(roads,worldSpace){
+  const byType={highway:[],arterial:[],local:[]};
+  for(const road of roads||[]){
+    const pts=road.p||[];
+    const h=road.h||"";
+    const bucket=/motorway|trunk/.test(h)?"highway":/primary|secondary|tertiary/.test(h)?"arterial":"local";
+    const width=Math.max(0.28,Number(road.w)||0.55);
+    for(let i=0;i<pts.length-1;i++){
+      const a=pts[i],b=pts[i+1];
+      const ax=Number(a[0]),az=Number(a[1]),bx=Number(b[0]),bz=Number(b[1]);
+      const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
+      if(!Number.isFinite(len)||len<0.01)continue;
+      const nx=-dz/len*width*0.5,nz=dx/len*width*0.5;
+      const y=MAP_Y_OFFSET+0.18;
+      byType[bucket].push(
+        ax+nx,y,az+nz, ax-nx,y,az-nz, bx-nx,y,bz-nz,
+        ax+nx,y,az+nz, bx-nx,y,bz-nz, bx+nx,y,bz+nz
+      );
+    }
+  }
+  return byType;
+}
+function makeRoadMeshes(roads,materials,worldSpace){
+  const buckets=roadQuadGeometry(roads,worldSpace);
+  const group=new THREE.Group();
+  for(const [type,verts] of Object.entries(buckets)){
+    if(!verts.length)continue;
+    const g=new THREE.BufferGeometry();
+    g.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));
+    g.computeBoundingSphere();
+    const m=new THREE.Mesh(g,materials[type]||roadMats.local);
+    m.frustumCulled=true;
+    m.renderOrder=2;
+    group.add(m);
+  }
+  return group;
+}
+async function loadRoadRuntime(){
+  try{
+    const res=await fetch("./jc-map/roads/manifest.json?ts="+Date.now(),{cache:"no-store"});
+    if(!res.ok)throw new Error("road manifest HTTP "+res.status);
+    const data=await res.json();
+    roadManifest=data.tiles||[];
+    roadManifestByKey=new Map(roadManifest.map(function(t){return [tileKey(t.col,t.row),t]}));
+    roadRuntimeReady=roadManifest.length>0;
+  }catch(err){
+    console.warn("Road tile manifest unavailable",err);
+    roadRuntimeReady=false;
+  }
+
+  try{
+    const res=await fetch("./jc-map/roads/major-roads.json?ts="+Date.now(),{cache:"no-store"});
+    if(!res.ok)throw new Error("major roads HTTP "+res.status);
+    const data=await res.json();
+    const roads=(data.roads||[]).map(function(r){
+      return {...r,w:Math.max(0.18,(Number(r.w)||0.6)*0.55)};
+    });
+    const mats={highway:roadMats.majorOverview,arterial:roadMats.majorOverview,local:roadMats.majorOverview};
+    const mesh=makeRoadMeshes(roads,mats,true);
+    mesh.name="CITYWIDE_MAJOR_ROADS";
+    majorRoadGroup.add(mesh);
+    majorRoadReady=true;
+  }catch(err){
+    console.warn("Major road overview unavailable",err);
+    majorRoadReady=false;
+  }
+}
+async function loadRoadTile(rec){
+  const key=tileKey(rec.col,rec.row);
+  if(loadedRoadTiles.has(key)||loadingRoadTiles.has(key))return;
+  loadingRoadTiles.add(key);
+  try{
+    const res=await fetch("./jc-map/roads/"+rec.file.replace(/^\.\//,""),{cache:"force-cache"});
+    if(!res.ok)throw new Error(key+" road HTTP "+res.status);
+    const data=await res.json();
+    const root=makeRoadMeshes(data.roads||[],roadMats,false);
+    root.name="ROADS_"+key;
+    root.position.copy(tileWorldPosition(rec.col,rec.row));
+    roadTileGroup.add(root);
+    loadedRoadTiles.set(key,{root:root,rec:rec,count:(data.roads||[]).length});
+  }catch(err){
+    console.warn("Road tile failed",key,err);
+  }finally{
+    loadingRoadTiles.delete(key);
+  }
+}
+function unloadRoadTile(key,item){
+  roadTileGroup.remove(item.root);
+  item.root.traverse(function(o){
+    if(o.geometry&&o.geometry.dispose)o.geometry.dispose();
+  });
+  loadedRoadTiles.delete(key);
+}
+async function streamRoadTiles(force){
+  if(!roadRuntimeReady||player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
+  const cell=worldCell(player.pos.x,player.pos.z);
+  const radius=player.pos.y<MIXED_DETAIL_ALTITUDE?LOAD_RADIUS+1:LOAD_RADIUS;
+  const wanted=roadManifest
+    .filter(function(t){return Math.abs(t.col-cell.col)<=radius&&Math.abs(t.row-cell.row)<=radius;})
+    .sort(function(a,b){
+      return (Math.abs(a.col-cell.col)+Math.abs(a.row-cell.row))-(Math.abs(b.col-cell.col)+Math.abs(b.row-cell.row));
+    });
+  for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
+    await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadRoadTile));
+  }
+  const keep=radius+2;
+  for(const [key,item] of Array.from(loadedRoadTiles.entries())){
+    if(Math.abs(item.rec.col-cell.col)>keep||Math.abs(item.rec.row-cell.row)>keep)unloadRoadTile(key,item);
+  }
+}
+function updateRoadLod(){
+  const y=player.pos.y;
+  roadTileGroup.visible=y<LOW_DETAIL_ONLY_ALTITUDE;
+  majorRoadGroup.visible=majorRoadReady&&y>=FULL_DETAIL_ALTITUDE;
+  const overviewOpacity=y>=LOW_DETAIL_ONLY_ALTITUDE?0.95:
+    THREE.MathUtils.lerp(0.2,0.82,THREE.MathUtils.smoothstep(y,FULL_DETAIL_ALTITUDE,LOW_DETAIL_ONLY_ALTITUDE));
+  roadMats.majorOverview.opacity=overviewOpacity;
+}
+
+
 let manifest=[];
 let manifestByKey=new Map();
 const loadedTiles=new Map();
@@ -891,7 +1036,9 @@ function updateHud(){
   const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
   const detail=player.pos.y< FULL_DETAIL_ALTITUDE?"FULL DETAIL":
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs";
+  const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
+  const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+roadText;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -900,7 +1047,8 @@ async function boot(){
   await loadManifest();
   rebuildDestinations();
   loadWorldLod();
-  await streamTiles(true);
+  await loadRoadRuntime();
+  await Promise.all([streamTiles(true),streamRoadTiles(true)]);
   toggleFlight();
   toggleFlight();
   updateHud();
@@ -909,6 +1057,8 @@ async function boot(){
     loadedTiles:loadedTiles,
     mapGroup:mapGroup,
     worldLodGroup:worldLodGroup,
+    roadTileGroup:roadTileGroup,
+    majorRoadGroup:majorRoadGroup,
     player:player,
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
@@ -922,6 +1072,9 @@ async function boot(){
     get flightMode(){return player.flightMode},
     get worldLodReady(){return worldLodReady},
     get worldLodBounds(){return worldLodBounds},
+    get roadRuntimeReady(){return roadRuntimeReady},
+    get majorRoadReady(){return majorRoadReady},
+    loadedRoadTiles:loadedRoadTiles,
     powers:powerState,
     usePower:usePower,
     togglePowerController:togglePowerController
@@ -938,10 +1091,15 @@ function frame(){
   syncControlledAvatar();
   updatePowers(dt);
   updateWorldLod();
+  updateRoadLod();
   updateAtmosphere();
   updateCamera(dt);
   streamClock+=dt;
-  if(streamClock>0.7){streamClock=0;streamTiles(false);}
+  if(streamClock>0.7){
+    streamClock=0;
+    streamTiles(false);
+    streamRoadTiles(false);
+  }
   updateHud();
   renderer.render(scene,camera);
 }

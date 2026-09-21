@@ -1,57 +1,397 @@
 import * as THREE from "three";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
 
-const mount=document.getElementById("game"),statusEl=document.getElementById("status"),progressEl=document.getElementById("progress"),locationEl=document.getElementById("location"),flightStateEl=document.getElementById("flightState"),solarFillEl=document.getElementById("solarFill"),solarTextEl=document.getElementById("solarText"),destinationEl=document.getElementById("destination"),hyperFxEl=document.getElementById("hyperFx");
-const lowSpec=matchMedia('(pointer:coarse)').matches||(navigator.hardwareConcurrency||4)<=4||('deviceMemory'in navigator&&(navigator.deviceMemory||4)<=4);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x8fa7b4);scene.fog=new THREE.FogExp2(0x9aa8aa,.00105);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,2500);
-const renderer=new THREE.WebGLRenderer({antialias:!lowSpec,powerPreference:lowSpec?"low-power":"high-performance"});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,lowSpec?1:1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.shadowMap.enabled=!lowSpec;mount.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xd6ecff,0x5b4b39,2.1));const sun=new THREE.DirectionalLight(0xffe7bd,4);sun.position.set(-300,500,240);sun.castShadow=true;scene.add(sun);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(1600,1200),new THREE.MeshStandardMaterial({color:0x8b806f,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.03;ground.receiveShadow=true;scene.add(ground);
+const mount=document.getElementById("game");
+const statusEl=document.getElementById("status");
+const progressEl=document.getElementById("progress");
+const locationEl=document.getElementById("location");
+const flightStateEl=document.getElementById("flightState");
+const solarFillEl=document.getElementById("solarFill");
+const solarTextEl=document.getElementById("solarText");
+const destinationEl=document.getElementById("destination");
+const hyperFxEl=document.getElementById("hyperFx");
+const missionEl=document.getElementById("mission");
+const creditEl=document.getElementById("credit");
 
-const roadMat=new THREE.MeshStandardMaterial({color:0x292c30,roughness:.86}),fenceMat=new THREE.MeshStandardMaterial({color:0x4f5559,roughness:.55,metalness:.45}),wallMat=new THREE.MeshStandardMaterial({color:0x80786d,roughness:.9}),gateOpenMat=new THREE.MeshStandardMaterial({color:0x56a36a}),gateClosedMat=new THREE.MeshStandardMaterial({color:0x9a4540});
-function facadeTexture(wall,windowColor){const c=document.createElement('canvas');c.width=64;c.height=128;const x=c.getContext('2d');x.fillStyle=wall;x.fillRect(0,0,64,128);x.fillStyle='rgba(0,0,0,.14)';for(let y=0;y<128;y+=16)x.fillRect(0,y,64,2);for(let y=6;y<124;y+=16)for(let col=5;col<60;col+=14){x.fillStyle=((y+col)/14)%4<1?'#172332':windowColor;x.fillRect(col,y,8,8)}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,4);t.magFilter=THREE.NearestFilter;return t}
-const facadeSpecs=[['#6f6256','#e6c975'],['#4c5864','#8fd8ff'],['#806c5b','#ffd28a'],['#54504f','#efb06d'],['#777a76','#bde8ff'],['#5e5148','#ffc862']];
-const facadeMats=facadeSpecs.map(([wall,light])=>{const map=facadeTexture(wall,light);return new THREE.MeshStandardMaterial({map,emissiveMap:map,emissive:0x332610,emissiveIntensity:.36,roughness:.72,metalness:.04})});
-const roofMats=[0x43484d,0x595751,0x3d4248].map(color=>new THREE.MeshStandardMaterial({color,roughness:.82,metalness:.06}));
-const buildings=[],barriers=[],gates=[],keys={};let city=null,vaultFlash=0,vaultCount=0,maxHeight=0,roofReached=false,missionComplete=false,solarCharge=55,solarHolding=false,namedDestinations=[],destinationIndex=-1;
-const hyper={active:false,time:0,duration:1.65,start:new THREE.Vector3(),end:new THREE.Vector3(),destination:null};
+const lowSpec=matchMedia("(pointer:coarse)").matches||(navigator.hardwareConcurrency||4)<=4||("deviceMemory" in navigator&&(navigator.deviceMemory||4)<=4);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x101722);
+scene.fog=new THREE.FogExp2(0x17202b,0.00055);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,12000);
+const renderer=new THREE.WebGLRenderer({antialias:!lowSpec,powerPreference:lowSpec?"low-power":"high-performance"});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,lowSpec?1:1.4));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.08;
+mount.appendChild(renderer.domElement);
 
-function pointInPoly(x,z,pts){let inside=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const a=pts[i],b=pts[j];if(((a[1]>z)!==(b[1]>z))&&(x<(b[0]-a[0])*(z-a[1])/((b[1]-a[1])||1e-9)+a[0]))inside=!inside}return inside}
-function segDist(px,pz,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],d2=dx*dx+dz*dz||1,t=THREE.MathUtils.clamp(((px-a[0])*dx+(pz-a[1])*dz)/d2,0,1),x=a[0]+dx*t,z=a[1]+dz*t,l=Math.sqrt(d2);return{d:Math.hypot(px-x,pz-z),x,z,nx:-dz/l,nz:dx/l}}
-function nearestBarrier(x,z,maxD=.82){let best=null;for(const b of barriers)for(let i=0;i<b.data.line_xz.length-1;i++){const q=segDist(x,z,b.data.line_xz[i],b.data.line_xz[i+1]);if(q.d<=maxD&&(!best||q.d<best.d))best={...q,barrier:b}}return best}
-function gateOpeningAt(x,z,maxD=1.35){return gates.find(g=>g.data.gameplay?.passable&&Math.hypot(x-g.data.position_xz[0],z-g.data.position_xz[1])<=maxD)||null}
-function blockedBuilding(x,z,y){return buildings.find(b=>pointInPoly(x,z,b.data.footprint_xz)&&y<b.data.height_m-.15)||null}
-function blockedBarrier(x,z,y){const q=nearestBarrier(x,z);if(!q||gateOpeningAt(q.x,q.z))return null;return y<q.barrier.data.height_m-.05?q:null}
-function supportHeight(x,z,y){let h=0;for(const b of buildings){const top=b.data.height_m;if(pointInPoly(x,z,b.data.footprint_xz)&&y>=top-1.2&&top<=y+2.2)h=Math.max(h,top)}return h}
-function nearestBuildingEdge(x,z,maxD=1.45){let best=null;for(const b of buildings){if(!b.data.climb?.wall_climb)continue;const pts=b.data.footprint_xz;for(let i=0;i<pts.length-1;i++){const q=segDist(x,z,pts[i],pts[i+1]);if(q.d<=maxD&&(!best||q.d<best.d))best={...q,building:b}}}return best}
+scene.add(new THREE.HemisphereLight(0xb9d7ff,0x2e241d,2.4));
+const moon=new THREE.DirectionalLight(0xffe9c5,3.2);
+moon.position.set(-500,900,350);
+scene.add(moon);
+const fill=new THREE.DirectionalLight(0x738dff,1.35);
+fill.position.set(600,300,-500);
+scene.add(fill);
 
-function makeRoad(r){const pts=r.centerline_xz||[],w=Math.max(1.4,r.width_m||6);for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<.3)continue;const m=new THREE.Mesh(new THREE.BoxGeometry(w,.08,len+.2),roadMat);m.position.set((a[0]+b[0])/2,.02,(a[1]+b[1])/2);m.rotation.y=Math.atan2(dx,dz);m.receiveShadow=true;scene.add(m)}}
-function makeBuilding(b){const pts=b.footprint_xz;if(!pts||pts.length<4)return;const s=new THREE.Shape();s.moveTo(pts[0][0],-pts[0][1]);for(let i=1;i<pts.length-1;i++)s.lineTo(pts[i][0],-pts[i][1]);const g=new THREE.ExtrudeGeometry(s,{depth:b.height_m,bevelEnabled:false});g.rotateX(-Math.PI/2);const seed=Math.abs(Number(b.osm_id)||0),facade=facadeMats[seed%facadeMats.length],roof=roofMats[seed%roofMats.length],m=new THREE.Mesh(g,[roof,facade]);m.castShadow=!lowSpec;m.receiveShadow=true;m.userData={source:'OpenStreetMap',osmId:b.osm_id,name:b.name||null,heightSource:b.height_source,finishedProceduralFacade:true};scene.add(m);buildings.push({data:b,mesh:m})}
-function makeBarrier(b){const group=new THREE.Group(),mat=b.barrier==="fence"?fenceMat:wallMat,h=Math.max(.25,b.height_m||1.5),pts=b.line_xz||[];for(let i=0;i<pts.length-1;i++){const a=pts[i],c=pts[i+1],dx=c[0]-a[0],dz=c[1]-a[1],len=Math.hypot(dx,dz);if(len<.2)continue;const m=new THREE.Mesh(new THREE.BoxGeometry(b.barrier==="fence"?.07:.22,h,len),mat);m.position.set((a[0]+c[0])/2,h/2,(a[1]+c[1])/2);m.rotation.y=Math.atan2(dx,dz);m.castShadow=true;group.add(m)}scene.add(group);barriers.push({data:b,group})}
-function makeGate(g){const pass=!!g.gameplay?.passable,m=new THREE.Mesh(new THREE.BoxGeometry(.45,1.7,.45),pass?gateOpenMat:gateClosedMat);m.position.set(g.position_xz[0],.85,g.position_xz[1]);scene.add(m);gates.push({data:g,mesh:m})}
+const holeGround=new THREE.Mesh(
+  new THREE.PlaneGeometry(20000,20000),
+  new THREE.MeshStandardMaterial({color:0x17191d,roughness:1,metalness:0})
+);
+holeGround.rotation.x=-Math.PI/2;
+holeGround.position.y=-1.5;
+scene.add(holeGround);
 
-const SAFE_SPAWN=new THREE.Vector3(-10,0,-10);const player={root:new THREE.Group(),pos:SAFE_SPAWN.clone(),vel:new THREE.Vector3(),flightVelocity:new THREE.Vector3(),grounded:true,climbing:false,vaulting:false,flying:false,yaw:Math.PI};
-const jcAtlas=new THREE.TextureLoader().load('./jc-the-holy-og-assets/character-atlas.png');jcAtlas.colorSpace=THREE.SRGBColorSpace;jcAtlas.wrapS=jcAtlas.wrapT=THREE.RepeatWrapping;jcAtlas.repeat.set(.25,.5);jcAtlas.offset.set(0,.5);jcAtlas.magFilter=THREE.LinearFilter;const jcMaterial=new THREE.SpriteMaterial({map:jcAtlas,transparent:true,depthWrite:false,alphaTest:.08,toneMapped:false});const jcSprite=new THREE.Sprite(jcMaterial);jcSprite.center.set(.5,0);jcSprite.position.y=.02;jcSprite.scale.set(3.25,3.25,1);player.root.add(jcSprite);const glow=new THREE.PointLight(0xffd45a,2.4,8,2);glow.position.y=1.8;player.root.add(glow);const flightRing=new THREE.Mesh(new THREE.RingGeometry(.7,1.05,28),new THREE.MeshBasicMaterial({color:0x7de6ff,transparent:true,opacity:.0,side:THREE.DoubleSide,depthWrite:false}));flightRing.rotation.x=-Math.PI/2;flightRing.position.y=.08;player.root.add(flightRing);scene.add(player.root);
-let camYaw=Math.PI,camPitch=.32,camDist=8,drag=false,lx=0,ly=0;
-function toggleFlight(){if(hyper.active)return;player.flying=!player.flying;player.climbing=false;player.vaulting=false;player.vel.set(0,0,0);player.flightVelocity.set(0,0,0);if(player.flying){const trapped=blockedBuilding(player.pos.x,player.pos.z,player.pos.y);if(trapped)player.pos.y=trapped.data.height_m+3;else player.pos.y=Math.max(1.5,player.pos.y+1.5);player.grounded=false}else player.grounded=false;flightStateEl.textContent=player.flying?'FLIGHT ON · AIM WITH MOUSE':'FLIGHT OFF';flightStateEl.style.color=player.flying?'#ffd45a':'#7de6ff'}
-function destinationPoint(b){const pts=b.data.footprint_xz||[];let x=0,z=0,n=0;for(let i=0;i<pts.length;i++){if(i===pts.length-1&&pts[i][0]===pts[0][0]&&pts[i][1]===pts[0][1])continue;x+=pts[i][0];z+=pts[i][1];n++}return{x:x/Math.max(1,n),z:z/Math.max(1,n),y:b.data.height_m+12,name:b.data.name||'CITY LANDMARK',building:b}}
-function selectDestination(step=1){if(!namedDestinations.length)return null;destinationIndex=(destinationIndex+step+namedDestinations.length)%namedDestinations.length;const d=namedDestinations[destinationIndex],distance=Math.hypot(player.pos.x-d.x,player.pos.y-d.y,player.pos.z-d.z);destinationEl.textContent=`TARGET: ${d.name.toUpperCase()} · ${distance.toFixed(0)}m`;return d}
-function beginHyperspeed(){if(hyper.active)return;if(!player.flying)toggleFlight();const d=namedDestinations[destinationIndex]||selectDestination();if(!d){statusEl.textContent='NO NAMED DESTINATION AVAILABLE';return}if(solarCharge<40){statusEl.textContent=`HYPERSPEED NEEDS 40% SOLAR · ${solarCharge.toFixed(0)}% STORED`;return}solarCharge-=40;hyper.active=true;hyper.time=0;hyper.start.copy(player.pos);hyper.end.set(d.x,d.y,d.z);hyper.destination=d;player.flightVelocity.set(0,0,0);flightStateEl.textContent=`HYPERSPEED → ${d.name.toUpperCase()}`;flightStateEl.style.color='#fff3a0'}
-function updateSolar(dt){if((solarHolding||keys.KeyR)&&player.flying&&!hyper.active)solarCharge=Math.min(100,solarCharge+28*dt);solarFillEl.style.width=`${solarCharge}%`;solarTextEl.textContent=(solarHolding||keys.KeyR)&&player.flying&&!hyper.active?`${solarCharge.toFixed(0)}% · ABSORBING SUNLIGHT`:`${solarCharge.toFixed(0)}%`;glow.intensity=2.4+solarCharge*.035+(solarHolding?2:0);glow.color.setHex(solarHolding?0xfff2a3:0xffd45a)}
-function updateHyperspeed(dt){if(!hyper.active)return false;hyper.time+=dt;const t=Math.min(1,hyper.time/hyper.duration),ease=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;player.pos.lerpVectors(hyper.start,hyper.end,ease);player.yaw=Math.atan2(hyper.end.x-hyper.start.x,hyper.end.z-hyper.start.z);hyperFxEl.style.opacity=String(Math.sin(Math.PI*t)*.9);hyperFxEl.style.transform=`scale(${.65+t*1.35}) rotate(${t*24}deg)`;if(t>=1){hyper.active=false;player.pos.copy(hyper.end);player.flightVelocity.set(0,0,0);hyperFxEl.style.opacity='0';flightStateEl.textContent=`ARRIVED · ${hyper.destination.name.toUpperCase()}`;selectDestination(1)}return true}
-function applyLook(dx,dy){camYaw-=dx*.0026;camPitch=THREE.MathUtils.clamp(camPitch+dy*.0023,-.82,.92)}
-renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());renderer.domElement.addEventListener("pointerdown",e=>{if(e.button===2){e.preventDefault();beginHyperspeed();return}drag=true;lx=e.clientX;ly=e.clientY;if(e.button===0){solarHolding=true;if(player.flying&&document.pointerLockElement!==renderer.domElement)renderer.domElement.requestPointerLock?.()}});addEventListener("pointermove",e=>{if(document.pointerLockElement===renderer.domElement){applyLook(e.movementX,e.movementY);return}if(!drag)return;applyLook(e.clientX-lx,e.clientY-ly);lx=e.clientX;ly=e.clientY});addEventListener("pointerup",e=>{drag=false;if(e.button===0)solarHolding=false});addEventListener("blur",()=>{drag=false;solarHolding=false;Object.keys(keys).forEach(k=>keys[k]=false)});addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat&&!player.grounded&&!player.flying)toggleFlight();keys[e.code]=true;if(e.code==="Space")e.preventDefault();if(e.code==="KeyF"&&!e.repeat)toggleFlight();if(e.code==="KeyQ"&&!e.repeat)selectDestination();if(e.code==="KeyH"&&!e.repeat)beginHyperspeed()});addEventListener("keyup",e=>keys[e.code]=false);document.querySelectorAll('[data-key]').forEach(button=>{const code=button.dataset.key;const on=e=>{e.preventDefault();if(code==='Space'&&!player.grounded&&!player.flying)toggleFlight();keys[code]=true};const off=e=>{e.preventDefault();keys[code]=false};button.addEventListener('pointerdown',on);button.addEventListener('pointerup',off);button.addEventListener('pointercancel',off);button.addEventListener('pointerleave',off)});document.querySelector('[data-flight-toggle]')?.addEventListener('pointerdown',e=>{e.preventDefault();toggleFlight()});document.querySelector('[data-solar-charge]')?.addEventListener('pointerdown',e=>{e.preventDefault();solarHolding=true});for(const event of ['pointerup','pointercancel','pointerleave'])document.querySelector('[data-solar-charge]')?.addEventListener(event,e=>{e.preventDefault();solarHolding=false});document.querySelector('[data-target-cycle]')?.addEventListener('pointerdown',e=>{e.preventDefault();selectDestination()});document.querySelector('[data-hyper-launch]')?.addEventListener('pointerdown',e=>{e.preventDefault();beginHyperspeed()});
+const TILE_SOURCE_SIZE=1000;
+const TILE_SCALE=0.1;
+const TILE_WORLD_SIZE=TILE_SOURCE_SIZE*TILE_SCALE;
+const ORIGIN_COL=8;
+const ORIGIN_ROW=8;
+const MAP_Y_OFFSET=-20.5;
+const LOAD_RADIUS=lowSpec?1:2;
+const KEEP_RADIUS=lowSpec?2:4;
+const MAX_CONCURRENT=lowSpec?2:4;
 
-function tryVault(move){if(!keys.Space||!player.grounded)return false;const ahead=player.pos.clone().addScaledVector(move,1.05),hit=blockedBarrier(ahead.x,ahead.z,player.pos.y);if(!hit||!hit.barrier.data.gameplay?.vaultable)return false;const n=new THREE.Vector3(hit.nx,0,hit.nz);if(n.dot(move)<0)n.multiplyScalar(-1);player.pos.x=hit.x+n.x*1.05;player.pos.z=hit.z+n.z*1.05;player.vel.y=Math.max(7.6,Math.sqrt(42*(hit.barrier.data.height_m+.55)));player.grounded=false;player.vaulting=true;vaultFlash=1;vaultCount++;keys.Space=false;return true}
+const gltfLoader=new GLTFLoader();
+const mapGroup=new THREE.Group();
+mapGroup.name="JC_GLB_TILE_MAP";
+scene.add(mapGroup);
 
-function updateMission(){maxHeight=Math.max(maxHeight,player.pos.y);if(player.grounded&&player.pos.y>3)roofReached=true;const done=[vaultCount>0,roofReached,maxHeight>=20].filter(Boolean).length;if(done===3)missionComplete=true;progressEl.textContent=missionComplete?'MISSION COMPLETE — CITY ASCENSION UNLOCKED':`${done} / 3 objectives · height ${maxHeight.toFixed(1)}m`;let nearest=null;for(const b of buildings){if(!b.data.name)continue;const p=b.data.footprint_xz?.[0];if(!p)continue;const d=Math.hypot(player.pos.x-p[0],player.pos.z-p[1]);if(!nearest||d<nearest.d)nearest={d,name:b.data.name}}locationEl.textContent=nearest&&nearest.d<220?`${nearest.name.toUpperCase()} · ${nearest.d.toFixed(0)}m`:'DOWNTOWN LAS VEGAS'}
-function updateSprite(){const viewYaw=Math.atan2(camera.position.x-player.pos.x,camera.position.z-player.pos.z),rel=Math.atan2(Math.sin(player.yaw-viewYaw),Math.cos(player.yaw-viewYaw));let frame=Math.abs(rel)>2.35?1:Math.abs(rel)<.78?0:rel>0?2:3;jcAtlas.offset.x=frame*.25;jcAtlas.offset.y=.5;jcMaterial.rotation=THREE.MathUtils.lerp(jcMaterial.rotation,hyper.active?0:player.flying?-player.flightVelocity.x*.012:0,.12);const ringTarget=hyper.active?1:player.flying?.72:0;flightRing.material.opacity=THREE.MathUtils.lerp(flightRing.material.opacity,ringTarget,.14);flightRing.scale.setScalar(hyper.active?1.8+Math.sin(hyper.time*35)*.3:1+solarCharge*.002);flightRing.rotation.z+=hyper.active?.22:player.flying?.045:.01;player.root.position.copy(player.pos);player.root.rotation.y=0}
-function updateFlight(dt,r){const boost=keys.ShiftLeft?1.8:1,vertical=(keys.Space?1:0)-((keys.KeyC||keys.ControlLeft)?1:0),longitudinal=(keys.KeyW?1:0)-(keys.KeyS?1:0),lateral=(keys.KeyD?1:0)-(keys.KeyA?1:0),aim=new THREE.Vector3(-Math.sin(camYaw)*Math.cos(camPitch),-Math.sin(camPitch),-Math.cos(camYaw)*Math.cos(camPitch)),move=new THREE.Vector3().addScaledVector(aim,longitudinal).addScaledVector(r,lateral),target=new THREE.Vector3();if(move.lengthSq())target.copy(move.normalize()).multiplyScalar(18*boost);target.y+=vertical*13*boost;const response=1-Math.exp(-5.5*dt);player.flightVelocity.lerp(target,response);if(!move.lengthSq())player.flightVelocity.multiplyScalar(Math.exp(-3.5*dt));const next=player.pos.clone().addScaledVector(player.flightVelocity,dt);next.y=THREE.MathUtils.clamp(next.y,1.2,480);if(!blockedBuilding(next.x,next.z,next.y)&&!blockedBarrier(next.x,next.z,next.y))player.pos.copy(next);else player.flightVelocity.multiplyScalar(.18);if(move.lengthSq())player.yaw=Math.atan2(move.x,move.z);player.grounded=false;player.climbing=false;player.vaulting=false}
-function updatePlayer(dt){updateSolar(dt);if(updateHyperspeed(dt)){updateSprite();statusEl.textContent=`HYPERSPEED · ${(hyper.time/hyper.duration*100).toFixed(0)}% · ${solarCharge.toFixed(0)}% SOLAR`;updateMission();return}const f=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw)),r=new THREE.Vector3(f.z,0,-f.x),move=new THREE.Vector3().addScaledVector(f,(keys.KeyW?1:0)-(keys.KeyS?1:0)).addScaledVector(r,(keys.KeyD?1:0)-(keys.KeyA?1:0)),edge=nearestBuildingEdge(player.pos.x,player.pos.z),wantsClimb=!player.flying&&keys.KeyE&&edge;
- if(player.flying)updateFlight(dt,r);
- else if(wantsClimb){player.climbing=true;player.vaulting=false;player.vel.y=5.8;player.pos.x=THREE.MathUtils.lerp(player.pos.x,edge.x+edge.nx*.58,Math.min(1,dt*8));player.pos.z=THREE.MathUtils.lerp(player.pos.z,edge.z+edge.nz*.58,Math.min(1,dt*8));if(player.pos.y>=edge.building.data.height_m-.15){player.pos.y=edge.building.data.height_m;player.vel.y=0;player.climbing=false}}
- else{player.climbing=false;if(move.lengthSq()>.001){move.normalize();const sp=keys.ShiftLeft?11:6.3;if(!tryVault(move)){const nx=player.pos.x+move.x*sp*dt,nz=player.pos.z+move.z*sp*dt;if(!blockedBuilding(nx,nz,player.pos.y)&&!blockedBarrier(nx,nz,player.pos.y)){player.pos.x=nx;player.pos.z=nz}}player.yaw=Math.atan2(move.x,move.z)}if(keys.Space&&player.grounded){player.vel.y=8.3;player.grounded=false;keys.Space=false}player.vel.y-=21*dt;player.pos.y+=player.vel.y*dt;const floor=supportHeight(player.pos.x,player.pos.z,player.pos.y);if(player.vel.y<=0&&player.pos.y<=floor+.08){player.pos.y=floor;player.vel.y=0;player.grounded=true;player.vaulting=false}if(player.pos.y<0){player.pos.y=0;player.vel.y=0;player.grounded=true;player.vaulting=false}}
- updateSprite();vaultFlash=Math.max(0,vaultFlash-dt);const fb=nearestBarrier(player.pos.x,player.pos.z,1.8);let txt=player.flying?`${solarHolding||keys.KeyR?'SOLAR CHARGING':'FLYING'} · ${player.pos.y.toFixed(1)}m`:player.climbing?"CLIMBING":(player.vaulting||vaultFlash>0)?"VAULTING":"Y="+player.pos.y.toFixed(1)+"m";if(fb&&!player.flying){const d=fb.barrier.data;txt+=` • ${d.barrier} ${d.height_m.toFixed(1)}m • ${d.gameplay?.vaultable?"HOPPABLE":d.gameplay?.climbable?"CLIMBABLE":"BLOCKING"}`}statusEl.textContent=txt;const d=namedDestinations[destinationIndex];if(d){const distance=Math.hypot(player.pos.x-d.x,player.pos.y-d.y,player.pos.z-d.z);destinationEl.textContent=`TARGET: ${d.name.toUpperCase()} · ${distance.toFixed(0)}m`}updateMission()}
-function updateCamera(dt){const target=player.pos.clone().add(new THREE.Vector3(0,1.25,0)),distance=hyper.active?12+Math.sin(Math.PI*Math.min(1,hyper.time/hyper.duration))*7:camDist,desired=target.clone().add(new THREE.Vector3(Math.sin(camYaw)*Math.cos(camPitch)*distance,Math.sin(camPitch)*distance+1.2,Math.cos(camYaw)*Math.cos(camPitch)*distance));camera.position.lerp(desired,1-Math.exp(-(hyper.active?5:10)*dt));camera.fov=THREE.MathUtils.lerp(camera.fov,hyper.active?88:62,.12);camera.updateProjectionMatrix();camera.lookAt(target)}
-async function boot(){const res=await fetch("./jc-the-holy-og-assets/generated/real_city_chunk.json",{cache:"no-store"});if(!res.ok)throw new Error(`real_city_chunk.json HTTP ${res.status}`);city=await res.json();(city.roads||[]).forEach(makeRoad);(city.buildings||[]).forEach(makeBuilding);(city.barriers||[]).forEach(makeBarrier);(city.gates||[]).forEach(makeGate);if(buildings.length!==(city.buildings||[]).length)throw new Error(`building render incomplete: ${buildings.length}/${city.buildings.length}`);const seen=new Set();namedDestinations=buildings.filter(b=>b.data.name&&!seen.has(b.data.name)&&seen.add(b.data.name)).map(destinationPoint).sort((a,b)=>Math.hypot(player.pos.x-a.x,player.pos.z-a.z)-Math.hypot(player.pos.x-b.x,player.pos.z-b.z));selectDestination();statusEl.textContent=`${buildings.length}/${city.buildings.length} buildings finalized • solar flight ready`;window.JC_REAL_CLIMB_TEST={city,buildings,barriers,gates,player,get solarCharge(){return solarCharge},namedDestinations,beginHyperspeed,selectDestination,renderContract:{allLoadedBuildingsFinalized:true,finishedBuildingCount:buildings.length,flightControls:true,mouseAimFlight:true,solarCharging:true,destinationHyperspeed:true,jcAtlas3DSprite:true}};requestAnimationFrame(frame)}
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const dt=Math.min(.033,clock.getDelta());updatePlayer(dt);updateCamera(dt);renderer.render(scene,camera)}addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});boot().catch(e=>{console.error(e);statusEl.textContent="LOAD ERROR: "+e.message});
+let manifest=[];
+let manifestByKey=new Map();
+const loadedTiles=new Map();
+const loadingTiles=new Set();
+const failedTiles=new Set();
+let streamBusy=false;
+let lastStreamCell="";
+let manifestVersion="";
+
+function tileKey(col,row){
+  return "C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
+}
+function tileWorldPosition(col,row){
+  return new THREE.Vector3((col-ORIGIN_COL)*TILE_WORLD_SIZE,MAP_Y_OFFSET,-(row-ORIGIN_ROW)*TILE_WORLD_SIZE);
+}
+function worldCell(x,z){
+  return {
+    col:ORIGIN_COL+Math.floor(x/TILE_WORLD_SIZE),
+    row:ORIGIN_ROW+Math.floor(-z/TILE_WORLD_SIZE)
+  };
+}
+function disposeTile(root){
+  root.traverse(function(o){
+    if(!o.isMesh)return;
+    if(o.geometry)o.geometry.dispose();
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(function(m){
+      if(!m)return;
+      ["map","normalMap","roughnessMap","metalnessMap","emissiveMap","aoMap","alphaMap"].forEach(function(k){
+        if(m[k]&&m[k].dispose)m[k].dispose();
+      });
+      if(m.dispose)m.dispose();
+    });
+  });
+}
+async function loadManifest(){
+  const res=await fetch("./jc-map/tile-manifest.json?ts="+Date.now(),{cache:"no-store"});
+  if(!res.ok)throw new Error("tile-manifest.json HTTP "+res.status);
+  const data=await res.json();
+  manifest=(data.tiles||[]).filter(function(t){return Number.isFinite(t.col)&&Number.isFinite(t.row)&&t.url});
+  manifestByKey=new Map(manifest.map(function(t){return [tileKey(t.col,t.row),t]}));
+  manifestVersion=data.generatedAt||String(manifest.length);
+  if(!manifest.length)throw new Error("No C##_R## GLB tiles found in manifest");
+  return data;
+}
+async function loadOneTile(rec){
+  const key=tileKey(rec.col,rec.row);
+  if(loadedTiles.has(key)||loadingTiles.has(key)||failedTiles.has(key))return;
+  loadingTiles.add(key);
+  try{
+    const version=rec.sha?("?v="+rec.sha.slice(0,10)):"";
+    const gltf=await gltfLoader.loadAsync(rec.url+version);
+    const root=gltf.scene;
+    root.name=key;
+    root.scale.setScalar(TILE_SCALE);
+    root.position.copy(tileWorldPosition(rec.col,rec.row));
+    root.traverse(function(o){
+      if(!o.isMesh)return;
+      o.castShadow=false;
+      o.receiveShadow=true;
+      o.frustumCulled=true;
+      const mats=Array.isArray(o.material)?o.material:[o.material];
+      mats.forEach(function(m){
+        if(m&&m.map)m.map.colorSpace=THREE.SRGBColorSpace;
+      });
+    });
+    mapGroup.add(root);
+    loadedTiles.set(key,{root:root,rec:rec});
+  }catch(err){
+    console.error("GLB tile load failed",key,err);
+    failedTiles.add(key);
+  }finally{
+    loadingTiles.delete(key);
+  }
+}
+async function streamTiles(force){
+  if(streamBusy)return;
+  const cell=worldCell(player.pos.x,player.pos.z);
+  const cellKey=tileKey(cell.col,cell.row);
+  if(!force&&cellKey===lastStreamCell)return;
+  lastStreamCell=cellKey;
+  streamBusy=true;
+  try{
+    const wanted=manifest
+      .filter(function(t){return Math.abs(t.col-cell.col)<=LOAD_RADIUS&&Math.abs(t.row-cell.row)<=LOAD_RADIUS;})
+      .sort(function(a,b){
+        return (Math.abs(a.col-cell.col)+Math.abs(a.row-cell.row))-(Math.abs(b.col-cell.col)+Math.abs(b.row-cell.row));
+      });
+    for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
+      await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadOneTile));
+    }
+    for(const entry of Array.from(loadedTiles.entries())){
+      const key=entry[0],item=entry[1];
+      if(Math.abs(item.rec.col-cell.col)>KEEP_RADIUS||Math.abs(item.rec.row-cell.row)>KEEP_RADIUS){
+        mapGroup.remove(item.root);
+        disposeTile(item.root);
+        loadedTiles.delete(key);
+      }
+    }
+  }finally{
+    streamBusy=false;
+    updateHud();
+  }
+}
+
+const player={
+  root:new THREE.Group(),
+  pos:new THREE.Vector3(50,4,-50),
+  flying:true,
+  yaw:Math.PI,
+  velocity:new THREE.Vector3()
+};
+const jcAtlas=new THREE.TextureLoader().load("./jc-the-holy-og-assets/character-atlas.png");
+jcAtlas.colorSpace=THREE.SRGBColorSpace;
+jcAtlas.wrapS=jcAtlas.wrapT=THREE.RepeatWrapping;
+jcAtlas.repeat.set(0.25,0.5);
+jcAtlas.offset.set(0,0.5);
+const jcMaterial=new THREE.SpriteMaterial({map:jcAtlas,transparent:true,depthWrite:false,alphaTest:0.08,toneMapped:false});
+const jcSprite=new THREE.Sprite(jcMaterial);
+jcSprite.center.set(0.5,0);
+jcSprite.scale.set(4.2,4.2,1);
+player.root.add(jcSprite);
+const glow=new THREE.PointLight(0xffd45a,5,30,2);
+glow.position.y=2.4;
+player.root.add(glow);
+const flightRing=new THREE.Mesh(
+  new THREE.RingGeometry(1.0,1.35,32),
+  new THREE.MeshBasicMaterial({color:0x7de6ff,transparent:true,opacity:0.72,side:THREE.DoubleSide,depthWrite:false})
+);
+flightRing.rotation.x=-Math.PI/2;
+flightRing.position.y=0.12;
+player.root.add(flightRing);
+scene.add(player.root);
+
+const keys={};
+let camYaw=Math.PI,camPitch=0.28,camDist=14,drag=false,lx=0,ly=0;
+let solarCharge=100,solarHolding=false;
+let destinationIndex=-1;
+let destinations=[];
+const hyper={active:false,t:0,duration:1.5,start:new THREE.Vector3(),end:new THREE.Vector3(),name:""};
+
+function currentCellName(){
+  const c=worldCell(player.pos.x,player.pos.z);
+  return tileKey(c.col,c.row);
+}
+function rebuildDestinations(){
+  destinations=manifest.map(function(t){
+    const p=tileWorldPosition(t.col,t.row);
+    return {name:tileKey(t.col,t.row),x:p.x+TILE_WORLD_SIZE*0.5,y:24,z:p.z-TILE_WORLD_SIZE*0.5};
+  }).sort(function(a,b){
+    return Math.hypot(player.pos.x-a.x,player.pos.z-a.z)-Math.hypot(player.pos.x-b.x,player.pos.z-b.z);
+  });
+  if(destinations.length)destinationIndex=0;
+}
+function selectDestination(step){
+  if(!destinations.length)return null;
+  destinationIndex=(destinationIndex+(step||1)+destinations.length)%destinations.length;
+  const d=destinations[destinationIndex];
+  destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
+  return d;
+}
+function beginHyperspeed(){
+  const d=destinations[destinationIndex]||selectDestination(1);
+  if(!d)return;
+  if(solarCharge<25){statusEl.textContent="HYPERSPEED NEEDS 25% SOLAR";return;}
+  solarCharge-=25;
+  hyper.active=true;
+  hyper.t=0;
+  hyper.start.copy(player.pos);
+  hyper.end.set(d.x,d.y,d.z);
+  hyper.name=d.name;
+}
+function toggleFlight(){
+  player.flying=!player.flying;
+  if(!player.flying)player.pos.y=Math.max(3,player.pos.y);
+  flightStateEl.textContent=player.flying?"FLIGHT ON · REAL GLB MAP":"GROUND MODE";
+  flightStateEl.style.color=player.flying?"#ffd45a":"#7de6ff";
+}
+function applyLook(dx,dy){
+  camYaw-=dx*0.0026;
+  camPitch=THREE.MathUtils.clamp(camPitch+dy*0.0023,-0.7,0.9);
+}
+
+renderer.domElement.addEventListener("contextmenu",function(e){e.preventDefault();});
+renderer.domElement.addEventListener("pointerdown",function(e){
+  if(e.button===2){e.preventDefault();beginHyperspeed();return;}
+  drag=true;lx=e.clientX;ly=e.clientY;
+  if(e.button===0)solarHolding=true;
+});
+addEventListener("pointermove",function(e){
+  if(!drag)return;
+  applyLook(e.clientX-lx,e.clientY-ly);
+  lx=e.clientX;ly=e.clientY;
+});
+addEventListener("pointerup",function(e){drag=false;if(e.button===0)solarHolding=false;});
+addEventListener("keydown",function(e){
+  keys[e.code]=true;
+  if(e.code==="KeyF"&&!e.repeat)toggleFlight();
+  if(e.code==="KeyQ"&&!e.repeat)selectDestination(1);
+  if(e.code==="KeyH"&&!e.repeat)beginHyperspeed();
+  if(e.code==="Space")e.preventDefault();
+});
+addEventListener("keyup",function(e){keys[e.code]=false;});
+addEventListener("blur",function(){drag=false;solarHolding=false;Object.keys(keys).forEach(function(k){keys[k]=false;});});
+
+document.querySelectorAll("[data-key]").forEach(function(button){
+  const code=button.dataset.key;
+  const on=function(e){e.preventDefault();keys[code]=true;};
+  const off=function(e){e.preventDefault();keys[code]=false;};
+  button.addEventListener("pointerdown",on);
+  button.addEventListener("pointerup",off);
+  button.addEventListener("pointercancel",off);
+  button.addEventListener("pointerleave",off);
+});
+document.querySelector("[data-flight-toggle]")?.addEventListener("pointerdown",function(e){e.preventDefault();toggleFlight();});
+document.querySelector("[data-solar-charge]")?.addEventListener("pointerdown",function(e){e.preventDefault();solarHolding=true;});
+["pointerup","pointercancel","pointerleave"].forEach(function(ev){
+  document.querySelector("[data-solar-charge]")?.addEventListener(ev,function(e){e.preventDefault();solarHolding=false;});
+});
+document.querySelector("[data-target-cycle]")?.addEventListener("pointerdown",function(e){e.preventDefault();selectDestination(1);});
+document.querySelector("[data-hyper-launch]")?.addEventListener("pointerdown",function(e){e.preventDefault();beginHyperspeed();});
+
+function updateSolar(dt){
+  if((solarHolding||keys.KeyR)&&!hyper.active)solarCharge=Math.min(100,solarCharge+30*dt);
+  solarFillEl.style.width=solarCharge+"%";
+  solarTextEl.textContent=Math.round(solarCharge)+"%";
+  glow.intensity=4+solarCharge*0.04;
+}
+function updateHyper(dt){
+  if(!hyper.active)return false;
+  hyper.t+=dt;
+  const t=Math.min(1,hyper.t/hyper.duration);
+  const e=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  player.pos.lerpVectors(hyper.start,hyper.end,e);
+  hyperFxEl.style.opacity=String(Math.sin(Math.PI*t)*0.9);
+  hyperFxEl.style.transform="scale("+(0.65+t*1.35)+") rotate("+(t*24)+"deg)";
+  if(t>=1){
+    hyper.active=false;
+    hyperFxEl.style.opacity="0";
+    streamTiles(true);
+    selectDestination(1);
+  }
+  return true;
+}
+function updatePlayer(dt){
+  updateSolar(dt);
+  if(updateHyper(dt)){player.root.position.copy(player.pos);return;}
+  const forward=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw));
+  const right=new THREE.Vector3(forward.z,0,-forward.x);
+  const move=new THREE.Vector3()
+    .addScaledVector(forward,(keys.KeyW?1:0)-(keys.KeyS?1:0))
+    .addScaledVector(right,(keys.KeyD?1:0)-(keys.KeyA?1:0));
+  const boost=keys.ShiftLeft?2.2:1;
+  const speed=(player.flying?42:26)*boost;
+  if(move.lengthSq()){
+    move.normalize();
+    player.pos.addScaledVector(move,speed*dt);
+    player.yaw=Math.atan2(move.x,move.z);
+  }
+  if(player.flying){
+    player.pos.y+=((keys.Space?1:0)-((keys.KeyC||keys.ControlLeft)?1:0))*28*boost*dt;
+    player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,420);
+  }else{
+    player.pos.y=3;
+  }
+  const viewYaw=Math.atan2(camera.position.x-player.pos.x,camera.position.z-player.pos.z);
+  const rel=Math.atan2(Math.sin(player.yaw-viewYaw),Math.cos(player.yaw-viewYaw));
+  let frame=Math.abs(rel)>2.35?1:Math.abs(rel)<0.78?0:rel>0?2:3;
+  jcAtlas.offset.x=frame*0.25;
+  jcAtlas.offset.y=0.5;
+  flightRing.material.opacity=THREE.MathUtils.lerp(flightRing.material.opacity,player.flying?0.72:0.08,0.12);
+  flightRing.rotation.z+=player.flying?0.05:0.01;
+  player.root.position.copy(player.pos);
+}
+function updateCamera(dt){
+  const target=player.pos.clone().add(new THREE.Vector3(0,2,0));
+  const d=hyper.active?22:camDist;
+  const desired=target.clone().add(new THREE.Vector3(
+    Math.sin(camYaw)*Math.cos(camPitch)*d,
+    Math.sin(camPitch)*d+2,
+    Math.cos(camYaw)*Math.cos(camPitch)*d
+  ));
+  camera.position.lerp(desired,1-Math.exp(-8*dt));
+  camera.fov=THREE.MathUtils.lerp(camera.fov,hyper.active?86:62,0.12);
+  camera.updateProjectionMatrix();
+  camera.lookAt(target);
+}
+function updateHud(){
+  const cell=currentCellName();
+  locationEl.textContent=cell+" · JC REAL GLB MAP";
+  progressEl.textContent=loadedTiles.size+" loaded / "+manifest.length+" uploaded GLBs";
+  statusEl.textContent=(streamBusy?"STREAMING ":"READY ")+loadedTiles.size+" tiles · "+loadingTiles.size+" loading · "+failedTiles.size+" failed";
+  const d=destinations[destinationIndex];
+  if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
+}
+async function boot(){
+  if(missionEl)missionEl.innerHTML="MISSION: explore the <b>real uploaded GLB Las Vegas map</b> · nearby tiles stream automatically<br><span id=\"progress\"></span> · <span id=\"location\"></span>";
+  if(creditEl)creditEl.textContent="JC Map • streaming C##_R## GLB tiles from the GitHub repository";
+  await loadManifest();
+  rebuildDestinations();
+  await streamTiles(true);
+  toggleFlight();
+  toggleFlight();
+  updateHud();
+  window.JC_GLB_MAP={
+    manifest:manifest,
+    loadedTiles:loadedTiles,
+    mapGroup:mapGroup,
+    player:player,
+    tileWorldSize:TILE_WORLD_SIZE,
+    tileScale:TILE_SCALE,
+    origin:{col:ORIGIN_COL,row:ORIGIN_ROW},
+    manifestVersion:manifestVersion,
+    streamTiles:streamTiles
+  };
+  requestAnimationFrame(frame);
+}
+let streamClock=0;
+const clock=new THREE.Clock();
+function frame(){
+  requestAnimationFrame(frame);
+  const dt=Math.min(0.033,clock.getDelta());
+  updatePlayer(dt);
+  updateCamera(dt);
+  streamClock+=dt;
+  if(streamClock>0.7){streamClock=0;streamTiles(false);}
+  updateHud();
+  renderer.render(scene,camera);
+}
+addEventListener("resize",function(){
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+boot().catch(function(e){
+  console.error(e);
+  statusEl.textContent="GLB MAP LOAD ERROR: "+e.message;
+});

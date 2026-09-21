@@ -10,7 +10,7 @@ on:
       - "world/canonical-world-contract.json"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: sincity-road-registry
@@ -52,6 +52,100 @@ jobs:
           assert 'OpenStreetMap' in d['source']['dataset'], d
           print(json.dumps(d, indent=2))
           PY
+      - name: Build runtime road tile packs
+        run: |
+          python - <<'PY'
+          import json, math, shutil
+          from pathlib import Path
+
+          contract=json.loads(Path('world/canonical-world-contract.json').read_text())
+          fc=json.loads(Path('work/road-registry/output/road_registry.geojson').read_text())
+          b=contract['bounds_utm']
+          tile_size=float(contract['grid']['tile_size_m'])
+          scale=0.1
+          origin_col=8
+          origin_row=8
+          out=Path('jc-map/roads')
+          tiles_dir=out/'tiles'
+          if out.exists():
+              shutil.rmtree(out)
+          tiles_dir.mkdir(parents=True, exist_ok=True)
+
+          by_tile={}
+          overview=[]
+          major={'motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link'}
+
+          def width_m(props):
+              raw=props.get('width')
+              if raw is not None:
+                  try:
+                      return max(2.0, float(str(raw).split()[0]))
+                  except Exception:
+                      pass
+              h=props.get('highway') or ''
+              if h in ('motorway','trunk'): return 18.0
+              if h in ('primary','secondary'): return 12.0
+              if h in ('tertiary',): return 9.0
+              if h in ('residential','unclassified'): return 7.0
+              return 5.0
+
+          for feat in fc.get('features',[]):
+              p=feat.get('properties',{})
+              tid=p.get('tile_id','')
+              if not tid.startswith('r') or '_c' not in tid:
+                  continue
+              row=int(tid[1:3]); col=int(tid[5:7])
+              coords=feat.get('geometry',{}).get('coordinates') or []
+              if len(coords)<2: continue
+              x0=b['min_x']+col*tile_size
+              y0=b['min_y']+row*tile_size
+              local=[[round((float(x)-x0)*scale,3),round(-(float(y)-y0)*scale,3)] for x,y in coords]
+              rec={
+                  'id':p.get('road_id'),
+                  'n':p.get('name'),
+                  'h':p.get('highway'),
+                  'w':round(width_m(p)*scale,3),
+                  'o':p.get('oneway'),
+                  'b':p.get('bridge'),
+                  't':p.get('tunnel'),
+                  'p':local
+              }
+              by_tile.setdefault((col,row),[]).append(rec)
+
+              if p.get('highway') in major:
+                  world=[[round((float(x)-(b['min_x']+origin_col*tile_size))*scale,3),
+                          round(-(float(y)-(b['min_y']+origin_row*tile_size))*scale,3)] for x,y in coords]
+                  overview.append({
+                      'n':p.get('name'),
+                      'h':p.get('highway'),
+                      'w':round(width_m(p)*scale,3),
+                      'p':world
+                  })
+
+          manifest={'version':1,'scale':scale,'origin':{'col':origin_col,'row':origin_row},'tiles':[]}
+          for (col,row),roads in sorted(by_tile.items()):
+              name=f'C{col:02d}_R{row:02d}.json'
+              payload={'col':col,'row':row,'roads':roads}
+              (tiles_dir/name).write_text(json.dumps(payload,separators=(',',':')))
+              manifest['tiles'].append({'col':col,'row':row,'file':'./tiles/'+name,'count':len(roads)})
+
+          (out/'manifest.json').write_text(json.dumps(manifest,separators=(',',':')))
+          (out/'major-roads.json').write_text(json.dumps({'roads':overview},separators=(',',':')))
+          print('road tiles',len(manifest['tiles']),'segments',sum(x['count'] for x in manifest['tiles']),'major',len(overview))
+          PY
+
+      - name: Publish runtime road packs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add jc-map/roads
+          if git diff --cached --quiet; then
+            echo "Road runtime packs unchanged"
+          else
+            git commit -m "Update citywide JC road runtime packs"
+            git push
+          fi
+
       - name: Add run summary
         if: always()
         run: |

@@ -144,7 +144,7 @@ function roadQuadGeometry(roads,worldSpace){
       const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
       if(!Number.isFinite(len)||len<0.01)continue;
       const nx=-dz/len*width*0.5,nz=dx/len*width*0.5;
-      const y=MAP_Y_OFFSET+0.18;
+      const y=worldSpace?MAP_Y_OFFSET+0.18:0.18;
       byType[bucket].push(
         ax+nx,y,az+nz, ax-nx,y,az-nz, bx-nx,y,bz-nz,
         ax+nx,y,az+nz, bx-nx,y,bz-nz, bx+nx,y,bz+nz

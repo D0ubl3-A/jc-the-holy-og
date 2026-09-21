@@ -90,6 +90,10 @@ const MAP_Y_OFFSET=-20.5;
 const LOAD_RADIUS=lowSpec?1:2;
 const KEEP_RADIUS=lowSpec?2:4;
 const MAX_CONCURRENT=lowSpec?2:4;
+const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.8:3.2;
+const MAX_LOOKAHEAD_TILES=lowSpec?5:11;
+const HIGH_SPEED_STREAM_THRESHOLD=260;
+const VERY_HIGH_SPEED_STREAM_THRESHOLD=900;
 const PLAYER_RADIUS=0.38;
 const PLAYER_HEIGHT=1.85;
 const GRAVITY=38;
@@ -296,19 +300,19 @@ function unloadRoadTile(key,item){
 }
 async function streamRoadTiles(force){
   if(!roadRuntimeReady||player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
-  const cell=worldCell(player.pos.x,player.pos.z);
+  const plan=streamPlan();
   const radius=player.pos.y<MIXED_DETAIL_ALTITUDE?LOAD_RADIUS+1:LOAD_RADIUS;
   const wanted=roadManifest
-    .filter(function(t){return Math.abs(t.col-cell.col)<=radius&&Math.abs(t.row-cell.row)<=radius;})
-    .sort(function(a,b){
-      return (Math.abs(a.col-cell.col)+Math.abs(a.row-cell.row))-(Math.abs(b.col-cell.col)+Math.abs(b.row-cell.row));
-    });
+    .filter(function(t){return tileNearStreamCorridor(t,plan,radius);})
+    .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
+
   for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
     await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadRoadTile));
   }
-  const keep=radius+2;
+
+  const keep=radius+3;
   for(const [key,item] of Array.from(loadedRoadTiles.entries())){
-    if(Math.abs(item.rec.col-cell.col)>keep||Math.abs(item.rec.row-cell.row)>keep)unloadRoadTile(key,item);
+    if(!tileNearStreamCorridor(item.rec,plan,keep))unloadRoadTile(key,item);
   }
 }
 function updateRoadLod(){
@@ -451,13 +455,20 @@ function updateWorldLod(){
   if(!worldLodReady)return;
   const y=player.pos.y;
 
-  if(y<FULL_DETAIL_ALTITUDE){
+  const fastFallback=player.speed>=HIGH_SPEED_STREAM_THRESHOLD||loadingTiles.size>0;
+
+  if(y<FULL_DETAIL_ALTITUDE&&!fastFallback){
     worldLodGroup.visible=false;
     mapGroup.visible=true;
     return;
   }
 
   worldLodGroup.visible=true;
+  if(y<FULL_DETAIL_ALTITUDE&&fastFallback){
+    mapGroup.visible=true;
+    setLodOpacity(player.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?0.82:0.48);
+    return;
+  }
 
   if(y<MIXED_DETAIL_ALTITUDE){
     mapGroup.visible=true;
@@ -623,26 +634,95 @@ async function loadOneTile(rec){
     loadingTiles.delete(key);
   }
 }
+function streamPlan(){
+  const current=worldCell(player.pos.x,player.pos.z);
+  const speed=Math.hypot(player.velocity.x,player.velocity.z);
+  const dir=new THREE.Vector2(player.velocity.x,player.velocity.z);
+  if(dir.lengthSq()<0.0001){
+    dir.set(-Math.sin(camYaw),-Math.cos(camYaw));
+  }else dir.normalize();
+
+  const speedTiles=speed/TILE_WORLD_SIZE;
+  const aheadTiles=THREE.MathUtils.clamp(
+    Math.ceil(speedTiles*STREAM_LOOKAHEAD_SECONDS),
+    0,
+    MAX_LOOKAHEAD_TILES
+  );
+
+  const cells=[];
+  const seen=new Set();
+  function addCell(col,row,step){
+    const k=tileKey(col,row);
+    if(seen.has(k))return;
+    seen.add(k);
+    cells.push({col:col,row:row,step:step,key:k});
+  }
+
+  addCell(current.col,current.row,0);
+
+  // Sample a corridor in the actual direction of travel, not only the destination tile.
+  for(let i=1;i<=aheadTiles;i++){
+    const wx=player.pos.x+dir.x*i*TILE_WORLD_SIZE;
+    const wz=player.pos.z+dir.y*i*TILE_WORLD_SIZE;
+    const c=worldCell(wx,wz);
+    addCell(c.col,c.row,i);
+
+    // At high speed preload side neighbors too, so turns do not expose empty space.
+    if(speed>=HIGH_SPEED_STREAM_THRESHOLD){
+      const lateral=i>=3?1:0;
+      for(let j=-lateral;j<=lateral;j++){
+        if(j===0)continue;
+        addCell(c.col+j,c.row,i+0.15);
+        addCell(c.col,c.row+j,i+0.15);
+      }
+    }
+  }
+
+  return {current:current,cells:cells,aheadTiles:aheadTiles,speed:speed};
+}
+function tileNearStreamCorridor(rec,plan,radius){
+  for(const c of plan.cells){
+    if(Math.abs(rec.col-c.col)<=radius&&Math.abs(rec.row-c.row)<=radius)return true;
+  }
+  return false;
+}
+function streamPriority(rec,plan){
+  let best=Infinity;
+  for(const c of plan.cells){
+    const d=Math.abs(rec.col-c.col)+Math.abs(rec.row-c.row)+c.step*0.16;
+    if(d<best)best=d;
+  }
+  return best;
+}
+
 async function streamTiles(force){
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
   if(streamBusy)return;
-  const cell=worldCell(player.pos.x,player.pos.z);
-  const cellKey=tileKey(cell.col,cell.row);
-  if(!force&&cellKey===lastStreamCell)return;
-  lastStreamCell=cellKey;
+
+  const plan=streamPlan();
+  const end=plan.cells[plan.cells.length-1]||plan.current;
+  const speedTier=plan.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?"V":plan.speed>=HIGH_SPEED_STREAM_THRESHOLD?"H":"N";
+  const streamKey=tileKey(plan.current.col,plan.current.row)+"->"+tileKey(end.col,end.row)+":"+speedTier;
+
+  if(!force&&streamKey===lastStreamCell)return;
+  lastStreamCell=streamKey;
   streamBusy=true;
+
   try{
+    const dynamicRadius=plan.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?Math.max(1,LOAD_RADIUS-1):LOAD_RADIUS;
     const wanted=manifest
-      .filter(function(t){return Math.abs(t.col-cell.col)<=LOAD_RADIUS&&Math.abs(t.row-cell.row)<=LOAD_RADIUS;})
-      .sort(function(a,b){
-        return (Math.abs(a.col-cell.col)+Math.abs(a.row-cell.row))-(Math.abs(b.col-cell.col)+Math.abs(b.row-cell.row));
-      });
+      .filter(function(t){return tileNearStreamCorridor(t,plan,dynamicRadius);})
+      .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
+
+    // Load current neighborhood first, then the forward corridor in parallel batches.
     for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
       await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadOneTile));
     }
+
+    const keepRadius=KEEP_RADIUS+(plan.speed>=HIGH_SPEED_STREAM_THRESHOLD?2:0);
     for(const entry of Array.from(loadedTiles.entries())){
       const key=entry[0],item=entry[1];
-      if(Math.abs(item.rec.col-cell.col)>KEEP_RADIUS||Math.abs(item.rec.row-cell.row)>KEEP_RADIUS){
+      if(!tileNearStreamCorridor(item.rec,plan,keepRadius)){
         mapGroup.remove(item.root);
         disposeTile(item.root);
         loadedTiles.delete(key);
@@ -1462,7 +1542,9 @@ function updateHud(){
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
   const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"");
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+roadText+solidText;
+  const plan=streamPlan();
+  const aheadText=plan.aheadTiles>0?" · PRELOAD +"+plan.aheadTiles+" TILES":"";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -1523,7 +1605,9 @@ function frame(){
   updateAtmosphere();
   updateCamera(dt);
   streamClock+=dt;
-  if(streamClock>0.7){
+  const streamInterval=player.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?0.12:
+    player.speed>=HIGH_SPEED_STREAM_THRESHOLD?0.22:0.55;
+  if(streamClock>streamInterval){
     streamClock=0;
     streamTiles(false);
     streamRoadTiles(false);

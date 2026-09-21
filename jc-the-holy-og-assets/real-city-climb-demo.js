@@ -96,6 +96,16 @@ const mapGroup=new THREE.Group();
 mapGroup.name="JC_GLB_TILE_MAP";
 scene.add(mapGroup);
 
+const worldLodGroup=new THREE.Group();
+worldLodGroup.name="JC_WORLD_LOW_DETAIL";
+scene.add(worldLodGroup);
+let worldLodRoot=null;
+let worldLodReady=false;
+let worldLodBounds=null;
+const FULL_DETAIL_ALTITUDE=900;
+const MIXED_DETAIL_ALTITUDE=6000;
+const LOW_DETAIL_ONLY_ALTITUDE=14000;
+
 let manifest=[];
 let manifestByKey=new Map();
 const loadedTiles=new Map();
@@ -141,6 +151,111 @@ async function loadManifest(){
   if(!manifest.length)throw new Error("No C##_R## GLB tiles found in manifest");
   return data;
 }
+async function loadWorldLod(){
+  try{
+    const gltf=await gltfLoader.loadAsync("./jc-the-holy-og-assets/models/vegas-city-lod.glb");
+    const root=gltf.scene;
+    root.name="VEGAS_CITY_GLOBAL_LOD";
+
+    root.traverse(function(o){
+      if(!o.isMesh)return;
+      o.castShadow=false;
+      o.receiveShadow=false;
+      o.frustumCulled=true;
+
+      const source=Array.isArray(o.material)?o.material:[o.material];
+      const simple=source.map(function(m){
+        return new THREE.MeshBasicMaterial({
+          map:m&&m.map?m.map:null,
+          color:m&&m.color?m.color.clone():new THREE.Color(0x777777),
+          transparent:true,
+          opacity:0.9,
+          depthWrite:true
+        });
+      });
+      o.material=Array.isArray(o.material)?simple:simple[0];
+    });
+
+    const box=new THREE.Box3().setFromObject(root);
+    const size=new THREE.Vector3(),center=new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    let minCol=Infinity,maxCol=-Infinity,minRow=Infinity,maxRow=-Infinity;
+    for(const t of manifest){
+      minCol=Math.min(minCol,t.col); maxCol=Math.max(maxCol,t.col);
+      minRow=Math.min(minRow,t.row); maxRow=Math.max(maxRow,t.row);
+    }
+
+    const targetW=(maxCol-minCol+1)*TILE_WORLD_SIZE;
+    const targetD=(maxRow-minRow+1)*TILE_WORLD_SIZE;
+    const sx=targetW/Math.max(1,size.x);
+    const sz=targetD/Math.max(1,size.z);
+    const scale=Math.min(sx,sz);
+
+    root.scale.setScalar(scale);
+    root.updateMatrixWorld(true);
+
+    const scaledBox=new THREE.Box3().setFromObject(root);
+    const scaledCenter=new THREE.Vector3();
+    scaledBox.getCenter(scaledCenter);
+
+    const left=tileWorldPosition(minCol,minRow);
+    const right=tileWorldPosition(maxCol,maxRow);
+    const targetCenterX=(left.x+right.x+TILE_WORLD_SIZE)/2;
+    const targetCenterZ=(left.z+right.z-TILE_WORLD_SIZE)/2;
+
+    root.position.x+=targetCenterX-scaledCenter.x;
+    root.position.z+=targetCenterZ-scaledCenter.z;
+    root.position.y+=MAP_Y_OFFSET-scaledBox.min.y;
+
+    worldLodGroup.add(root);
+    worldLodRoot=root;
+    worldLodBounds={minCol,maxCol,minRow,maxRow,targetW,targetD};
+    worldLodReady=true;
+    updateWorldLod();
+  }catch(err){
+    console.warn("Global city LOD unavailable",err);
+  }
+}
+function setLodOpacity(value){
+  if(!worldLodRoot)return;
+  worldLodRoot.traverse(function(o){
+    if(!o.isMesh)return;
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(function(m){
+      if(!m)return;
+      m.transparent=value<1;
+      m.opacity=value;
+      m.depthWrite=value>0.55;
+    });
+  });
+}
+function updateWorldLod(){
+  if(!worldLodReady)return;
+  const y=player.pos.y;
+
+  if(y<FULL_DETAIL_ALTITUDE){
+    worldLodGroup.visible=false;
+    mapGroup.visible=true;
+    return;
+  }
+
+  worldLodGroup.visible=true;
+
+  if(y<MIXED_DETAIL_ALTITUDE){
+    mapGroup.visible=true;
+    const t=THREE.MathUtils.smoothstep(y,FULL_DETAIL_ALTITUDE,MIXED_DETAIL_ALTITUDE);
+    setLodOpacity(0.35+0.65*t);
+  }else if(y<LOW_DETAIL_ONLY_ALTITUDE){
+    mapGroup.visible=true;
+    setLodOpacity(1);
+  }else{
+    mapGroup.visible=false;
+    setLodOpacity(1);
+  }
+}
+
 async function loadOneTile(rec){
   const key=tileKey(rec.col,rec.row);
   if(loadedTiles.has(key)||loadingTiles.has(key)||failedTiles.has(key))return;
@@ -172,6 +287,7 @@ async function loadOneTile(rec){
   }
 }
 async function streamTiles(force){
+  if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
   if(streamBusy)return;
   const cell=worldCell(player.pos.x,player.pos.z);
   const cellKey=tileKey(cell.col,cell.row);
@@ -536,7 +652,9 @@ function updateHud(){
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
   const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+loadedTiles.size+"/"+manifest.length+" GLBs";
+  const detail=player.pos.y< FULL_DETAIL_ALTITUDE?"FULL DETAIL":
+    player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -544,6 +662,7 @@ async function boot(){
   if(creditEl)creditEl.textContent="JC Map • streaming C##_R## GLB tiles from the GitHub repository";
   await loadManifest();
   rebuildDestinations();
+  loadWorldLod();
   await streamTiles(true);
   toggleFlight();
   toggleFlight();
@@ -552,6 +671,7 @@ async function boot(){
     manifest:manifest,
     loadedTiles:loadedTiles,
     mapGroup:mapGroup,
+    worldLodGroup:worldLodGroup,
     player:player,
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
@@ -562,7 +682,9 @@ async function boot(){
     spaceAltitude:SPACE_ALTITUDE,
     get speed(){return player.speed},
     get mach(){return player.mach},
-    get flightMode(){return player.flightMode}
+    get flightMode(){return player.flightMode},
+    get worldLodReady(){return worldLodReady},
+    get worldLodBounds(){return worldLodBounds}
   };
   requestAnimationFrame(frame);
 }
@@ -573,6 +695,7 @@ function frame(){
   const dt=Math.min(0.033,clock.getDelta());
   updateLook(dt);
   updatePlayer(dt);
+  updateWorldLod();
   updateAtmosphere();
   updateCamera(dt);
   streamClock+=dt;

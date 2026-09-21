@@ -371,7 +371,8 @@ function flightTargetSpeed(){
 function classifyFlight(){
   player.speed=player.velocity.length();
   player.mach=player.speed/MACH_1;
-  if(player.pos.y>=SPACE_ALTITUDE)player.flightMode="SPACE";
+  if(keys.Space&&(keys.ShiftLeft||keys.ShiftRight))player.flightMode="ROCKET ASCENT";
+  else if(player.pos.y>=SPACE_ALTITUDE)player.flightMode="SPACE";
   else if(player.mach>=5)player.flightMode="HYPERSONIC";
   else if(player.mach>=1)player.flightMode="SUPERSONIC";
   else if(keys.AltLeft||keys.AltRight)player.flightMode="PRECISION";
@@ -397,12 +398,12 @@ function updatePlayer(dt){
 
     const throttle=(keys.KeyW?1:0)-(keys.KeyS?1:0);
     const strafe=(keys.KeyD?1:0)-(keys.KeyA?1:0);
-    const vertical=(keys.Space?1:0)-((keys.KeyC||keys.ControlLeft||keys.ControlRight)?1:0);
+    const rising=!!keys.Space;
+    const descending=!!(keys.KeyC||keys.ControlLeft||keys.ControlRight);
 
     const input=new THREE.Vector3()
       .addScaledVector(forward3,throttle)
-      .addScaledVector(right,strafe)
-      .addScaledVector(up,vertical);
+      .addScaledVector(right,strafe);
 
     const targetSpeed=flightTargetSpeed();
     const desired=new THREE.Vector3();
@@ -426,6 +427,33 @@ function updatePlayer(dt){
     }
 
     player.pos.addScaledVector(player.velocity,dt);
+
+    // Dedicated vertical thrusters: fast rise is independent of horizontal inertia.
+    if(rising||descending){
+      const boosted=!!(keys.ShiftLeft||keys.ShiftRight);
+      let riseSpeed=220;
+      let descendSpeed=180;
+
+      if(boosted){
+        riseSpeed=1200;          // 0-2 km: rocket launch
+        if(player.pos.y>=2000) riseSpeed=3200;
+        if(player.pos.y>=12000) riseSpeed=7000;
+        if(player.pos.y>=35000) riseSpeed=12000;
+        if(player.pos.y>=80000) riseSpeed=18000;
+
+        descendSpeed=900;
+        if(player.pos.y>=12000) descendSpeed=2800;
+        if(player.pos.y>=50000) descendSpeed=6500;
+      }
+
+      if(rising) player.pos.y+=riseSpeed*dt;
+      if(descending) player.pos.y-=descendSpeed*dt;
+
+      // Kill opposing vertical drift so climb/descent controls feel immediate.
+      if(rising&&player.velocity.y<0) player.velocity.y*=0.2;
+      if(descending&&player.velocity.y>0) player.velocity.y*=0.2;
+    }
+
     player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,MAX_ALTITUDE);
 
     if(player.pos.y<=3&&player.velocity.y<0)player.velocity.y=0;

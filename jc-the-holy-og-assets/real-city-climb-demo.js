@@ -15,9 +15,13 @@ const creditEl=document.getElementById("credit");
 
 const lowSpec=matchMedia("(pointer:coarse)").matches||(navigator.hardwareConcurrency||4)<=4||("deviceMemory" in navigator&&(navigator.deviceMemory||4)<=4);
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x101722);
+const SKY_GROUND=new THREE.Color(0x101722),SKY_SPACE=new THREE.Color(0x000003);
+scene.background=SKY_GROUND.clone();
 scene.fog=new THREE.FogExp2(0x17202b,0.00055);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,12000);
+const MAX_ALTITUDE=120000;
+const SPACE_ALTITUDE=100000;
+const ATMOSPHERE_FADE_START=2500;
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,300000);
 const renderer=new THREE.WebGLRenderer({antialias:!lowSpec,powerPreference:lowSpec?"low-power":"high-performance"});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,lowSpec?1:1.4));
@@ -26,13 +30,38 @@ renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.08;
 mount.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xb9d7ff,0x2e241d,2.4));
+const hemi=new THREE.HemisphereLight(0xb9d7ff,0x2e241d,2.4);
+scene.add(hemi);
 const moon=new THREE.DirectionalLight(0xffe9c5,3.2);
 moon.position.set(-500,900,350);
 scene.add(moon);
 const fill=new THREE.DirectionalLight(0x738dff,1.35);
 fill.position.set(600,300,-500);
 scene.add(fill);
+
+const starGeo=new THREE.BufferGeometry();
+const starCount=lowSpec?700:1800;
+const starPositions=new Float32Array(starCount*3);
+for(let i=0;i<starCount;i++){
+  const r=140000+Math.random()*90000;
+  const theta=Math.random()*Math.PI*2;
+  const phi=Math.acos(THREE.MathUtils.randFloatSpread(2));
+  starPositions[i*3]=Math.sin(phi)*Math.cos(theta)*r;
+  starPositions[i*3+1]=Math.abs(Math.cos(phi))*r+20000;
+  starPositions[i*3+2]=Math.sin(phi)*Math.sin(theta)*r;
+}
+starGeo.setAttribute("position",new THREE.BufferAttribute(starPositions,3));
+const starMat=new THREE.PointsMaterial({color:0xffffff,size:lowSpec?180:110,sizeAttenuation:true,transparent:true,opacity:0,depthWrite:false});
+const stars=new THREE.Points(starGeo,starMat);
+scene.add(stars);
+
+const spaceSun=new THREE.Mesh(
+  new THREE.SphereGeometry(2600,24,16),
+  new THREE.MeshBasicMaterial({color:0xfff1bd})
+);
+spaceSun.position.set(-90000,70000,-120000);
+spaceSun.visible=false;
+scene.add(spaceSun);
 
 const holeGround=new THREE.Mesh(
   new THREE.PlaneGeometry(20000,20000),
@@ -317,8 +346,15 @@ function updatePlayer(dt){
     player.yaw=Math.atan2(move.x,move.z);
   }
   if(player.flying){
-    player.pos.y+=((keys.Space?1:0)-((keys.KeyC||keys.ControlLeft)?1:0))*28*boost*dt;
-    player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,420);
+    const verticalInput=(keys.Space?1:0)-((keys.KeyC||keys.ControlLeft)?1:0);
+    let verticalSpeed=70;
+    if(player.pos.y>500)verticalSpeed=220;
+    if(player.pos.y>2500)verticalSpeed=850;
+    if(player.pos.y>15000)verticalSpeed=2600;
+    if(player.pos.y>50000)verticalSpeed=5200;
+    if(keys.ShiftLeft)verticalSpeed*=2.4;
+    player.pos.y+=verticalInput*verticalSpeed*dt;
+    player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,MAX_ALTITUDE);
   }else{
     player.pos.y=3;
   }
@@ -331,6 +367,29 @@ function updatePlayer(dt){
   flightRing.rotation.z+=player.flying?0.05:0.01;
   player.root.position.copy(player.pos);
 }
+function updateAtmosphere(){
+  const y=player.pos.y;
+  const t=THREE.MathUtils.smoothstep(y,ATMOSPHERE_FADE_START,SPACE_ALTITUDE);
+  scene.background.copy(SKY_GROUND).lerp(SKY_SPACE,t);
+  scene.fog.density=0.00055*(1-t);
+  starMat.opacity=THREE.MathUtils.smoothstep(y,6000,45000);
+  spaceSun.visible=y>12000;
+  hemi.intensity=THREE.MathUtils.lerp(2.4,0.15,t);
+  moon.intensity=THREE.MathUtils.lerp(3.2,1.25,t);
+  fill.intensity=THREE.MathUtils.lerp(1.35,0.25,t);
+  holeGround.visible=y<35000;
+  if(y>=SPACE_ALTITUDE){
+    flightStateEl.textContent="SPACE FLIGHT · "+Math.round(y/1000)+" KM";
+    flightStateEl.style.color="#ffffff";
+  }else if(y>=12000){
+    flightStateEl.textContent="UPPER ATMOSPHERE · "+Math.round(y/1000)+" KM";
+    flightStateEl.style.color="#9fd8ff";
+  }else if(player.flying){
+    flightStateEl.textContent="FLIGHT ON · "+Math.round(y)+" M";
+    flightStateEl.style.color="#ffd45a";
+  }
+}
+
 function updateCamera(dt){
   const target=player.pos.clone().add(new THREE.Vector3(0,2,0));
   const d=hyper.active?22:camDist;
@@ -348,7 +407,8 @@ function updateHud(){
   const cell=currentCellName();
   locationEl.textContent=cell+" · JC REAL GLB MAP";
   progressEl.textContent=loadedTiles.size+" loaded / "+manifest.length+" uploaded GLBs";
-  statusEl.textContent=(streamBusy?"STREAMING ":"READY ")+loadedTiles.size+" tiles · "+loadingTiles.size+" loading · "+failedTiles.size+" failed";
+  const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
+  statusEl.textContent=(streamBusy?"STREAMING ":"READY ")+loadedTiles.size+" tiles · "+loadingTiles.size+" loading · "+failedTiles.size+" failed · ALT "+alt;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -369,7 +429,9 @@ async function boot(){
     tileScale:TILE_SCALE,
     origin:{col:ORIGIN_COL,row:ORIGIN_ROW},
     manifestVersion:manifestVersion,
-    streamTiles:streamTiles
+    streamTiles:streamTiles,
+    maxAltitude:MAX_ALTITUDE,
+    spaceAltitude:SPACE_ALTITUDE
   };
   requestAnimationFrame(frame);
 }
@@ -379,6 +441,7 @@ function frame(){
   requestAnimationFrame(frame);
   const dt=Math.min(0.033,clock.getDelta());
   updatePlayer(dt);
+  updateAtmosphere();
   updateCamera(dt);
   streamClock+=dt;
   if(streamClock>0.7){streamClock=0;streamTiles(false);}

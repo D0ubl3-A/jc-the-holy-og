@@ -121,9 +121,12 @@ let roadRuntimeReady=false;
 let majorRoadReady=false;
 
 const roadMats={
-  highway:new THREE.MeshBasicMaterial({color:0x2f3438,side:THREE.DoubleSide}),
-  arterial:new THREE.MeshBasicMaterial({color:0x303438,side:THREE.DoubleSide}),
-  local:new THREE.MeshBasicMaterial({color:0x25282b,side:THREE.DoubleSide}),
+  highway:new THREE.MeshBasicMaterial({color:0x26282b,side:THREE.DoubleSide}),
+  arterial:new THREE.MeshBasicMaterial({color:0x2b2d30,side:THREE.DoubleSide}),
+  local:new THREE.MeshBasicMaterial({color:0x303236,side:THREE.DoubleSide}),
+  lane:new THREE.MeshBasicMaterial({color:0xf1ead5,side:THREE.DoubleSide,depthWrite:false}),
+  center:new THREE.MeshBasicMaterial({color:0xe2b84f,side:THREE.DoubleSide,depthWrite:false}),
+  edge:new THREE.MeshBasicMaterial({color:0xcfcfc8,side:THREE.DoubleSide,depthWrite:false}),
   majorOverview:new THREE.MeshBasicMaterial({color:0x59616a,transparent:true,opacity:0.78,side:THREE.DoubleSide,depthWrite:false})
 };
 function roadMaterialFor(highway){
@@ -144,7 +147,7 @@ function roadQuadGeometry(roads,worldSpace){
       const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
       if(!Number.isFinite(len)||len<0.01)continue;
       const nx=-dz/len*width*0.5,nz=dx/len*width*0.5;
-      const y=worldSpace?MAP_Y_OFFSET+0.18:0.18;
+      const y=worldSpace?0.22:(-MAP_Y_OFFSET+0.22);
       byType[bucket].push(
         ax+nx,y,az+nz, ax-nx,y,az-nz, bx-nx,y,bz-nz,
         ax+nx,y,az+nz, bx-nx,y,bz-nz, bx+nx,y,bz+nz
@@ -153,9 +156,23 @@ function roadQuadGeometry(roads,worldSpace){
   }
   return byType;
 }
+function stripeQuad(out,ax,az,bx,bz,width,y,offset){
+  const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
+  if(!Number.isFinite(len)||len<0.01)return;
+  const sx=-dz/len,sz=dx/len;
+  const cx1=ax+sx*offset,cz1=az+sz*offset;
+  const cx2=bx+sx*offset,cz2=bz+sz*offset;
+  const nx=sx*width*0.5,nz=sz*width*0.5;
+  out.push(
+    cx1+nx,y,cz1+nz, cx1-nx,y,cz1-nz, cx2-nx,y,cz2-nz,
+    cx1+nx,y,cz1+nz, cx2-nx,y,cz2-nz, cx2+nx,y,cz2+nz
+  );
+}
 function makeRoadMeshes(roads,materials,worldSpace){
   const buckets=roadQuadGeometry(roads,worldSpace);
   const group=new THREE.Group();
+
+  // Full asphalt surface for every road class.
   for(const [type,verts] of Object.entries(buckets)){
     if(!verts.length)continue;
     const g=new THREE.BufferGeometry();
@@ -166,6 +183,52 @@ function makeRoadMeshes(roads,materials,worldSpace){
     m.renderOrder=2;
     group.add(m);
   }
+
+  // Detailed mode: center lines + highway edge lines, batched for performance.
+  if(!worldSpace){
+    const centerVerts=[],laneVerts=[],edgeVerts=[];
+    const y=(-MAP_Y_OFFSET)+0.245;
+    for(const road of roads||[]){
+      const pts=road.p||[];
+      const h=road.h||"";
+      const roadWidth=Math.max(0.28,Number(road.w)||0.55);
+      const major=/motorway|trunk|primary|secondary|tertiary/.test(h);
+      const highway=/motorway|trunk/.test(h);
+
+      for(let i=0;i<pts.length-1;i++){
+        const a=pts[i],b=pts[i+1];
+        const ax=Number(a[0]),az=Number(a[1]),bx=Number(b[0]),bz=Number(b[1]);
+        if(![ax,az,bx,bz].every(Number.isFinite))continue;
+
+        if(roadWidth>=0.65){
+          stripeQuad(centerVerts,ax,az,bx,bz,major?0.026:0.018,y,0);
+        }
+
+        if(highway&&roadWidth>=1.0){
+          stripeQuad(edgeVerts,ax,az,bx,bz,0.018,y, roadWidth*0.5-0.07);
+          stripeQuad(edgeVerts,ax,az,bx,bz,0.018,y,-roadWidth*0.5+0.07);
+        }else if(major&&roadWidth>=1.0){
+          stripeQuad(laneVerts,ax,az,bx,bz,0.014,y, roadWidth*0.25);
+          stripeQuad(laneVerts,ax,az,bx,bz,0.014,y,-roadWidth*0.25);
+        }
+      }
+    }
+
+    const addBatch=function(verts,mat,order){
+      if(!verts.length)return;
+      const g=new THREE.BufferGeometry();
+      g.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));
+      g.computeBoundingSphere();
+      const m=new THREE.Mesh(g,mat);
+      m.frustumCulled=true;
+      m.renderOrder=order;
+      group.add(m);
+    };
+    addBatch(centerVerts,roadMats.center,4);
+    addBatch(laneVerts,roadMats.lane,4);
+    addBatch(edgeVerts,roadMats.edge,4);
+  }
+
   return group;
 }
 async function loadRoadRuntime(){
@@ -480,7 +543,7 @@ jcAtlas.offset.set(0,0.5);
 const jcMaterial=new THREE.SpriteMaterial({map:jcAtlas,transparent:true,depthWrite:false,alphaTest:0.08,toneMapped:false});
 const jcSprite=new THREE.Sprite(jcMaterial);
 jcSprite.center.set(0.5,0);
-jcSprite.scale.set(4.2,4.2,1);
+jcSprite.scale.set(1.9,1.9,1);
 player.root.add(jcSprite);
 const glow=new THREE.PointLight(0xffd45a,5,30,2);
 glow.position.y=2.4;
@@ -502,7 +565,7 @@ satanTex.colorSpace=THREE.SRGBColorSpace;
 const satanMat=new THREE.SpriteMaterial({map:satanTex,transparent:true,depthWrite:false,toneMapped:false});
 const satanSprite=new THREE.Sprite(satanMat);
 satanSprite.center.set(0.5,0);
-satanSprite.scale.set(6.2,6.2,1);
+satanSprite.scale.set(2.4,2.4,1);
 satanRoot.add(satanSprite);
 const satanGlow=new THREE.PointLight(0xff2200,8,45,2);
 satanGlow.position.y=2.6;

@@ -92,6 +92,8 @@ const MAP_Y_OFFSET=TILE_GROUND_Y;
 const LOAD_RADIUS=lowSpec?1:2;
 const KEEP_RADIUS=lowSpec?2:4;
 const MAX_CONCURRENT=lowSpec?2:4;
+const FULL_MAP_MODE=true;
+const FULL_MAP_BATCH=lowSpec?3:8;
 const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.8:3.2;
 const MAX_LOOKAHEAD_TILES=lowSpec?5:11;
 const HIGH_SPEED_STREAM_THRESHOLD=260;
@@ -448,7 +450,26 @@ function unloadRoadTile(key,item){
   });
   loadedRoadTiles.delete(key);
 }
+async function preloadAllRoadTiles(){
+  if(!roadRuntimeReady)return;
+
+  // Only load detailed road packs for tiles that actually have a GLB in the
+  // playable map. The citywide major-road overview remains loaded separately.
+  const playableKeys=new Set(manifest.map(function(t){return tileKey(t.col,t.row);}));
+  const wanted=roadManifest.filter(function(t){
+    return playableKeys.has(tileKey(t.col,t.row));
+  });
+
+  for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
+    await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadRoadTile));
+    updateHud();
+  }
+}
 async function streamRoadTiles(force){
+  if(FULL_MAP_MODE){
+    if(force&&loadedRoadTiles.size===0)await preloadAllRoadTiles();
+    return;
+  }
   if(!roadRuntimeReady||player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
   const plan=streamPlan();
   const radius=player.pos.y<MIXED_DETAIL_ALTITUDE?LOAD_RADIUS+1:LOAD_RADIUS;
@@ -467,7 +488,7 @@ async function streamRoadTiles(force){
 }
 function updateRoadLod(){
   const y=player.pos.y;
-  roadTileGroup.visible=y<LOW_DETAIL_ONLY_ALTITUDE;
+  roadTileGroup.visible=FULL_MAP_MODE||y<LOW_DETAIL_ONLY_ALTITUDE;
   majorRoadGroup.visible=majorRoadReady&&y>=FULL_DETAIL_ALTITUDE;
   const overviewOpacity=y>=LOW_DETAIL_ONLY_ALTITUDE?0.95:
     THREE.MathUtils.lerp(0.2,0.82,THREE.MathUtils.smoothstep(y,FULL_DETAIL_ALTITUDE,LOW_DETAIL_ONLY_ALTITUDE));
@@ -606,6 +627,12 @@ function updateWorldLod(){
   const y=player.pos.y;
 
   const fastFallback=player.speed>=HIGH_SPEED_STREAM_THRESHOLD||loadingTiles.size>0;
+
+  if(FULL_MAP_MODE){
+    mapGroup.visible=true;
+    worldLodGroup.visible=false;
+    return;
+  }
 
   if(y<FULL_DETAIL_ALTITUDE&&!fastFallback){
     worldLodGroup.visible=false;
@@ -881,7 +908,32 @@ function streamPriority(rec,plan){
   return (-bestStep*100)+bestDistance;
 }
 
+async function preloadAllTiles(){
+  streamBusy=true;
+  try{
+    // Load nearest-to-Strip first for faster initial progress, but gameplay does
+    // not begin until every manifest tile is resident.
+    const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
+    const wanted=manifest.slice().sort(function(a,b){
+      const da=Math.abs(a.col-spawnCell.col)+Math.abs(a.row-spawnCell.row);
+      const db=Math.abs(b.col-spawnCell.col)+Math.abs(b.row-spawnCell.row);
+      return da-db;
+    });
+
+    for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
+      await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadOneTile));
+      if(progressEl)progressEl.textContent="FULL MAP "+loadedTiles.size+"/"+manifest.length+" tiles loaded";
+      updateHud();
+    }
+  }finally{
+    streamBusy=false;
+  }
+}
 async function streamTiles(force){
+  if(FULL_MAP_MODE){
+    if(force&&loadedTiles.size<manifest.length)await preloadAllTiles();
+    return;
+  }
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
   if(streamBusy)return;
 
@@ -900,7 +952,6 @@ async function streamTiles(force){
       .filter(function(t){return tileNearStreamCorridor(t,plan,dynamicRadius);})
       .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
 
-    // Strict ordering: farthest predicted tiles first, then work backward to JC.
     for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
       await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadOneTile));
     }
@@ -1731,7 +1782,7 @@ function updateHud(){
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
   const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · WALLPAPER "+wallpaperShellCount;
   const plan=streamPlan();
-  const aheadText=plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"";
+  const aheadText=FULL_MAP_MODE?" · FULL MAP RESIDENT":(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
@@ -1746,7 +1797,11 @@ async function boot(){
   rebuildDestinations();
   loadWorldLod();
   await loadRoadRuntime();
-  await Promise.all([streamTiles(true),streamRoadTiles(true)]);
+  if(progressEl)progressEl.textContent="FULL MAP loading all GLB tiles…";
+  await streamTiles(true);
+  if(progressEl)progressEl.textContent="FULL MAP loading all road surfaces…";
+  await streamRoadTiles(true);
+  if(progressEl)progressEl.textContent="FULL MAP READY · "+loadedTiles.size+" tiles · "+loadedRoadTiles.size+" road tiles";
   toggleFlight();
   toggleFlight();
   updateHud();
@@ -1759,6 +1814,7 @@ async function boot(){
     majorRoadGroup:majorRoadGroup,
     player:player,
     stripSpawn:STRIP_SPAWN.clone(),
+    fullMapMode:FULL_MAP_MODE,
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
     tileGroundY:TILE_GROUND_Y,
@@ -1807,13 +1863,15 @@ function frame(){
   updateRoadLod();
   updateAtmosphere();
   updateCamera(dt);
-  streamClock+=dt;
-  const streamInterval=player.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?0.12:
-    player.speed>=HIGH_SPEED_STREAM_THRESHOLD?0.22:0.55;
-  if(streamClock>streamInterval){
-    streamClock=0;
-    streamTiles(false);
-    streamRoadTiles(false);
+  if(!FULL_MAP_MODE){
+    streamClock+=dt;
+    const streamInterval=player.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?0.12:
+      player.speed>=HIGH_SPEED_STREAM_THRESHOLD?0.22:0.55;
+    if(streamClock>streamInterval){
+      streamClock=0;
+      streamTiles(false);
+      streamRoadTiles(false);
+    }
   }
   updateHud();
   renderer.render(scene,camera);

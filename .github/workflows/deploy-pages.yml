@@ -30,10 +30,48 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare static site
+      - name: Prepare static site and GLB tile manifest
         run: |
           mkdir -p _site
           rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='release-electron' ./ _site/
+          python - <<'PY'
+          import glob, hashlib, json, os, re
+          from datetime import datetime, timezone
+
+          tiles = []
+          for path in sorted(glob.glob("_site/C*_R*.glb")):
+              name = os.path.basename(path)
+              m = re.fullmatch(r"C(\d+)_R(\d+)\.glb", name, re.I)
+              if not m:
+                  continue
+              h = hashlib.sha1()
+              with open(path, "rb") as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                      h.update(chunk)
+              tiles.append({
+                  "name": name[:-4],
+                  "col": int(m.group(1)),
+                  "row": int(m.group(2)),
+                  "file": name,
+                  "url": "./" + name,
+                  "sha": h.hexdigest(),
+                  "size": os.path.getsize(path),
+              })
+
+          os.makedirs("_site/jc-map", exist_ok=True)
+          manifest = {
+              "generatedAt": datetime.now(timezone.utc).isoformat(),
+              "tileSourceSize": 1000,
+              "tileScale": 0.1,
+              "origin": {"col": 8, "row": 8},
+              "count": len(tiles),
+              "tiles": tiles,
+          }
+          with open("_site/jc-map/tile-manifest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, indent=2)
+              f.write("\n")
+          print("Indexed", len(tiles), "JC GLB tiles")
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

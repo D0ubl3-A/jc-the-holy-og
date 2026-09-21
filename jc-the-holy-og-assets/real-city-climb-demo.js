@@ -105,6 +105,151 @@ const MAX_COLLIDERS_PER_TILE=lowSpec?220:420;
 
 
 const gltfLoader=new GLTFLoader();
+
+const STRIP_WALLPAPER_URL="./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg";
+const STRIP_MIN_COL=6;
+const STRIP_MAX_COL=12;
+const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?4:9;
+const wallpaperTextureLoader=new THREE.TextureLoader();
+const stripWallpaperAtlas=wallpaperTextureLoader.load(STRIP_WALLPAPER_URL,function(tex){
+  tex.colorSpace=THREE.SRGBColorSpace;
+  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+  tex.minFilter=THREE.LinearMipmapLinearFilter;
+  tex.magFilter=THREE.LinearFilter;
+  tex.needsUpdate=true;
+});
+const wallpaperMaterials={facade:[],roof:[],side:[]};
+let wallpaperShellCount=0;
+
+function atlasSliceTexture(index,kind){
+  const tex=stripWallpaperAtlas.clone();
+  tex.colorSpace=THREE.SRGBColorSpace;
+  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+  tex.minFilter=THREE.LinearMipmapLinearFilter;
+  tex.magFilter=THREE.LinearFilter;
+
+  // Atlas layout: 6 facade panels on the first row, matching roof panels below.
+  tex.repeat.x=1/6;
+  tex.offset.x=index/6;
+  if(kind==="facade"){
+    tex.repeat.y=0.335;
+    tex.offset.y=0.665;
+  }else if(kind==="roof"){
+    tex.repeat.y=0.225;
+    tex.offset.y=0.405;
+  }else{
+    tex.repeat.y=0.335;
+    tex.offset.y=0.665;
+  }
+  tex.needsUpdate=true;
+  return tex;
+}
+function wallpaperMaterial(index,kind){
+  const cache=wallpaperMaterials[kind];
+  if(cache[index])return cache[index];
+  const map=atlasSliceTexture(index,kind);
+  const mat=new THREE.MeshBasicMaterial({
+    map:map,
+    color:0xffffff,
+    transparent:false,
+    side:THREE.DoubleSide,
+    depthWrite:true,
+    toneMapped:false
+  });
+  cache[index]=mat;
+  return mat;
+}
+const wallpaperBottomMaterial=new THREE.MeshBasicMaterial({
+  transparent:true,
+  opacity:0,
+  depthWrite:false,
+  colorWrite:false
+});
+function isStripWallpaperTile(rec){
+  return rec.col>=STRIP_MIN_COL&&rec.col<=STRIP_MAX_COL;
+}
+function wallpaperProfileIndex(rec,center,slot){
+  const h=(rec.col*17+rec.row*31+Math.round(center.x*0.11)+Math.round(center.z*0.07)+slot*13);
+  return Math.abs(h)%6;
+}
+function buildStripWallpaper(root,rec){
+  if(!isStripWallpaperTile(rec))return null;
+
+  root.updateMatrixWorld(true);
+  const candidates=[];
+  root.traverse(function(o){
+    if(!o.isMesh||!o.visible)return;
+    const box=new THREE.Box3().setFromObject(o);
+    if(box.isEmpty())return;
+    const size=new THREE.Vector3(),center=new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    // Large architectural masses only; skip terrain, roads, signs and tiny detail.
+    if(size.y<5.5||size.x<2.5||size.z<2.5)return;
+    if(size.x>180&&size.z>180&&size.y<18)return;
+    const volume=size.x*size.y*size.z;
+    if(volume<130)return;
+    candidates.push({box:box,size:size,center:center,volume:volume});
+  });
+
+  candidates.sort(function(a,b){return b.volume-a.volume;});
+  const chosen=[];
+  for(const c of candidates){
+    if(chosen.length>=MAX_WALLPAPER_BUILDINGS_PER_TILE)break;
+    let nested=false;
+    for(const keep of chosen){
+      if(keep.box.containsBox(c.box)){nested=true;break;}
+      const dx=Math.abs(keep.center.x-c.center.x);
+      const dz=Math.abs(keep.center.z-c.center.z);
+      if(dx<Math.min(keep.size.x,c.size.x)*0.18&&dz<Math.min(keep.size.z,c.size.z)*0.18){
+        nested=true;break;
+      }
+    }
+    if(!nested)chosen.push(c);
+  }
+
+  if(!chosen.length)return null;
+  const group=new THREE.Group();
+  group.name="STRIP_WALLPAPER_"+tileKey(rec.col,rec.row);
+
+  chosen.forEach(function(c,slot){
+    const idx=wallpaperProfileIndex(rec,c.center,slot);
+    const facade=wallpaperMaterial(idx,"facade");
+    const side=wallpaperMaterial(idx,"side");
+    const roof=wallpaperMaterial(idx,"roof");
+
+    // Slight expansion turns the generated art into a true outer cover while
+    // leaving the original GLB and its collision shell untouched underneath.
+    const pad=0.10;
+    const geom=new THREE.BoxGeometry(
+      Math.max(0.5,c.size.x+pad),
+      Math.max(0.5,c.size.y+pad),
+      Math.max(0.5,c.size.z+pad)
+    );
+    const mats=[side,side,roof,wallpaperBottomMaterial,facade,facade];
+    const shell=new THREE.Mesh(geom,mats);
+    shell.position.copy(c.center);
+    shell.renderOrder=5;
+    shell.frustumCulled=true;
+    shell.userData.wallpaperProfile=idx;
+    shell.userData.wallpaper=true;
+    group.add(shell);
+  });
+
+  mapGroup.add(group);
+  wallpaperShellCount+=group.children.length;
+  return group;
+}
+function disposeWallpaperGroup(group){
+  if(!group)return;
+  wallpaperShellCount=Math.max(0,wallpaperShellCount-group.children.length);
+  mapGroup.remove(group);
+  group.traverse(function(o){
+    if(o.geometry&&o.geometry.dispose)o.geometry.dispose();
+  });
+}
+
 const mapGroup=new THREE.Group();
 mapGroup.name="JC_GLB_TILE_MAP";
 scene.add(mapGroup);
@@ -652,8 +797,9 @@ async function loadOneTile(rec){
     }
 
     mapGroup.add(root);
+    const wallpaperGroup=buildStripWallpaper(root,rec);
     const colliderCount=buildTileColliders(root,rec);
-    loadedTiles.set(key,{root:root,rec:rec,colliderCount:colliderCount});
+    loadedTiles.set(key,{root:root,rec:rec,colliderCount:colliderCount,wallpaperGroup:wallpaperGroup});
   }catch(err){
     console.error("GLB tile load failed",key,err);
     failedTiles.add(key);
@@ -760,6 +906,7 @@ async function streamTiles(force){
     for(const entry of Array.from(loadedTiles.entries())){
       const key=entry[0],item=entry[1];
       if(!tileNearStreamCorridor(item.rec,plan,keepRadius)){
+        if(item.wallpaperGroup)disposeWallpaperGroup(item.wallpaperGroup);
         mapGroup.remove(item.root);
         disposeTile(item.root);
         loadedTiles.delete(key);
@@ -1578,7 +1725,7 @@ function updateHud(){
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP";
+  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · WALLPAPER "+wallpaperShellCount;
   const plan=streamPlan();
   const aheadText=plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"";
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
@@ -1607,6 +1754,14 @@ async function boot(){
     tileScale:TILE_SCALE,
     tileGroundY:TILE_GROUND_Y,
     roadSurfaceY:ROAD_SURFACE_Y,
+    wallpaperAtlas:stripWallpaperAtlas,
+    get wallpaperShellCount(){return wallpaperShellCount},
+    rebuildWallpaper:function(){
+      for(const item of loadedTiles.values()){
+        if(item.wallpaperGroup)disposeWallpaperGroup(item.wallpaperGroup);
+        item.wallpaperGroup=buildStripWallpaper(item.root,item.rec);
+      }
+    },
     origin:{col:ORIGIN_COL,row:ORIGIN_ROW},
     manifestVersion:manifestVersion,
     streamTiles:streamTiles,

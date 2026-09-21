@@ -86,7 +86,9 @@ const TILE_SCALE=0.1;
 const TILE_WORLD_SIZE=TILE_SOURCE_SIZE*TILE_SCALE;
 const ORIGIN_COL=8;
 const ORIGIN_ROW=8;
-const MAP_Y_OFFSET=-20.5;
+const TILE_GROUND_Y=0;
+const ROAD_SURFACE_Y=0.10;
+const MAP_Y_OFFSET=TILE_GROUND_Y;
 const LOAD_RADIUS=lowSpec?1:2;
 const KEEP_RADIUS=lowSpec?2:4;
 const MAX_CONCURRENT=lowSpec?2:4;
@@ -97,7 +99,7 @@ const VERY_HIGH_SPEED_STREAM_THRESHOLD=900;
 const PLAYER_RADIUS=0.38;
 const PLAYER_HEIGHT=1.85;
 const GRAVITY=38;
-const GROUND_Y=3;
+const GROUND_Y=ROAD_SURFACE_Y+0.04;
 const COLLISION_TILE_RADIUS=1;
 const MAX_COLLIDERS_PER_TILE=lowSpec?220:420;
 
@@ -158,7 +160,7 @@ function roadQuadGeometry(roads,worldSpace){
       const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
       if(!Number.isFinite(len)||len<0.01)continue;
       const nx=-dz/len*width*0.5,nz=dx/len*width*0.5;
-      const y=worldSpace?0.22:(-MAP_Y_OFFSET+0.22);
+      const y=ROAD_SURFACE_Y;
       byType[bucket].push(
         ax+nx,y,az+nz, ax-nx,y,az-nz, bx-nx,y,bz-nz,
         ax+nx,y,az+nz, bx-nx,y,bz-nz, bx+nx,y,bz+nz
@@ -198,7 +200,7 @@ function makeRoadMeshes(roads,materials,worldSpace){
   // Detailed mode: center lines + highway edge lines, batched for performance.
   if(!worldSpace){
     const centerVerts=[],laneVerts=[],edgeVerts=[];
-    const y=(-MAP_Y_OFFSET)+0.245;
+    const y=ROAD_SURFACE_Y+0.025;
     for(const road of roads||[]){
       const pts=road.p||[];
       const h=road.h||"";
@@ -306,14 +308,6 @@ async function streamRoadTiles(force){
     .filter(function(t){return tileNearStreamCorridor(t,plan,radius);})
     .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
 
-  const currentRoad=roadManifestByKey.get(tileKey(plan.current.col,plan.current.row));
-  if(currentRoad&&!loadedRoadTiles.has(tileKey(currentRoad.col,currentRoad.row))){
-    await loadRoadTile(currentRoad);
-    wanted=wanted.filter(function(t){
-      return !(t.col===currentRoad.col&&t.row===currentRoad.row);
-    });
-  }
-
   for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
     await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadRoadTile));
   }
@@ -347,7 +341,7 @@ function tileKey(col,row){
   return "C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
 }
 function tileWorldPosition(col,row){
-  return new THREE.Vector3((col-ORIGIN_COL)*TILE_WORLD_SIZE,MAP_Y_OFFSET,-(row-ORIGIN_ROW)*TILE_WORLD_SIZE);
+  return new THREE.Vector3((col-ORIGIN_COL)*TILE_WORLD_SIZE,TILE_GROUND_Y,-(row-ORIGIN_ROW)*TILE_WORLD_SIZE);
 }
 function worldCell(x,z){
   return {
@@ -435,7 +429,7 @@ async function loadWorldLod(){
 
     root.position.x+=targetCenterX-scaledCenter.x;
     root.position.z+=targetCenterZ-scaledCenter.z;
-    root.position.y+=MAP_Y_OFFSET-scaledBox.min.y;
+    root.position.y+=TILE_GROUND_Y-scaledBox.min.y;
 
     worldLodGroup.add(root);
     worldLodRoot=root;
@@ -620,7 +614,20 @@ async function loadOneTile(rec){
     const root=gltf.scene;
     root.name=key;
     root.scale.setScalar(TILE_SCALE);
-    root.position.copy(tileWorldPosition(rec.col,rec.row));
+
+    // Static world tile: preserve the exported horizontal orientation, but anchor
+    // its actual lowest geometry point to the common ground plane.
+    root.position.set(0,0,0);
+    root.updateMatrixWorld(true);
+    const localBounds=new THREE.Box3().setFromObject(root);
+    const baseY=Number.isFinite(localBounds.min.y)?localBounds.min.y:0;
+    const tilePos=tileWorldPosition(rec.col,rec.row);
+    root.position.set(tilePos.x,TILE_GROUND_Y-baseY,tilePos.z);
+    root.userData.staticWorldTile=true;
+    root.userData.gravityAnchored=true;
+    root.userData.groundY=TILE_GROUND_Y;
+    root.userData.sourceBaseY=baseY;
+
     root.traverse(function(o){
       if(!o.isMesh)return;
       o.castShadow=false;
@@ -631,8 +638,20 @@ async function loadOneTile(rec){
         if(m&&m.map)m.map.colorSpace=THREE.SRGBColorSpace;
       });
     });
-    mapGroup.add(root);
     root.updateMatrixWorld(true);
+
+    // Final anchor verification: no streamed tile is allowed to float above or
+    // sink below the shared ground plane because of source-export Y offsets.
+    const groundedBounds=new THREE.Box3().setFromObject(root);
+    if(Number.isFinite(groundedBounds.min.y)){
+      const correction=TILE_GROUND_Y-groundedBounds.min.y;
+      if(Math.abs(correction)>0.002){
+        root.position.y+=correction;
+        root.updateMatrixWorld(true);
+      }
+    }
+
+    mapGroup.add(root);
     const colliderCount=buildTileColliders(root,rec);
     loadedTiles.set(key,{root:root,rec:rec,colliderCount:colliderCount});
   }catch(err){
@@ -732,17 +751,7 @@ async function streamTiles(force){
       .filter(function(t){return tileNearStreamCorridor(t,plan,dynamicRadius);})
       .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
 
-    // Safety only: if JC's exact current tile has never loaded, get that one first.
-    // Once the local tile exists, every new preload starts at the far horizon
-    // and works backward toward JC.
-    const currentRec=manifestByKey.get(tileKey(plan.current.col,plan.current.row));
-    if(currentRec&&!loadedTiles.has(tileKey(currentRec.col,currentRec.row))){
-      await loadOneTile(currentRec);
-      wanted=wanted.filter(function(t){
-        return !(t.col===currentRec.col&&t.row===currentRec.row);
-      });
-    }
-
+    // Strict ordering: farthest predicted tiles first, then work backward to JC.
     for(let i=0;i<wanted.length;i+=MAX_CONCURRENT){
       await Promise.all(wanted.slice(i,i+MAX_CONCURRENT).map(loadOneTile));
     }
@@ -1569,7 +1578,7 @@ function updateHud(){
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"");
+  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP";
   const plan=streamPlan();
   const aheadText=plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"";
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
@@ -1596,6 +1605,8 @@ async function boot(){
     player:player,
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
+    tileGroundY:TILE_GROUND_Y,
+    roadSurfaceY:ROAD_SURFACE_Y,
     origin:{col:ORIGIN_COL,row:ORIGIN_ROW},
     manifestVersion:manifestVersion,
     streamTiles:streamTiles,

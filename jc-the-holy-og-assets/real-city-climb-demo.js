@@ -577,19 +577,42 @@ const powerState={
   controller:"JC",
   divine:100,
   infernal:100,
+  health:100,
+  maxHealth:100,
+  satanHealth:500,
   divineShield:0,
   secondComing:0,
   hellOnEarth:0,
+  timeGrace:0,
+  resurrectionReady:true,
+  combo:0,
+  comboTimer:0,
+  cameraShake:0,
+  lastAbility:"",
   cooldowns:{}
 };
 const powerFx=[];
 const powerHud=document.createElement("div");
 powerHud.id="powerHud";
-powerHud.style.cssText="position:fixed;right:14px;top:14px;z-index:7;min-width:240px;padding:10px 12px;background:rgba(5,5,9,.82);border-right:3px solid #ffd45a;font:12px/1.45 Arial,sans-serif;color:white;pointer-events:none";
+powerHud.style.cssText="position:fixed;right:14px;top:14px;z-index:7;min-width:280px;padding:10px 12px;background:rgba(5,5,9,.84);border-right:3px solid #ffd45a;font:12px/1.45 Arial,sans-serif;color:white;pointer-events:none";
 document.body.appendChild(powerHud);
 
+const powerFlash=document.createElement("div");
+powerFlash.style.cssText="position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;background:#fff;mix-blend-mode:screen";
+document.body.appendChild(powerFlash);
+
 function powerOrigin(){
-  return player.pos.clone().add(new THREE.Vector3(0,2.2,0));
+  return player.pos.clone().add(new THREE.Vector3(0,1.2,0));
+}
+function viewForward(){
+  return new THREE.Vector3(
+    -Math.sin(camYaw)*Math.cos(camPitch),
+    -Math.sin(camPitch),
+    -Math.cos(camYaw)*Math.cos(camPitch)
+  ).normalize();
+}
+function forwardPoint(distance){
+  return powerOrigin().addScaledVector(viewForward(),distance);
 }
 function addFx(obj,life,update){
   scene.add(obj);
@@ -604,35 +627,50 @@ function disposeFx(obj){
     mats.forEach(function(m){if(m&&m.dispose)m.dispose();});
   });
 }
-function radialRing(color,radius,life,y){
+function flashPower(color,amount){
+  powerFlash.style.background=color;
+  powerFlash.style.opacity=String(amount);
+  setTimeout(function(){powerFlash.style.opacity="0";},70);
+}
+function shakePower(amount){
+  powerState.cameraShake=Math.max(powerState.cameraShake,amount);
+}
+function radialRingAt(center,color,radius,life){
   const g=new THREE.RingGeometry(Math.max(0.5,radius*0.82),radius,72);
   const m=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.95,side:THREE.DoubleSide,depthWrite:false});
   const ring=new THREE.Mesh(g,m);
   ring.rotation.x=-Math.PI/2;
-  ring.position.copy(powerOrigin());
-  ring.position.y=(y??player.pos.y)+0.4;
+  ring.position.copy(center);
   ring.scale.setScalar(0.08);
-  return addFx(ring,life,function(f,dt){
+  return addFx(ring,life,function(f){
     const t=1-f.life/f.maxLife;
     f.obj.scale.setScalar(0.08+t*5.5);
     f.obj.material.opacity=(1-t)*0.9;
   });
 }
-function verticalBeam(color,height,life){
-  const g=new THREE.CylinderGeometry(2.4,5.5,height,24,1,true);
+function radialRing(color,radius,life,y){
+  const c=powerOrigin();
+  c.y=(y??player.pos.y)+0.2;
+  return radialRingAt(c,color,radius,life);
+}
+function verticalBeamAt(center,color,height,life){
+  const g=new THREE.CylinderGeometry(1.8,4.8,height,24,1,true);
   const m=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.78,side:THREE.DoubleSide,depthWrite:false});
   const beam=new THREE.Mesh(g,m);
-  beam.position.copy(powerOrigin());
-  beam.position.y+=height/2-2;
+  beam.position.copy(center);
+  beam.position.y+=height/2;
   return addFx(beam,life,function(f){
     const t=1-f.life/f.maxLife;
     f.obj.material.opacity=(1-t)*0.78;
     f.obj.scale.x=f.obj.scale.z=1+t*1.8;
   });
 }
+function verticalBeam(color,height,life){
+  return verticalBeamAt(powerOrigin(),color,height,life);
+}
 function orbBurst(color,count,radius,life,center){
   const group=new THREE.Group();
-  const geom=new THREE.SphereGeometry(0.45,8,6);
+  const geom=new THREE.SphereGeometry(0.35,8,6);
   const mat=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.95});
   for(let i=0;i<count;i++){
     const m=new THREE.Mesh(geom,mat.clone());
@@ -652,51 +690,195 @@ function orbBurst(color,count,radius,life,center){
     });
   });
 }
-function canUse(key,cost,meter){
+function lightningStrike(center,color,life){
+  const group=new THREE.Group();
+  group.position.copy(center);
+  for(let bolt=0;bolt<5;bolt++){
+    const points=[];
+    const top=180+Math.random()*100;
+    for(let i=0;i<=12;i++){
+      const t=i/12;
+      points.push(new THREE.Vector3(
+        (Math.random()-.5)*8*(1-t),
+        top*(1-t),
+        (Math.random()-.5)*8*(1-t)
+      ));
+    }
+    const g=new THREE.BufferGeometry().setFromPoints(points);
+    const m=new THREE.LineBasicMaterial({color:color,transparent:true,opacity:0.95});
+    group.add(new THREE.Line(g,m));
+  }
+  return addFx(group,life,function(f){
+    const t=1-f.life/f.maxLife;
+    f.obj.children.forEach(function(line){line.material.opacity=1-t;});
+  });
+}
+function holyAura(duration){
+  const g=new THREE.SphereGeometry(2.4,18,12);
+  const m=new THREE.MeshBasicMaterial({color:0xffe88a,transparent:true,opacity:0.16,side:THREE.DoubleSide,depthWrite:false});
+  const aura=new THREE.Mesh(g,m);
+  aura.position.copy(powerOrigin());
+  return addFx(aura,duration,function(f){
+    f.obj.position.copy(powerOrigin());
+    const pulse=1+Math.sin(performance.now()*0.012)*0.12;
+    f.obj.scale.setScalar(pulse);
+    f.obj.material.opacity=0.11+Math.sin(performance.now()*0.02)*0.05;
+  });
+}
+function comboScale(){
+  return 1+Math.min(10,powerState.combo)*0.08;
+}
+function registerJCAbility(name){
+  powerState.lastAbility=name;
+  powerState.combo=Math.min(10,powerState.combo+1);
+  powerState.comboTimer=4;
+}
+function canUse(key,cost,meter,cooldown){
   if((powerState.cooldowns[key]||0)>0)return false;
-  if(powerState[meter]<cost)return false;
-  powerState[meter]-=cost;
-  powerState.cooldowns[key]=0.8;
+  const free=powerState.controller==="JC"&&powerState.secondComing>0;
+  if(!free&&powerState[meter]<cost)return false;
+  if(!free)powerState[meter]-=cost;
+  powerState.cooldowns[key]=cooldown??0.8;
   return true;
 }
+function damageSatan(amount,knockback,origin){
+  powerState.satanHealth=Math.max(0,powerState.satanHealth-amount*comboScale());
+  const from=origin||player.pos;
+  const delta=satanRoot.position.clone().sub(from);
+  if(delta.lengthSq()<0.001)delta.set(0,0,-1);
+  satanRoot.position.add(delta.normalize().multiplyScalar(knockback||0));
+}
+function takeDivineDamage(amount){
+  if(powerState.controller!=="JC")return;
+  if(powerState.divineShield>0)amount*=0.12;
+  if(powerState.secondComing>0)amount*=0.25;
+  powerState.health-=amount;
+  shakePower(Math.min(2.5,amount*0.04));
+  flashPower("#ff3344",0.18);
+  if(powerState.health<=0){
+    if(powerState.resurrectionReady){
+      powerState.resurrectionReady=false;
+      powerState.health=100;
+      powerState.divine=100;
+      powerState.divineShield=5;
+      player.pos.y=Math.max(player.pos.y,18);
+      player.velocity.set(0,140,0);
+      radialRing(0xffffff,18,1.7);
+      verticalBeam(0xfff5c7,260,2.2);
+      orbBurst(0xffffff,55,24,2.4,powerOrigin());
+      flashPower("#ffffff",0.75);
+      shakePower(3.5);
+    }else{
+      powerState.health=1;
+    }
+  }
+}
 function holyShockwave(){
-  if(!canUse("jc1",18,"divine"))return;
-  radialRing(0xffe783,7,0.9);
-  orbBurst(0xfff3b0,18,4,0.8,powerOrigin());
-  const delta=satanRoot.position.clone().sub(player.pos);
-  if(delta.length()<80)satanRoot.position.add(delta.normalize().multiplyScalar(20));
+  if(!canUse("jc1",14,"divine",0.45))return;
+  registerJCAbility("HOLY SHOCKWAVE");
+  const scale=comboScale();
+  radialRing(0xffe783,8*scale,0.85);
+  orbBurst(0xfff3b0,22,5*scale,0.75,powerOrigin());
+  damageSatan(22,18*scale);
+  shakePower(0.75*scale);
 }
 function divineShield(){
-  if(!canUse("jc2",25,"divine"))return;
-  powerState.divineShield=7;
-  const g=new THREE.SphereGeometry(5.2,24,18);
-  const m=new THREE.MeshBasicMaterial({color:0xffe58a,transparent:true,opacity:0.24,wireframe:false,side:THREE.DoubleSide,depthWrite:false});
+  if(!canUse("jc2",20,"divine",2.4))return;
+  registerJCAbility("DIVINE SHIELD");
+  powerState.divineShield=8;
+  holyAura(8);
+  const g=new THREE.SphereGeometry(3.6,24,18);
+  const m=new THREE.MeshBasicMaterial({color:0xffe58a,transparent:true,opacity:0.22,side:THREE.DoubleSide,depthWrite:false});
   const shield=new THREE.Mesh(g,m);
   shield.position.copy(powerOrigin());
-  addFx(shield,7,function(f){
+  addFx(shield,8,function(f){
     f.obj.position.copy(powerOrigin());
-    f.obj.material.opacity=0.16+Math.sin(performance.now()*0.01)*0.08;
+    f.obj.material.opacity=0.14+Math.sin(performance.now()*0.01)*0.08;
   });
 }
 function judgmentBeam(){
-  if(!canUse("jc3",32,"divine"))return;
-  verticalBeam(0xfff0a8,220,1.5);
-  radialRing(0xffffff,12,1.2);
+  if(!canUse("jc3",26,"divine",1.5))return;
+  registerJCAbility("JUDGMENT BEAM");
+  const target=forwardPoint(130);
+  target.y=Math.max(0,target.y);
+  verticalBeamAt(target,0xfff0a8,280,1.35);
+  lightningStrike(target,0xffffff,0.75);
+  radialRingAt(target.clone().setY(target.y+0.15),0xffffff,11*comboScale(),1.05);
+  orbBurst(0xfff7ca,26,9,1.1,target);
+  const d=satanRoot.position.distanceTo(target);
+  if(d<55)damageSatan(45,14,target);
+  shakePower(1.4);
+  flashPower("#fff6cb",0.28);
 }
 function secondComing(){
-  if(!canUse("jc4",100,"divine"))return;
-  powerState.secondComing=12;
-  radialRing(0xffe26f,24,2.2);
-  verticalBeam(0xfff6c8,420,3);
-  orbBurst(0xffffff,80,35,3,powerOrigin());
+  if(!canUse("jc4",100,"divine",20))return;
+  registerJCAbility("SECOND COMING");
+  powerState.secondComing=15;
+  powerState.divineShield=15;
+  powerState.health=100;
+  powerState.divine=100;
+  powerState.resurrectionReady=true;
+  radialRing(0xffe26f,30,2.3);
+  verticalBeam(0xfff6c8,520,3.2);
+  orbBurst(0xffffff,110,45,3.3,powerOrigin());
+  lightningStrike(powerOrigin(),0xfff9d8,2.2);
+  damageSatan(120,45);
+  shakePower(3);
+  flashPower("#ffffff",0.7);
+}
+function divineDash(){
+  if(!canUse("jc5",12,"divine",0.5))return;
+  registerJCAbility("DIVINE DASH");
+  const dir=viewForward();
+  player.velocity.addScaledVector(dir,1300);
+  player.pos.addScaledVector(dir,24);
+  orbBurst(0x9fe8ff,20,3.5,0.6,powerOrigin());
+  radialRing(0x9fe8ff,4.5,0.45);
+  shakePower(0.4);
+}
+function heavenSlam(){
+  if(!canUse("jc6",24,"divine",2.2))return;
+  registerJCAbility("HEAVEN SLAM");
+  const impact=player.pos.clone();
+  impact.y=0.25;
+  player.velocity.set(0,0,0);
+  player.pos.y=3;
+  radialRingAt(impact,0xffd75e,18*comboScale(),1.4);
+  radialRingAt(impact,0xffffff,10*comboScale(),0.8);
+  verticalBeamAt(impact,0xffed9b,180,1.5);
+  orbBurst(0xffc83d,48,18,1.8,impact);
+  if(satanRoot.position.distanceTo(impact)<85)damageSatan(65,35,impact);
+  shakePower(2.8);
+  flashPower("#ffe9a3",0.35);
+}
+function timeGrace(){
+  if(!canUse("jc7",28,"divine",9))return;
+  registerJCAbility("TIME GRACE");
+  powerState.timeGrace=7;
+  powerState.divineShield=Math.max(powerState.divineShield,4);
+  holyAura(7);
+  radialRing(0xb7e8ff,13,1.2);
+  flashPower("#dff7ff",0.2);
+}
+function miracleHeal(){
+  if(!canUse("jc8",30,"divine",10))return;
+  registerJCAbility("MIRACLE HEAL");
+  powerState.health=100;
+  powerState.divine=Math.min(100,powerState.divine+25);
+  powerState.divineShield=Math.max(powerState.divineShield,2.5);
+  radialRing(0xb8ffbf,16,1.5);
+  verticalBeam(0xdffff0,150,1.8);
+  orbBurst(0xb8ffcf,42,13,1.8,powerOrigin());
+  flashPower("#dffff0",0.3);
 }
 function hellfireStorm(){
-  if(!canUse("sat1",18,"infernal"))return;
+  if(!canUse("sat1",18,"infernal",0.8))return;
   radialRing(0xff3b12,9,1.1);
   orbBurst(0xff2b00,42,16,2.4,powerOrigin().add(new THREE.Vector3(0,16,0)));
+  takeDivineDamage(18);
 }
 function realityTear(){
-  if(!canUse("sat2",28,"infernal"))return;
+  if(!canUse("sat2",28,"infernal",1.8))return;
   const g=new THREE.TorusGeometry(6,1.25,18,56);
   const m=new THREE.MeshBasicMaterial({color:0x9c28ff,transparent:true,opacity:0.9,side:THREE.DoubleSide,depthWrite:false});
   const portal=new THREE.Mesh(g,m);
@@ -707,18 +889,21 @@ function realityTear(){
     f.obj.scale.multiplyScalar(1+dt*0.08);
     f.obj.material.opacity=Math.max(0,f.life/f.maxLife);
   });
+  takeDivineDamage(24);
 }
 function fearWave(){
-  if(!canUse("sat3",22,"infernal"))return;
+  if(!canUse("sat3",22,"infernal",1.1))return;
   radialRing(0x7c00ff,13,1.5);
   orbBurst(0x5b00b8,24,8,1.2,powerOrigin());
+  takeDivineDamage(14);
 }
 function hellOnEarth(){
-  if(!canUse("sat4",100,"infernal"))return;
+  if(!canUse("sat4",100,"infernal",20))return;
   powerState.hellOnEarth=12;
   radialRing(0xff2200,28,2.4);
   verticalBeam(0xff2600,340,2.6);
   orbBurst(0xff3b00,95,45,4,powerOrigin().add(new THREE.Vector3(0,20,0)));
+  takeDivineDamage(35);
 }
 function usePower(slot){
   if(powerState.controller==="JC"){
@@ -726,6 +911,10 @@ function usePower(slot){
     if(slot===2)divineShield();
     if(slot===3)judgmentBeam();
     if(slot===4)secondComing();
+    if(slot===5)divineDash();
+    if(slot===6)heavenSlam();
+    if(slot===7)timeGrace();
+    if(slot===8)miracleHeal();
   }else{
     if(slot===1)hellfireStorm();
     if(slot===2)realityTear();
@@ -742,12 +931,21 @@ function togglePowerController(){
   else player.root.position.copy(player.pos);
 }
 function updatePowers(dt){
-  powerState.divine=Math.min(100,powerState.divine+6*dt);
+  const regen=powerState.secondComing>0?35:(powerState.timeGrace>0?15:7);
+  powerState.divine=Math.min(100,powerState.divine+regen*dt);
   powerState.infernal=Math.min(100,powerState.infernal+6*dt);
   powerState.divineShield=Math.max(0,powerState.divineShield-dt);
   powerState.secondComing=Math.max(0,powerState.secondComing-dt);
   powerState.hellOnEarth=Math.max(0,powerState.hellOnEarth-dt);
+  powerState.timeGrace=Math.max(0,powerState.timeGrace-dt);
+  powerState.comboTimer=Math.max(0,powerState.comboTimer-dt);
+  powerState.cameraShake=Math.max(0,powerState.cameraShake-dt*2.4);
+  if(powerState.comboTimer<=0)powerState.combo=Math.max(0,powerState.combo-dt*2.2);
   Object.keys(powerState.cooldowns).forEach(function(k){powerState.cooldowns[k]=Math.max(0,powerState.cooldowns[k]-dt);});
+
+  if(powerState.timeGrace>0&&powerState.controller==="JC"){
+    player.velocity.multiplyScalar(1+0.55*dt);
+  }
 
   for(let i=powerFx.length-1;i>=0;i--){
     const f=powerFx[i];
@@ -760,9 +958,10 @@ function updatePowers(dt){
   }
 
   if(powerState.secondComing>0){
-    scene.background.lerp(new THREE.Color(0x3b4868),0.07);
-    hemi.intensity=Math.max(hemi.intensity,4.5);
-    glow.intensity=Math.max(glow.intensity,14);
+    scene.background.lerp(new THREE.Color(0x4b5576),0.09);
+    hemi.intensity=Math.max(hemi.intensity,5.2);
+    glow.intensity=Math.max(glow.intensity,18);
+    flightRing.scale.setScalar(Math.max(flightRing.scale.x,2.2));
   }
   if(powerState.hellOnEarth>0){
     scene.background.lerp(new THREE.Color(0x390400),0.09);
@@ -780,9 +979,12 @@ function updatePowers(dt){
 
   const meter=powerState.controller==="JC"?powerState.divine:powerState.infernal;
   const names=powerState.controller==="JC"
-    ?["1 HOLY SHOCKWAVE","2 DIVINE SHIELD","3 JUDGMENT BEAM","4 SECOND COMING"]
+    ?["1 SHOCKWAVE","2 DIVINE SHIELD","3 JUDGMENT BEAM","4 SECOND COMING","5 DIVINE DASH","6 HEAVEN SLAM","7 TIME GRACE","8 MIRACLE HEAL"]
     :["1 HELLFIRE STORM","2 REALITY TEAR","3 FEAR WAVE","4 HELL ON EARTH"];
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%<br>"+names.join("<br>")+"<br><span style='opacity:.75'>T = switch JC / Satan</span>";
+  const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
+  const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
+  const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · T switch</span>";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
@@ -866,6 +1068,10 @@ addEventListener("keydown",function(e){
   if(e.code==="Digit2"&&!e.repeat)usePower(2);
   if(e.code==="Digit3"&&!e.repeat)usePower(3);
   if(e.code==="Digit4"&&!e.repeat)usePower(4);
+  if(e.code==="Digit5"&&!e.repeat)usePower(5);
+  if(e.code==="Digit6"&&!e.repeat)usePower(6);
+  if(e.code==="Digit7"&&!e.repeat)usePower(7);
+  if(e.code==="Digit8"&&!e.repeat)usePower(8);
   if(e.code==="Space")e.preventDefault();
 });
 addEventListener("keyup",function(e){keys[e.code]=false;});
@@ -1084,8 +1290,15 @@ function updateCamera(dt){
     Math.sin(camPitch)*d+2,
     Math.cos(camYaw)*Math.cos(camPitch)*d
   ));
+  if(powerState.cameraShake>0){
+    const s=powerState.cameraShake;
+    desired.x+=(Math.random()-.5)*s;
+    desired.y+=(Math.random()-.5)*s;
+    desired.z+=(Math.random()-.5)*s;
+  }
   camera.position.lerp(desired,1-Math.exp(-(hyper.active?10:7)*dt));
-  const targetFov=hyper.active?94:62+speedFx*26;
+  const powerFov=powerState.secondComing>0?8:(powerState.timeGrace>0?5:0);
+  const targetFov=(hyper.active?94:62+speedFx*26)+powerFov;
   camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-5*dt));
   camera.updateProjectionMatrix();
   camera.lookAt(target);
@@ -1140,6 +1353,7 @@ async function boot(){
     loadedRoadTiles:loadedRoadTiles,
     powers:powerState,
     usePower:usePower,
+    takeDivineDamage:takeDivineDamage,
     togglePowerController:togglePowerController
   };
   requestAnimationFrame(frame);

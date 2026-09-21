@@ -1,0 +1,354 @@
+{
+  "generatedAt": "2026-09-21T15:24:13.708Z",
+  "tileSourceSize": 1000,
+  "tileScale": 0.1,
+  "origin": {
+    "col": 8,
+    "row": 8
+  },
+  "count": 38,
+  "tiles": [
+    {
+      "name": "C06_R23",
+      "col": 6,
+      "row": 23,
+      "file": "C06_R23.glb",
+      "url": "./C06_R23.glb",
+      "sha": "c7a777df2aea2abc23b8a65dffa8f5c63f43a4b5",
+      "size": 3630508
+    },
+    {
+      "name": "C06_R24",
+      "col": 6,
+      "row": 24,
+      "file": "C06_R24.glb",
+      "url": "./C06_R24.glb",
+      "sha": "e47564784ab7e9c9801273e372706d2b1f054ce9",
+      "size": 3783608
+    },
+    {
+      "name": "C06_R25",
+      "col": 6,
+      "row": 25,
+      "file": "C06_R25.glb",
+      "url": "./C06_R25.glb",
+      "sha": "53be9731b063e4fc0b00c7c63f706c06095adeaa",
+      "size": 3380664
+    },
+    {
+      "name": "C06_R26",
+      "col": 6,
+      "row": 26,
+      "file": "C06_R26.glb",
+      "url": "./C06_R26.glb",
+      "sha": "652457b4e742c2b74ea7098bf580c15e5ec12ae9",
+      "size": 4242880
+    },
+    {
+      "name": "C06_R27",
+      "col": 6,
+      "row": 27,
+      "file": "C06_R27.glb",
+      "url": "./C06_R27.glb",
+      "sha": "f986b7be13109022ea091884cbd6ac5415fc6270",
+      "size": 3872724
+    },
+    {
+      "name": "C06_R28",
+      "col": 6,
+      "row": 28,
+      "file": "C06_R28.glb",
+      "url": "./C06_R28.glb",
+      "sha": "a705ffb865e8c5dce58048302264093f62bcc67c",
+      "size": 1582148
+    },
+    {
+      "name": "C06_R29",
+      "col": 6,
+      "row": 29,
+      "file": "C06_R29.glb",
+      "url": "./C06_R29.glb",
+      "sha": "fcb9cbc7a6f167f4a7a461a8c58542bb3e576938",
+      "size": 1742400
+    },
+    {
+      "name": "C06_R30",
+      "col": 6,
+      "row": 30,
+      "file": "C06_R30.glb",
+      "url": "./C06_R30.glb",
+      "sha": "521cd0a784d40884757afe3e7e6eb6564a057e7e",
+      "size": 3005696
+    },
+    {
+      "name": "C06_R31",
+      "col": 6,
+      "row": 31,
+      "file": "C06_R31.glb",
+      "url": "./C06_R31.glb",
+      "sha": "1f37bf97483dc1e187f94341bb0934bae17dcd01",
+      "size": 2277908
+    },
+    {
+      "name": "C06_R32",
+      "col": 6,
+      "row": 32,
+      "file": "C06_R32.glb",
+      "url": "./C06_R32.glb",
+      "sha": "30d02d1d8d20958e7fb96b7d8c33e0f38fe6c23b",
+      "size": 464912
+    },
+    {
+      "name": "C06_R33",
+      "col": 6,
+      "row": 33,
+      "file": "C06_R33.glb",
+      "url": "./C06_R33.glb",
+      "sha": "e831c9825ccf9ef25688437616325db6b8078760",
+      "size": 3163772
+    },
+    {
+      "name": "C06_R34",
+      "col": 6,
+      "row": 34,
+      "file": "C06_R34.glb",
+      "url": "./C06_R34.glb",
+      "sha": "06e90939d90fa08cd832ee981b87350c3bd0fc76",
+      "size": 25448
+    },
+    {
+      "name": "C07_R00",
+      "col": 7,
+      "row": 0,
+      "file": "C07_R00.glb",
+      "url": "./C07_R00.glb",
+      "sha": "c11b21f8baabcf29d134f209a8088f8d49b00645",
+      "size": 84228
+    },
+    {
+      "name": "C07_R01",
+      "col": 7,
+      "row": 1,
+      "file": "C07_R01.glb",
+      "url": "./C07_R01.glb",
+      "sha": "6c736edc4fdbbbda12454b6c7a3b70bb371da140",
+      "size": 804284
+    },
+    {
+      "name": "C07_R02",
+      "col": 7,
+      "row": 2,
+      "file": "C07_R02.glb",
+      "url": "./C07_R02.glb",
+      "sha": "3ae9b861789608a669c071ffec253d74d013df9c",
+      "size": 2580720
+    },
+    {
+      "name": "C07_R03",
+      "col": 7,
+      "row": 3,
+      "file": "C07_R03.glb",
+      "url": "./C07_R03.glb",
+      "sha": "f5c01b3539831329da5f39de6e0a563b60c6e7c8",
+      "size": 2448476
+    },
+    {
+      "name": "C07_R04",
+      "col": 7,
+      "row": 4,
+      "file": "C07_R04.glb",
+      "url": "./C07_R04.glb",
+      "sha": "fd7279157d34ceb5000ba1e228325a212c6fd610",
+      "size": 351068
+    },
+    {
+      "name": "C07_R32",
+      "col": 7,
+      "row": 32,
+      "file": "C07_R32.glb",
+      "url": "./C07_R32.glb",
+      "sha": "4fd562a71db899be037cebaad314e83964792ae0",
+      "size": 981728
+    },
+    {
+      "name": "C07_R33",
+      "col": 7,
+      "row": 33,
+      "file": "C07_R33.glb",
+      "url": "./C07_R33.glb",
+      "sha": "81446d4a7241daf3cfb9ccb2eb9bf54f75804dc0",
+      "size": 1676516
+    },
+    {
+      "name": "C07_R34",
+      "col": 7,
+      "row": 34,
+      "file": "C07_R34.glb",
+      "url": "./C07_R34.glb",
+      "sha": "0bcbdc2d2108ff1e2c60fb7aef2200e4211c7b63",
+      "size": 25452
+    },
+    {
+      "name": "C08_R00",
+      "col": 8,
+      "row": 0,
+      "file": "C08_R00.glb",
+      "url": "./C08_R00.glb",
+      "sha": "283c6021a48047ac600933d5f71ea4b8c740c95d",
+      "size": 548708
+    },
+    {
+      "name": "C08_R01",
+      "col": 8,
+      "row": 1,
+      "file": "C08_R01.glb",
+      "url": "./C08_R01.glb",
+      "sha": "fc76762377dc82ed79763c5a703088f2fd813355",
+      "size": 3685784
+    },
+    {
+      "name": "C08_R02",
+      "col": 8,
+      "row": 2,
+      "file": "C08_R02.glb",
+      "url": "./C08_R02.glb",
+      "sha": "2e24a275981bfe22d82d2c005a7c7b912d72934b",
+      "size": 2822740
+    },
+    {
+      "name": "C08_R03",
+      "col": 8,
+      "row": 3,
+      "file": "C08_R03.glb",
+      "url": "./C08_R03.glb",
+      "sha": "89f5091c116a5da1535581e0a29cb8bfdb8269ed",
+      "size": 242224
+    },
+    {
+      "name": "C08_R04",
+      "col": 8,
+      "row": 4,
+      "file": "C08_R04.glb",
+      "url": "./C08_R04.glb",
+      "sha": "6898ab86912c5c9787deb2a28e9bbfdbe1926192",
+      "size": 552044
+    },
+    {
+      "name": "C08_R05",
+      "col": 8,
+      "row": 5,
+      "file": "C08_R05.glb",
+      "url": "./C08_R05.glb",
+      "sha": "cf954f02b9d57c97320557d80dd1332989cc24d4",
+      "size": 1174300
+    },
+    {
+      "name": "C08_R06",
+      "col": 8,
+      "row": 6,
+      "file": "C08_R06.glb",
+      "url": "./C08_R06.glb",
+      "sha": "bfc4070b143ea33839f02198ccbff134d4578189",
+      "size": 3477300
+    },
+    {
+      "name": "C08_R07",
+      "col": 8,
+      "row": 7,
+      "file": "C08_R07.glb",
+      "url": "./C08_R07.glb",
+      "sha": "3abfcd288a4892beec3d2781587c47e65e6a9d64",
+      "size": 3520556
+    },
+    {
+      "name": "C08_R08",
+      "col": 8,
+      "row": 8,
+      "file": "C08_R08.glb",
+      "url": "./C08_R08.glb",
+      "sha": "09dc9edb36b2a3fb4b45b78c31ff584ceeba5f3f",
+      "size": 286256
+    },
+    {
+      "name": "C08_R09",
+      "col": 8,
+      "row": 9,
+      "file": "C08_R09.glb",
+      "url": "./C08_R09.glb",
+      "sha": "6427ae1beade6edce6c4be96063b27757c5438a0",
+      "size": 765812
+    },
+    {
+      "name": "C08_R10",
+      "col": 8,
+      "row": 10,
+      "file": "C08_R10.glb",
+      "url": "./C08_R10.glb",
+      "sha": "5671331f2f2f6f409ae9b709f777e8546d3502ad",
+      "size": 1990584
+    },
+    {
+      "name": "C08_R11",
+      "col": 8,
+      "row": 11,
+      "file": "C08_R11.glb",
+      "url": "./C08_R11.glb",
+      "sha": "9c7d110f2a963f63d5f93abde3bfe8bf4814e66b",
+      "size": 2530708
+    },
+    {
+      "name": "C08_R12",
+      "col": 8,
+      "row": 12,
+      "file": "C08_R12.glb",
+      "url": "./C08_R12.glb",
+      "sha": "64246950be509b79b6e440ca82d8befe461a4038",
+      "size": 2038152
+    },
+    {
+      "name": "C08_R13",
+      "col": 8,
+      "row": 13,
+      "file": "C08_R13.glb",
+      "url": "./C08_R13.glb",
+      "sha": "64355f82e86b26bc76826a3926d20082171bdf8e",
+      "size": 4218828
+    },
+    {
+      "name": "C08_R14",
+      "col": 8,
+      "row": 14,
+      "file": "C08_R14.glb",
+      "url": "./C08_R14.glb",
+      "sha": "69a8eb5bd362f45a3832cbab658cee2e1dbdb5a4",
+      "size": 3821392
+    },
+    {
+      "name": "C08_R15",
+      "col": 8,
+      "row": 15,
+      "file": "C08_R15.glb",
+      "url": "./C08_R15.glb",
+      "sha": "675ef1fe733553d70d80e4ed76fd95caee142d0d",
+      "size": 2124064
+    },
+    {
+      "name": "C08_R16",
+      "col": 8,
+      "row": 16,
+      "file": "C08_R16.glb",
+      "url": "./C08_R16.glb",
+      "sha": "e8165f1ad52907d6dd5b2525f242233d59f99669",
+      "size": 1932860
+    },
+    {
+      "name": "C08_R17",
+      "col": 8,
+      "row": 17,
+      "file": "C08_R17.glb",
+      "url": "./C08_R17.glb",
+      "sha": "c84c80fe36b10050df542f5d28972cb2319fa0df",
+      "size": 1659924
+    }
+  ]
+}

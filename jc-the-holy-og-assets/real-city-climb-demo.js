@@ -1093,6 +1093,13 @@ document.querySelector("[data-solar-charge]")?.addEventListener("pointerdown",fu
 });
 document.querySelector("[data-target-cycle]")?.addEventListener("pointerdown",function(e){e.preventDefault();selectDestination(1);});
 document.querySelector("[data-hyper-launch]")?.addEventListener("pointerdown",function(e){e.preventDefault();beginHyperspeed();});
+document.querySelectorAll("[data-power]").forEach(function(button){
+  button.addEventListener("pointerdown",function(e){
+    e.preventDefault();
+    const slot=Number(button.dataset.power);
+    if(Number.isFinite(slot))usePower(slot);
+  });
+});
 
 function updateSolar(dt){
   if((solarHolding||keys.KeyR)&&!hyper.active)solarCharge=Math.min(100,solarCharge+30*dt);

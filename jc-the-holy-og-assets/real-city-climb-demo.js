@@ -90,6 +90,13 @@ const MAP_Y_OFFSET=-20.5;
 const LOAD_RADIUS=lowSpec?1:2;
 const KEEP_RADIUS=lowSpec?2:4;
 const MAX_CONCURRENT=lowSpec?2:4;
+const PLAYER_RADIUS=0.38;
+const PLAYER_HEIGHT=1.85;
+const GRAVITY=38;
+const GROUND_Y=3;
+const COLLISION_TILE_RADIUS=1;
+const MAX_COLLIDERS_PER_TILE=lowSpec?220:420;
+
 
 const gltfLoader=new GLTFLoader();
 const mapGroup=new THREE.Group();
@@ -319,6 +326,7 @@ let manifestByKey=new Map();
 const loadedTiles=new Map();
 const loadingTiles=new Set();
 const failedTiles=new Set();
+const tileColliders=new Map();
 let streamBusy=false;
 let lastStreamCell="";
 let manifestVersion="";
@@ -464,6 +472,125 @@ function updateWorldLod(){
   }
 }
 
+function buildTileColliders(root,rec){
+  root.updateMatrixWorld(true);
+  const candidates=[];
+  root.traverse(function(o){
+    if(!o.isMesh||!o.visible)return;
+    const box=new THREE.Box3().setFromObject(o);
+    if(box.isEmpty())return;
+    const size=new THREE.Vector3();
+    box.getSize(size);
+    if(![size.x,size.y,size.z].every(Number.isFinite))return;
+
+    // Ignore terrain skins, decals, poles, and tiny detail. Keep structural volumes.
+    if(size.y<1.25)return;
+    if(size.x<0.7||size.z<0.7)return;
+    if(size.x>240&&size.z>240&&size.y<8)return;
+
+    const volume=size.x*size.y*size.z;
+    candidates.push({box:box.clone(),volume:volume});
+  });
+
+  candidates.sort(function(a,b){return b.volume-a.volume;});
+  const boxes=candidates.slice(0,MAX_COLLIDERS_PER_TILE).map(function(x){return x.box;});
+  tileColliders.set(tileKey(rec.col,rec.row),{rec:rec,boxes:boxes});
+  return boxes.length;
+}
+function nearbyCollisionBoxes(){
+  if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return [];
+  const cell=worldCell(player.pos.x,player.pos.z);
+  const out=[];
+  for(const item of tileColliders.values()){
+    if(Math.abs(item.rec.col-cell.col)>COLLISION_TILE_RADIUS||Math.abs(item.rec.row-cell.row)>COLLISION_TILE_RADIUS)continue;
+    for(const box of item.boxes)out.push(box);
+  }
+  return out;
+}
+function horizontalOverlap(x,z,box,pad){
+  return x>=box.min.x-pad&&x<=box.max.x+pad&&z>=box.min.z-pad&&z<=box.max.z+pad;
+}
+function verticalBodyOverlap(y,box){
+  const eps=0.06;
+  return y<box.max.y-eps&&(y+PLAYER_HEIGHT)>box.min.y+eps;
+}
+function movePlayerSolid(delta){
+  const boxes=nearbyCollisionBoxes();
+  if(!boxes.length){
+    player.pos.add(delta);
+    if(player.pos.y<GROUND_Y){
+      player.pos.y=GROUND_Y;
+      if(player.velocity.y<0)player.velocity.y=0;
+      player.grounded=true;
+    }else player.grounded=false;
+    return;
+  }
+
+  const p=player.pos;
+  player.grounded=false;
+
+  // X sweep/slide.
+  if(delta.x!==0){
+    let target=p.x+delta.x;
+    for(const box of boxes){
+      if(!verticalBodyOverlap(p.y,box))continue;
+      if(p.z<box.min.z-PLAYER_RADIUS||p.z>box.max.z+PLAYER_RADIUS)continue;
+      const min=box.min.x-PLAYER_RADIUS,max=box.max.x+PLAYER_RADIUS;
+      if(delta.x>0&&p.x<=min&&target>min)target=Math.min(target,min);
+      else if(delta.x<0&&p.x>=max&&target<max)target=Math.max(target,max);
+      else if(target>min&&target<max){
+        target=Math.abs(target-min)<Math.abs(max-target)?min:max;
+      }
+    }
+    p.x=target;
+  }
+
+  // Z sweep/slide.
+  if(delta.z!==0){
+    let target=p.z+delta.z;
+    for(const box of boxes){
+      if(!verticalBodyOverlap(p.y,box))continue;
+      if(p.x<box.min.x-PLAYER_RADIUS||p.x>box.max.x+PLAYER_RADIUS)continue;
+      const min=box.min.z-PLAYER_RADIUS,max=box.max.z+PLAYER_RADIUS;
+      if(delta.z>0&&p.z<=min&&target>min)target=Math.min(target,min);
+      else if(delta.z<0&&p.z>=max&&target<max)target=Math.max(target,max);
+      else if(target>min&&target<max){
+        target=Math.abs(target-min)<Math.abs(max-target)?min:max;
+      }
+    }
+    p.z=target;
+  }
+
+  // Vertical sweep: land on roofs/floors and stop against undersides.
+  let targetY=p.y+delta.y;
+  for(const box of boxes){
+    if(!horizontalOverlap(p.x,p.z,box,PLAYER_RADIUS*0.72))continue;
+    const top=box.max.y;
+    const bottom=box.min.y;
+
+    if(delta.y<=0&&p.y>=top-0.04&&targetY<top){
+      targetY=Math.max(targetY,top);
+      player.velocity.y=0;
+      player.grounded=true;
+    }else if(delta.y>0&&(p.y+PLAYER_HEIGHT)<=bottom+0.04&&(targetY+PLAYER_HEIGHT)>bottom){
+      targetY=Math.min(targetY,bottom-PLAYER_HEIGHT);
+      player.velocity.y=0;
+    }
+  }
+
+  if(targetY<=GROUND_Y){
+    targetY=GROUND_Y;
+    if(player.velocity.y<0)player.velocity.y=0;
+    player.grounded=true;
+  }
+  p.y=targetY;
+}
+function collisionCount(){
+  let n=0;
+  for(const item of tileColliders.values())n+=item.boxes.length;
+  return n;
+}
+
 async function loadOneTile(rec){
   const key=tileKey(rec.col,rec.row);
   if(loadedTiles.has(key)||loadingTiles.has(key)||failedTiles.has(key))return;
@@ -486,7 +613,9 @@ async function loadOneTile(rec){
       });
     });
     mapGroup.add(root);
-    loadedTiles.set(key,{root:root,rec:rec});
+    root.updateMatrixWorld(true);
+    const colliderCount=buildTileColliders(root,rec);
+    loadedTiles.set(key,{root:root,rec:rec,colliderCount:colliderCount});
   }catch(err){
     console.error("GLB tile load failed",key,err);
     failedTiles.add(key);
@@ -517,6 +646,7 @@ async function streamTiles(force){
         mapGroup.remove(item.root);
         disposeTile(item.root);
         loadedTiles.delete(key);
+        tileColliders.delete(key);
       }
     }
   }finally{
@@ -533,7 +663,8 @@ const player={
   velocity:new THREE.Vector3(),
   speed:0,
   mach:0,
-  flightMode:"FLIGHT"
+  flightMode:"FLIGHT",
+  grounded:false
 };
 const jcAtlas=new THREE.TextureLoader().load("./jc-the-holy-og-assets/character-atlas.png");
 jcAtlas.colorSpace=THREE.SRGBColorSpace;
@@ -1031,7 +1162,10 @@ function beginHyperspeed(){
 }
 function toggleFlight(){
   player.flying=!player.flying;
-  if(!player.flying)player.pos.y=Math.max(3,player.pos.y);
+  if(!player.flying){
+    player.pos.y=Math.max(GROUND_Y,player.pos.y);
+    player.velocity.set(0,0,0);
+  }
   flightStateEl.textContent=player.flying?"FLIGHT ON · REAL GLB MAP":"GROUND MODE";
   flightStateEl.style.color=player.flying?"#ffd45a":"#7de6ff";
 }
@@ -1200,7 +1334,7 @@ function updatePlayer(dt){
       player.velocity.multiplyScalar(Math.exp(-10*dt));
     }
 
-    player.pos.addScaledVector(player.velocity,dt);
+    const motion=player.velocity.clone().multiplyScalar(dt);
 
     // Dedicated vertical thrusters: fast rise is independent of horizontal inertia.
     if(rising||descending){
@@ -1209,7 +1343,7 @@ function updatePlayer(dt){
       let descendSpeed=180;
 
       if(boosted){
-        riseSpeed=1200;          // 0-2 km: rocket launch
+        riseSpeed=1200;
         if(player.pos.y>=2000) riseSpeed=3200;
         if(player.pos.y>=12000) riseSpeed=7000;
         if(player.pos.y>=35000) riseSpeed=12000;
@@ -1220,30 +1354,36 @@ function updatePlayer(dt){
         if(player.pos.y>=50000) descendSpeed=6500;
       }
 
-      if(rising) player.pos.y+=riseSpeed*dt;
-      if(descending) player.pos.y-=descendSpeed*dt;
-
-      // Kill opposing vertical drift so climb/descent controls feel immediate.
-      if(rising&&player.velocity.y<0) player.velocity.y*=0.2;
-      if(descending&&player.velocity.y>0) player.velocity.y*=0.2;
+      if(rising)motion.y+=riseSpeed*dt;
+      if(descending)motion.y-=descendSpeed*dt;
+      if(rising&&player.velocity.y<0)player.velocity.y*=0.2;
+      if(descending&&player.velocity.y>0)player.velocity.y*=0.2;
     }
 
-    player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,MAX_ALTITUDE);
-
-    if(player.pos.y<=3&&player.velocity.y<0)player.velocity.y=0;
+    movePlayerSolid(motion);
+    player.pos.y=THREE.MathUtils.clamp(player.pos.y,GROUND_Y,MAX_ALTITUDE);
   }else{
     const forward=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw));
     const right=new THREE.Vector3(forward.z,0,-forward.x);
     const move=new THREE.Vector3()
       .addScaledVector(forward,(keys.KeyW?1:0)-(keys.KeyS?1:0))
       .addScaledVector(right,(keys.KeyD?1:0)-(keys.KeyA?1:0));
+
+    const speed=keys.ShiftLeft?18:10;
+    const delta=new THREE.Vector3();
     if(move.lengthSq()){
       move.normalize();
-      player.pos.addScaledVector(move,(keys.ShiftLeft?42:26)*dt);
+      delta.addScaledVector(move,speed*dt);
       player.yaw=Math.atan2(move.x,move.z);
     }
-    player.velocity.set(0,0,0);
-    player.pos.y=3;
+
+    player.velocity.x=0;
+    player.velocity.z=0;
+    player.velocity.y-=GRAVITY*dt;
+    player.velocity.y=Math.max(player.velocity.y,-65);
+    delta.y=player.velocity.y*dt;
+
+    movePlayerSolid(delta);
   }
 
   classifyFlight();
@@ -1321,7 +1461,8 @@ function updateHud(){
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+roadText;
+  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"");
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+roadText+solidText;
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -1358,6 +1499,9 @@ async function boot(){
     get roadRuntimeReady(){return roadRuntimeReady},
     get majorRoadReady(){return majorRoadReady},
     loadedRoadTiles:loadedRoadTiles,
+    tileColliders:tileColliders,
+    movePlayerSolid:movePlayerSolid,
+    get collisionCount(){return collisionCount()},
     powers:powerState,
     usePower:usePower,
     takeDivineDamage:takeDivineDamage,

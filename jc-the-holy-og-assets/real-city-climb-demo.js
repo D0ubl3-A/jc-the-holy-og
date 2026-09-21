@@ -21,6 +21,16 @@ scene.fog=new THREE.FogExp2(0x17202b,0.00055);
 const MAX_ALTITUDE=120000;
 const SPACE_ALTITUDE=100000;
 const ATMOSPHERE_FADE_START=2500;
+const MACH_1=343;
+const FLIGHT_SPEEDS={
+  street:95,
+  city:170,
+  regional:320,
+  supersonic:700,
+  hypersonic:2200,
+  upperAtmosphere:6000,
+  space:12000
+};
 const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,300000);
 const renderer=new THREE.WebGLRenderer({antialias:!lowSpec,powerPreference:lowSpec?"low-power":"high-performance"});
 renderer.setSize(innerWidth,innerHeight);
@@ -196,7 +206,10 @@ const player={
   pos:new THREE.Vector3(50,4,-50),
   flying:true,
   yaw:Math.PI,
-  velocity:new THREE.Vector3()
+  velocity:new THREE.Vector3(),
+  speed:0,
+  mach:0,
+  flightMode:"FLIGHT"
 };
 const jcAtlas=new THREE.TextureLoader().load("./jc-the-holy-og-assets/character-atlas.png");
 jcAtlas.colorSpace=THREE.SRGBColorSpace;
@@ -221,7 +234,7 @@ player.root.add(flightRing);
 scene.add(player.root);
 
 const keys={};
-let camYaw=Math.PI,camPitch=0.28,camDist=14,drag=false,lx=0,ly=0;
+let camYaw=Math.PI,camPitch=0.28,targetYaw=Math.PI,targetPitch=0.28,camDist=14,drag=false,lx=0,ly=0;
 let solarCharge=100,solarHolding=false;
 let destinationIndex=-1;
 let destinations=[];
@@ -265,8 +278,14 @@ function toggleFlight(){
   flightStateEl.style.color=player.flying?"#ffd45a":"#7de6ff";
 }
 function applyLook(dx,dy){
-  camYaw-=dx*0.0026;
-  camPitch=THREE.MathUtils.clamp(camPitch+dy*0.0023,-0.7,0.9);
+  const speedFactor=THREE.MathUtils.clamp(1-(player.speed/18000)*0.55,0.42,1);
+  targetYaw-=dx*0.0026*speedFactor;
+  targetPitch=THREE.MathUtils.clamp(targetPitch+dy*0.0023*speedFactor,-1.05,1.05);
+}
+function updateLook(dt){
+  const response=1-Math.exp(-12*dt);
+  camYaw=THREE.MathUtils.lerp(camYaw,targetYaw,response);
+  camPitch=THREE.MathUtils.lerp(camPitch,targetPitch,response);
 }
 
 renderer.domElement.addEventListener("contextmenu",function(e){e.preventDefault();});
@@ -330,41 +349,118 @@ function updateHyper(dt){
   }
   return true;
 }
+function flightTargetSpeed(){
+  const y=player.pos.y;
+  let base=FLIGHT_SPEEDS.street;
+  if(y>=300)base=FLIGHT_SPEEDS.city;
+  if(y>=1500)base=FLIGHT_SPEEDS.regional;
+  if(y>=5000)base=FLIGHT_SPEEDS.supersonic;
+  if(y>=12000)base=FLIGHT_SPEEDS.hypersonic;
+  if(y>=35000)base=FLIGHT_SPEEDS.upperAtmosphere;
+  if(y>=SPACE_ALTITUDE)base=FLIGHT_SPEEDS.space;
+
+  if(keys.AltLeft||keys.AltRight)base*=0.28;
+  if(keys.ShiftLeft||keys.ShiftRight){
+    if(y<1500)base*=2.4;
+    else if(y<12000)base*=2.0;
+    else if(y<SPACE_ALTITUDE)base*=1.55;
+    else base*=1.5;
+  }
+  return base;
+}
+function classifyFlight(){
+  player.speed=player.velocity.length();
+  player.mach=player.speed/MACH_1;
+  if(player.pos.y>=SPACE_ALTITUDE)player.flightMode="SPACE";
+  else if(player.mach>=5)player.flightMode="HYPERSONIC";
+  else if(player.mach>=1)player.flightMode="SUPERSONIC";
+  else if(keys.AltLeft||keys.AltRight)player.flightMode="PRECISION";
+  else player.flightMode="FLIGHT";
+}
 function updatePlayer(dt){
   updateSolar(dt);
-  if(updateHyper(dt)){player.root.position.copy(player.pos);return;}
-  const forward=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw));
-  const right=new THREE.Vector3(forward.z,0,-forward.x);
-  const move=new THREE.Vector3()
-    .addScaledVector(forward,(keys.KeyW?1:0)-(keys.KeyS?1:0))
-    .addScaledVector(right,(keys.KeyD?1:0)-(keys.KeyA?1:0));
-  const boost=keys.ShiftLeft?2.2:1;
-  const speed=(player.flying?42:26)*boost;
-  if(move.lengthSq()){
-    move.normalize();
-    player.pos.addScaledVector(move,speed*dt);
-    player.yaw=Math.atan2(move.x,move.z);
+  if(updateHyper(dt)){
+    player.velocity.set(0,0,0);
+    classifyFlight();
+    player.root.position.copy(player.pos);
+    return;
   }
+
   if(player.flying){
-    const verticalInput=(keys.Space?1:0)-((keys.KeyC||keys.ControlLeft)?1:0);
-    let verticalSpeed=70;
-    if(player.pos.y>500)verticalSpeed=220;
-    if(player.pos.y>2500)verticalSpeed=850;
-    if(player.pos.y>15000)verticalSpeed=2600;
-    if(player.pos.y>50000)verticalSpeed=5200;
-    if(keys.ShiftLeft)verticalSpeed*=2.4;
-    player.pos.y+=verticalInput*verticalSpeed*dt;
+    const forward3=new THREE.Vector3(
+      -Math.sin(camYaw)*Math.cos(camPitch),
+      -Math.sin(camPitch),
+      -Math.cos(camYaw)*Math.cos(camPitch)
+    ).normalize();
+    const right=new THREE.Vector3(Math.cos(camYaw),0,-Math.sin(camYaw)).normalize();
+    const up=new THREE.Vector3(0,1,0);
+
+    const throttle=(keys.KeyW?1:0)-(keys.KeyS?1:0);
+    const strafe=(keys.KeyD?1:0)-(keys.KeyA?1:0);
+    const vertical=(keys.Space?1:0)-((keys.KeyC||keys.ControlLeft||keys.ControlRight)?1:0);
+
+    const input=new THREE.Vector3()
+      .addScaledVector(forward3,throttle)
+      .addScaledVector(right,strafe)
+      .addScaledVector(up,vertical);
+
+    const targetSpeed=flightTargetSpeed();
+    const desired=new THREE.Vector3();
+    if(input.lengthSq()>0.0001){
+      input.normalize();
+      desired.copy(input).multiplyScalar(targetSpeed);
+      const accelRate=(keys.ShiftLeft||keys.ShiftRight)?2.6:4.8;
+      player.velocity.lerp(desired,1-Math.exp(-accelRate*dt));
+      player.yaw=THREE.MathUtils.lerp(
+        player.yaw,
+        Math.atan2(player.velocity.x,player.velocity.z),
+        1-Math.exp(-8*dt)
+      );
+    }else{
+      const coast=player.pos.y>=SPACE_ALTITUDE?0.22:0.9;
+      player.velocity.multiplyScalar(Math.exp(-coast*dt));
+    }
+
+    if(keys.KeyX){
+      player.velocity.multiplyScalar(Math.exp(-10*dt));
+    }
+
+    player.pos.addScaledVector(player.velocity,dt);
     player.pos.y=THREE.MathUtils.clamp(player.pos.y,3,MAX_ALTITUDE);
+
+    if(player.pos.y<=3&&player.velocity.y<0)player.velocity.y=0;
   }else{
+    const forward=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw));
+    const right=new THREE.Vector3(forward.z,0,-forward.x);
+    const move=new THREE.Vector3()
+      .addScaledVector(forward,(keys.KeyW?1:0)-(keys.KeyS?1:0))
+      .addScaledVector(right,(keys.KeyD?1:0)-(keys.KeyA?1:0));
+    if(move.lengthSq()){
+      move.normalize();
+      player.pos.addScaledVector(move,(keys.ShiftLeft?42:26)*dt);
+      player.yaw=Math.atan2(move.x,move.z);
+    }
+    player.velocity.set(0,0,0);
     player.pos.y=3;
   }
+
+  classifyFlight();
+
   const viewYaw=Math.atan2(camera.position.x-player.pos.x,camera.position.z-player.pos.z);
   const rel=Math.atan2(Math.sin(player.yaw-viewYaw),Math.cos(player.yaw-viewYaw));
   let frame=Math.abs(rel)>2.35?1:Math.abs(rel)<0.78?0:rel>0?2:3;
   jcAtlas.offset.x=frame*0.25;
   jcAtlas.offset.y=0.5;
-  flightRing.material.opacity=THREE.MathUtils.lerp(flightRing.material.opacity,player.flying?0.72:0.08,0.12);
-  flightRing.rotation.z+=player.flying?0.05:0.01;
+
+  const speedFx=THREE.MathUtils.clamp(player.mach/10,0,1);
+  flightRing.material.opacity=THREE.MathUtils.lerp(
+    flightRing.material.opacity,
+    player.flying?0.72+speedFx*0.25:0.08,
+    0.12
+  );
+  flightRing.scale.setScalar(1+speedFx*1.8);
+  flightRing.rotation.z+=player.flying?0.05+speedFx*0.18:0.01;
+  glow.intensity=4+solarCharge*0.04+speedFx*7;
   player.root.position.copy(player.pos);
 }
 function updateAtmosphere(){
@@ -378,28 +474,30 @@ function updateAtmosphere(){
   moon.intensity=THREE.MathUtils.lerp(3.2,1.25,t);
   fill.intensity=THREE.MathUtils.lerp(1.35,0.25,t);
   holeGround.visible=y<35000;
-  if(y>=SPACE_ALTITUDE){
-    flightStateEl.textContent="SPACE FLIGHT · "+Math.round(y/1000)+" KM";
-    flightStateEl.style.color="#ffffff";
-  }else if(y>=12000){
-    flightStateEl.textContent="UPPER ATMOSPHERE · "+Math.round(y/1000)+" KM";
-    flightStateEl.style.color="#9fd8ff";
-  }else if(player.flying){
-    flightStateEl.textContent="FLIGHT ON · "+Math.round(y)+" M";
-    flightStateEl.style.color="#ffd45a";
+  if(player.flying){
+    const alt=y>=1000?(y/1000).toFixed(y>=10000?0:1)+" KM":Math.round(y)+" M";
+    const mach=player.mach>=0.1?" · MACH "+player.mach.toFixed(player.mach>=10?0:1):"";
+    flightStateEl.textContent=player.flightMode+" · "+alt+mach;
+    flightStateEl.style.color=
+      player.flightMode==="SPACE"?"#ffffff":
+      player.flightMode==="HYPERSONIC"?"#ffdf77":
+      player.flightMode==="SUPERSONIC"?"#8de8ff":
+      player.flightMode==="PRECISION"?"#b7ffcf":"#ffd45a";
   }
 }
 
 function updateCamera(dt){
   const target=player.pos.clone().add(new THREE.Vector3(0,2,0));
-  const d=hyper.active?22:camDist;
+  const speedFx=THREE.MathUtils.clamp(player.mach/12,0,1);
+  const d=hyper.active?24:camDist+speedFx*18;
   const desired=target.clone().add(new THREE.Vector3(
     Math.sin(camYaw)*Math.cos(camPitch)*d,
     Math.sin(camPitch)*d+2,
     Math.cos(camYaw)*Math.cos(camPitch)*d
   ));
-  camera.position.lerp(desired,1-Math.exp(-8*dt));
-  camera.fov=THREE.MathUtils.lerp(camera.fov,hyper.active?86:62,0.12);
+  camera.position.lerp(desired,1-Math.exp(-(hyper.active?10:7)*dt));
+  const targetFov=hyper.active?94:62+speedFx*26;
+  camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-5*dt));
   camera.updateProjectionMatrix();
   camera.lookAt(target);
 }
@@ -408,7 +506,9 @@ function updateHud(){
   locationEl.textContent=cell+" · JC REAL GLB MAP";
   progressEl.textContent=loadedTiles.size+" loaded / "+manifest.length+" uploaded GLBs";
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
-  statusEl.textContent=(streamBusy?"STREAMING ":"READY ")+loadedTiles.size+" tiles · "+loadingTiles.size+" loading · "+failedTiles.size+" failed · ALT "+alt;
+  const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
+  const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+loadedTiles.size+"/"+manifest.length+" GLBs";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -431,7 +531,10 @@ async function boot(){
     manifestVersion:manifestVersion,
     streamTiles:streamTiles,
     maxAltitude:MAX_ALTITUDE,
-    spaceAltitude:SPACE_ALTITUDE
+    spaceAltitude:SPACE_ALTITUDE,
+    get speed(){return player.speed},
+    get mach(){return player.mach},
+    get flightMode(){return player.flightMode}
   };
   requestAnimationFrame(frame);
 }
@@ -440,6 +543,7 @@ const clock=new THREE.Clock();
 function frame(){
   requestAnimationFrame(frame);
   const dt=Math.min(0.033,clock.getDelta());
+  updateLook(dt);
   updatePlayer(dt);
   updateAtmosphere();
   updateCamera(dt);

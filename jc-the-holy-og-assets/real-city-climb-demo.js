@@ -127,7 +127,7 @@ const STRIP_MIN_COL=15;
 const STRIP_MAX_COL=16;
 const STRIP_MIN_ROW=12;
 const STRIP_MAX_ROW=15;
-const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?4:9;
+const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?48:160;
 const wallpaperTextureLoader=new THREE.TextureLoader();
 let stripWallpaperAtlas=null;
 let residentialWallpaperAtlas=null;
@@ -229,7 +229,6 @@ function wallpaperProfileIndex(rec,center,slot){
 }
 function buildStripWallpaper(root,rec){
   if(!wallpaperAssetsReady||!stripWallpaperAtlas)return null;
-  if(!isStripWallpaperTile(rec))return null;
 
   root.updateMatrixWorld(true);
   const candidates=[];
@@ -241,11 +240,13 @@ function buildStripWallpaper(root,rec){
     box.getSize(size);
     box.getCenter(center);
 
-    // Large architectural masses only; skip terrain, roads, signs and tiny detail.
-    if(size.y<5.5||size.x<2.5||size.z<2.5)return;
-    if(size.x>180&&size.z>180&&size.y<18)return;
+    // Wallpaper every non-residential structural building mass citywide.
+    // Residential-scale structures are handled by the dedicated instanced house pass.
+    if(size.y<2.2||size.x<2.0||size.z<2.0)return;
+    if(size.x>240&&size.z>240&&size.y<8)return;
+    if(residentialClass(size))return;
     const volume=size.x*size.y*size.z;
-    if(volume<130)return;
+    if(volume<28)return;
     candidates.push({box:box,size:size,center:center,volume:volume});
   });
 
@@ -267,7 +268,7 @@ function buildStripWallpaper(root,rec){
 
   if(!chosen.length)return null;
   const group=new THREE.Group();
-  group.name="STRIP_WALLPAPER_"+tileKey(rec.col,rec.row);
+  group.name="CITY_BUILDING_WALLPAPER_"+tileKey(rec.col,rec.row);
 
   chosen.forEach(function(c,slot){
     const idx=wallpaperProfileIndex(rec,c.center,slot);

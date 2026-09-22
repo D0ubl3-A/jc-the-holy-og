@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://illcoai.tech/schemas/jc-ai-asset-request.schema.json",
+  "title": "JC AI Asset Factory Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "asset_type",
+    "theme",
+    "outputs",
+    "runtime"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "asset_type": {
+      "enum": [
+        "building",
+        "residential",
+        "terrain",
+        "character",
+        "prop",
+        "vfx",
+        "sky"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "theme": {
+      "type": "string",
+      "minLength": 3
+    },
+    "identity_lock": {
+      "type": "boolean",
+      "default": false
+    },
+    "reference_asset_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "facade_atlas",
+          "roof_atlas",
+          "albedo",
+          "normal",
+          "roughness",
+          "metallic",
+          "emissive",
+          "ao",
+          "signage",
+          "decals",
+          "identity_sheet",
+          "expression_sheet",
+          "outfit_sheet",
+          "flipbook",
+          "glow_mask",
+          "skybox",
+          "horizon_card"
+        ]
+      }
+    },
+    "resolution": {
+      "enum": [
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "default": 1024
+    },
+    "variants": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32,
+      "default": 4
+    },
+    "tileable": {
+      "type": "boolean",
+      "default": false
+    },
+    "transparent": {
+      "type": "boolean",
+      "default": false
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lod_class",
+        "max_materials"
+      ],
+      "properties": {
+        "lod_class": {
+          "enum": [
+            "hero",
+            "near",
+            "world",
+            "far"
+          ]
+        },
+        "max_materials": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "atlas_reuse": {
+          "type": "boolean",
+          "default": true
+        },
+        "instancing": {
+          "type": "boolean",
+          "default": true
+        },
+        "collision_source": {
+          "enum": [
+            "original_geometry",
+            "generated_geometry"
+          ],
+          "default": "original_geometry"
+        }
+      }
+    }
+  }
+}

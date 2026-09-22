@@ -1,0 +1,37 @@
+{
+  "asset_type": "terrain",
+  "defaults": {
+    "theme": "photoreal Mojave / Las Vegas ground materials",
+    "outputs": [
+      "albedo",
+      "normal",
+      "roughness",
+      "ao",
+      "decals"
+    ],
+    "resolution": 1024,
+    "variants": 6,
+    "tileable": true,
+    "runtime": {
+      "lod_class": "world",
+      "max_materials": 4,
+      "atlas_reuse": true,
+      "instancing": true,
+      "collision_source": "original_geometry"
+    }
+  },
+  "materials": [
+    "asphalt",
+    "sidewalk",
+    "parking_lot",
+    "desert_dirt",
+    "cracked_concrete",
+    "rooftop_membrane"
+  ],
+  "prompt_rules": [
+    "seamless/tileable base materials",
+    "no baked directional lighting",
+    "no perspective distortion",
+    "use decals for cracks stains damage and infernal corruption"
+  ]
+}

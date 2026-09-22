@@ -1,0 +1,31 @@
+{
+  "asset_type": "building",
+  "defaults": {
+    "theme": "photoreal Hell Vegas casino architecture at night",
+    "outputs": [
+      "facade_atlas",
+      "roof_atlas",
+      "emissive",
+      "signage",
+      "decals"
+    ],
+    "resolution": 2048,
+    "variants": 6,
+    "tileable": false,
+    "runtime": {
+      "lod_class": "world",
+      "max_materials": 8,
+      "atlas_reuse": true,
+      "instancing": true,
+      "collision_source": "original_geometry"
+    }
+  },
+  "prompt_rules": [
+    "preserve recognizable real-world silhouette and footprint",
+    "do not invent replacement geometry in the texture",
+    "facades must be front-on and usable as material projections",
+    "roof panels must be clean top-down material surfaces",
+    "night emissive lighting should be separated conceptually from base facade",
+    "avoid accidental unrelated text or logos"
+  ]
+}

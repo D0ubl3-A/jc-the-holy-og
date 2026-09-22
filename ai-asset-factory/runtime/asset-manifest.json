@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "generated_at": "2026-09-21",
+  "factory": "JC AI Asset Factory",
+  "assets": [
+    {
+      "id": "hell-vegas-strip-wallpaper-v1",
+      "asset_type": "building",
+      "role": "facade_roof_atlas",
+      "path": "../../jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg",
+      "runtime": {
+        "lod_class": "world",
+        "atlas_reuse": true,
+        "instancing": true
+      },
+      "tags": [
+        "strip",
+        "casino",
+        "hell-vegas",
+        "night"
+      ]
+    },
+    {
+      "id": "vegas-residential-wallpaper-v1",
+      "asset_type": "residential",
+      "role": "facade_roof_atlas",
+      "path": "../../jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg",
+      "runtime": {
+        "lod_class": "world",
+        "atlas_reuse": true,
+        "instancing": true
+      },
+      "tags": [
+        "residential",
+        "las-vegas",
+        "single-family",
+        "townhome",
+        "apartment"
+      ]
+    }
+  ]
+}

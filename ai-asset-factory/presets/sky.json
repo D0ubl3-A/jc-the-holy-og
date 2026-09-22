@@ -1,0 +1,25 @@
+{
+  "asset_type": "sky",
+  "defaults": {
+    "theme": "Hell Vegas cinematic desert night sky",
+    "outputs": [
+      "skybox",
+      "horizon_card"
+    ],
+    "resolution": 2048,
+    "variants": 4,
+    "runtime": {
+      "lod_class": "far",
+      "max_materials": 2,
+      "atlas_reuse": true,
+      "instancing": false,
+      "collision_source": "original_geometry"
+    }
+  },
+  "prompt_rules": [
+    "no foreground geometry",
+    "horizon must match Mojave desert / Las Vegas scale",
+    "support storm infernal holy and neutral variants",
+    "avoid baked local-building silhouettes unless requested"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "asset_type": "character",
+  "defaults": {
+    "name": "JC",
+    "theme": "photoreal real-life version of the established JC identity",
+    "identity_lock": true,
+    "outputs": [
+      "identity_sheet",
+      "expression_sheet",
+      "outfit_sheet",
+      "albedo",
+      "normal",
+      "roughness"
+    ],
+    "resolution": 2048,
+    "variants": 4,
+    "runtime": {
+      "lod_class": "hero",
+      "max_materials": 6,
+      "atlas_reuse": false,
+      "instancing": false,
+      "collision_source": "original_geometry"
+    }
+  },
+  "target_height_m": 1.85,
+  "prompt_rules": [
+    "preserve the same face and identity across every output",
+    "realistic human proportions and anatomy",
+    "neutral front three-quarter and profile identity views",
+    "consistent hair facial hair skin tone scars and clothing cues",
+    "materials must support realistic skin cloth hair and eye shading",
+    "holy variants are effects layered over the same identity, never a new face"
+  ]
+}

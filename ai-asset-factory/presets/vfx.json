@@ -1,0 +1,42 @@
+{
+  "asset_type": "vfx",
+  "defaults": {
+    "theme": "cinematic photoreal game VFX",
+    "outputs": [
+      "flipbook",
+      "glow_mask"
+    ],
+    "resolution": 1024,
+    "variants": 4,
+    "transparent": true,
+    "runtime": {
+      "lod_class": "near",
+      "max_materials": 2,
+      "atlas_reuse": true,
+      "instancing": true,
+      "collision_source": "original_geometry"
+    }
+  },
+  "flipbook": {
+    "columns": 8,
+    "rows": 8,
+    "frames": 64
+  },
+  "families": [
+    "holy_energy",
+    "hellfire",
+    "lightning",
+    "portal",
+    "smoke",
+    "sparks",
+    "dust",
+    "impact"
+  ],
+  "prompt_rules": [
+    "frames must have consistent camera and scale",
+    "no clipped effect edges",
+    "transparent background where supported",
+    "center effect with safe padding for sprite bleed",
+    "engine controls timing scale rotation particles and blending"
+  ]
+}

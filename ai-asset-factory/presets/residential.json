@@ -1,0 +1,32 @@
+{
+  "asset_type": "residential",
+  "defaults": {
+    "theme": "photoreal Las Vegas residential architecture",
+    "outputs": [
+      "facade_atlas",
+      "roof_atlas",
+      "emissive"
+    ],
+    "resolution": 1024,
+    "variants": 8,
+    "tileable": false,
+    "runtime": {
+      "lod_class": "world",
+      "max_materials": 4,
+      "atlas_reuse": true,
+      "instancing": true,
+      "collision_source": "original_geometry"
+    }
+  },
+  "classes": [
+    "single_family",
+    "duplex_townhome",
+    "apartment_condo"
+  ],
+  "prompt_rules": [
+    "desert southwest materials",
+    "realistic stucco stone tile roof and garage proportions",
+    "avoid unique hero-detail that prevents reuse",
+    "support daytime and nighttime material response"
+  ]
+}

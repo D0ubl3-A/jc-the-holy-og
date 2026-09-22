@@ -957,6 +957,35 @@ function verticalBodyOverlap(y,box){
   const eps=0.06;
   return y<box.max.y-eps&&(y+PLAYER_HEIGHT)>box.min.y+eps;
 }
+const BREAKTHROUGH_SPEED=72;
+let lastBreakthroughFx=0;
+function canBreakThroughBuilding(){
+  return player.flying&&player.speed>=BREAKTHROUGH_SPEED;
+}
+function breakthroughImpact(box,axis){
+  const now=performance.now();
+  if(now-lastBreakthroughFx<70)return;
+  lastBreakthroughFx=now;
+  const impact=player.pos.clone().add(new THREE.Vector3(0,PLAYER_HEIGHT*0.55,0));
+  const strength=THREE.MathUtils.clamp((player.speed-BREAKTHROUGH_SPEED)/260,0,1);
+  radialRingAt(impact,0xffd75e,3.5+strength*8,0.35+strength*0.35);
+  orbBurst(0xffb45a,10+Math.round(strength*18),2.5+strength*5,0.45+strength*0.3,impact);
+  shakePower(0.18+strength*0.5);
+  if(box){
+    const debrisCount=6+Math.round(strength*10);
+    for(let i=0;i<debrisCount;i++){
+      const g=new THREE.BoxGeometry(0.12+Math.random()*0.32,0.12+Math.random()*0.32,0.08+Math.random()*0.25);
+      const m=new THREE.MeshBasicMaterial({color:Math.random()>0.5?0x8b6b55:0x55515a});
+      const shard=new THREE.Mesh(g,m);
+      shard.position.copy(impact);
+      scene.add(shard);
+      const outward=new THREE.Vector3((Math.random()-.5)*2,Math.random()*1.5,(Math.random()-.5)*2).normalize();
+      if(axis==="x")outward.x+=Math.sign(player.velocity.x||1)*1.6;
+      if(axis==="z")outward.z+=Math.sign(player.velocity.z||1)*1.6;
+      transientFx.push({obj:shard,life:0.45+Math.random()*0.55,maxLife:1,v:outward.multiplyScalar(6+strength*14)});
+    }
+  }
+}
 function movePlayerSolid(delta){
   const boxes=nearbyCollisionBoxes();
   if(!boxes.length){
@@ -979,8 +1008,8 @@ function movePlayerSolid(delta){
       if(!verticalBodyOverlap(p.y,box))continue;
       if(p.z<box.min.z-PLAYER_RADIUS||p.z>box.max.z+PLAYER_RADIUS)continue;
       const min=box.min.x-PLAYER_RADIUS,max=box.max.x+PLAYER_RADIUS;
-      if(delta.x>0&&p.x<=min&&target>min)target=Math.min(target,min);
-      else if(delta.x<0&&p.x>=max&&target<max)target=Math.max(target,max);
+      if(delta.x>0&&p.x<=min&&target>min){if(canBreakThroughBuilding()){breakthroughImpact(box,"x");continue;}target=Math.min(target,min);}
+      else if(delta.x<0&&p.x>=max&&target<max){if(canBreakThroughBuilding()){breakthroughImpact(box,"x");continue;}target=Math.max(target,max);}
       else if(target>min&&target<max){
         target=Math.abs(target-min)<Math.abs(max-target)?min:max;
       }
@@ -995,8 +1024,8 @@ function movePlayerSolid(delta){
       if(!verticalBodyOverlap(p.y,box))continue;
       if(p.x<box.min.x-PLAYER_RADIUS||p.x>box.max.x+PLAYER_RADIUS)continue;
       const min=box.min.z-PLAYER_RADIUS,max=box.max.z+PLAYER_RADIUS;
-      if(delta.z>0&&p.z<=min&&target>min)target=Math.min(target,min);
-      else if(delta.z<0&&p.z>=max&&target<max)target=Math.max(target,max);
+      if(delta.z>0&&p.z<=min&&target>min){if(canBreakThroughBuilding()){breakthroughImpact(box,"z");continue;}target=Math.min(target,min);}
+      else if(delta.z<0&&p.z>=max&&target<max){if(canBreakThroughBuilding()){breakthroughImpact(box,"z");continue;}target=Math.max(target,max);}
       else if(target>min&&target<max){
         target=Math.abs(target-min)<Math.abs(max-target)?min:max;
       }

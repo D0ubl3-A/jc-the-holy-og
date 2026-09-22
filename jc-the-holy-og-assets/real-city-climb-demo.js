@@ -672,6 +672,8 @@ const tileColliders=new Map();
 let streamBusy=false;
 let lastStreamCell="";
 let manifestVersion="";
+let aiAssetManifest=null;
+let aiAssetById=new Map();
 const bufferState={
   active:false,
   complete:false,
@@ -727,6 +729,29 @@ async function loadManifest(){
   if(!manifest.length)throw new Error("No C##_R## GLB tiles found in manifest");
   return data;
 }
+async function loadAIAssetFactoryManifest(){
+  try{
+    const res=await fetch("./ai-asset-factory/runtime/asset-manifest.json?ts="+Date.now(),{cache:"no-store"});
+    if(!res.ok)throw new Error("asset-manifest HTTP "+res.status);
+    const data=await res.json();
+    aiAssetManifest=data;
+    aiAssetById=new Map((data.assets||[]).map(function(asset){return [asset.id,asset];}));
+    return data;
+  }catch(err){
+    console.warn("AI Asset Factory manifest unavailable",err);
+    aiAssetManifest={version:0,assets:[]};
+    aiAssetById=new Map();
+    return aiAssetManifest;
+  }
+}
+function getAIAsset(id){
+  return aiAssetById.get(id)||null;
+}
+function listAIAssets(type){
+  const assets=(aiAssetManifest&&aiAssetManifest.assets)||[];
+  return type?assets.filter(function(a){return a.asset_type===type;}):assets.slice();
+}
+
 async function loadWorldLod(){
   try{
     const gltf=await gltfLoader.loadAsync("./jc-the-holy-og-assets/models/vegas-city-lod.glb");
@@ -2255,7 +2280,8 @@ function updateHud(){
   const bufferText=DATA_BUFFERING?
     (" · CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
   const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -2265,7 +2291,7 @@ async function boot(){
   player.yaw=Math.PI;
   if(locationEl)locationEl.textContent="LAS VEGAS STRIP";
   if(creditEl)creditEl.textContent="JC Map • START: Las Vegas Strip • streaming C##_R## GLB tiles";
-  await loadManifest();
+  await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
   rebuildDestinations();
   await loadWorldLod();
   await loadRoadRuntime();
@@ -2314,6 +2340,11 @@ async function boot(){
     },
     origin:{col:ORIGIN_COL,row:ORIGIN_ROW},
     manifestVersion:manifestVersion,
+    aiAssetManifest:aiAssetManifest,
+    aiAssetById:aiAssetById,
+    getAIAsset:getAIAsset,
+    listAIAssets:listAIAssets,
+    reloadAIAssetManifest:loadAIAssetFactoryManifest,
     streamTiles:streamTiles,
     maxAltitude:MAX_ALTITUDE,
     spaceAltitude:SPACE_ALTITUDE,

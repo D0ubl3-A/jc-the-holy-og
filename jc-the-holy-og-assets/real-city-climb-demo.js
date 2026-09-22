@@ -1519,7 +1519,7 @@ jcAtlas.offset.set(0,0.5);
 const jcMaterial=new THREE.SpriteMaterial({map:jcAtlas,transparent:true,depthWrite:false,alphaTest:0.08,toneMapped:false});
 const jcSprite=new THREE.Sprite(jcMaterial);
 jcSprite.center.set(0.5,0);
-jcSprite.scale.set(1.9,1.9,1);
+jcSprite.scale.set(1.55,1.85,1);
 player.root.add(jcSprite);
 const glow=new THREE.PointLight(0xffd45a,5,30,2);
 glow.position.y=2.4;
@@ -1968,7 +1968,7 @@ function syncControlledAvatar(){
 // -----------------------------------------------------------------------------
 
 const keys={};
-let camYaw=Math.PI,camPitch=0.28,targetYaw=Math.PI,targetPitch=0.28,camDist=14,drag=false,lx=0,ly=0;
+let camYaw=Math.PI,camPitch=0.24,targetYaw=Math.PI,targetPitch=0.24,camDist=9.5,drag=false,lx=0,ly=0;
 let solarCharge=100,solarHolding=false;
 let destinationIndex=-1;
 let destinations=[];
@@ -2274,7 +2274,7 @@ function updateAtmosphere(){
 }
 
 function updateCamera(dt){
-  const target=player.pos.clone().add(new THREE.Vector3(0,2,0));
+  const target=player.pos.clone().add(new THREE.Vector3(0,1.55,0));
   const speedFx=THREE.MathUtils.clamp(player.mach/12,0,1);
   const d=hyper.active?24:camDist+speedFx*18;
   const desired=target.clone().add(new THREE.Vector3(
@@ -2290,7 +2290,7 @@ function updateCamera(dt){
   }
   camera.position.lerp(desired,1-Math.exp(-(hyper.active?10:7)*dt));
   const powerFov=powerState.secondComing>0?8:(powerState.timeGrace>0?5:0);
-  const targetFov=(hyper.active?94:62+speedFx*26)+powerFov;
+  const targetFov=(hyper.active?94:54+speedFx*30)+powerFov;
   camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-5*dt));
   camera.updateProjectionMatrix();
   camera.lookAt(target);

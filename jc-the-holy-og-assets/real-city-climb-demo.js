@@ -324,6 +324,15 @@ function buildStripWallpaper(root,rec){
     shell.userData.sourceTile=tileKey(rec.col,rec.row);
     shell.userData.sourceModel=c.name||"unnamed";
     shell.userData.landmarkRule=landmarkWallpaperRule(rec,c.source)?.name||null;
+    // Building-mounted FX anchors: destruction/holy/demonic sprite layers attach to the
+    // exact visual shell rather than floating independently of the source structure.
+    const fxAnchor=new THREE.Group();
+    fxAnchor.name="BUILDING_FX_ANCHOR_"+slot;
+    fxAnchor.position.copy(c.center);
+    fxAnchor.userData.sourceTile=tileKey(rec.col,rec.row);
+    fxAnchor.userData.sourceModel=c.name||"unnamed";
+    group.add(fxAnchor);
+    shell.userData.fxAnchor=fxAnchor;
     group.add(shell);
   });
 
@@ -1181,6 +1190,19 @@ function fireSoulWeapon(){
   }
 }
 window.JC_FIRE_SOUL_WEAPON=fireSoulWeapon;
+window.JC_BUILDING_FX={
+  attach:function(shell,effect){
+    if(!shell||!shell.userData||!shell.userData.fxAnchor||!effect)return false;
+    shell.userData.fxAnchor.add(effect);
+    effect.position.set(0,0,0);
+    return true;
+  },
+  anchors:function(){
+    const out=[];
+    mapGroup.traverse(function(o){if(o.name&&o.name.indexOf("BUILDING_FX_ANCHOR_")===0)out.push(o);});
+    return out;
+  }
+};
 
 const influenceNpcs=[];
 function registerInfluenceNpc(npc){

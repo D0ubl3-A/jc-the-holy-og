@@ -260,6 +260,32 @@ function landmarkWallpaperRule(rec,o){
     return n.includes(rule.name)||((rule.aliases||[]).some(function(a){return n.includes(a);}));
   })||null;
 }
+function isWallpaperGroundMesh(o,size,box){
+  const objectName=((o&&o.name)||"").toLowerCase();
+  const materialNames=(Array.isArray(o&&o.material)?o.material:[o&&o.material])
+    .filter(Boolean)
+    .map(function(m){return (m.name||"").toLowerCase();})
+    .join(" ");
+  const label=objectName+" "+materialNames;
+
+  // Explicit semantic exclusions for common exported terrain/road names.
+  if(/(^|[_\\-\\s])(ground|terrain|land|road|street|asphalt|pavement|sidewalk|parking|lot|base|plane|surface|floor)([_\\-\\s]|$)/.test(label))return true;
+
+  const footprint=size.x*size.z;
+  const widest=Math.max(size.x,size.z);
+  const narrowest=Math.min(size.x,size.z);
+  const aspect=widest/Math.max(0.01,narrowest);
+
+  // Ground chunks can be much smaller than an entire 1000 m source tile. Reject
+  // low, broad slabs and long flat strips before they can receive facade shells.
+  if(size.y<=4.5&&footprint>=220&&widest>=24)return true;
+  if(size.y<=6&&footprint>=650&&widest>=34)return true;
+  if(size.y<=8&&aspect>=5.5&&widest>=28)return true;
+
+  // Anything hugging the shared tile ground plane with a broad footprint is terrain.
+  if(box&&box.min.y<=TILE_GROUND_Y+0.35&&size.y<=5.5&&footprint>=150)return true;
+  return false;
+}
 function stableModelHash(value){
   let h=2166136261;
   for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619);}
@@ -289,9 +315,10 @@ function buildStripWallpaper(root,rec){
     box.getSize(size);
     box.getCenter(center);
 
-    // Wallpaper every non-residential structural building mass citywide.
+    // Wallpaper buildings only. Ground/terrain/roads must never receive facade art.
     // Residential-scale structures are handled by the dedicated instanced house pass.
     if(size.y<2.2||size.x<2.0||size.z<2.0)return;
+    if(isWallpaperGroundMesh(o,size,box))return;
     if(size.x>240&&size.z>240&&size.y<8)return;
     if(residentialClass(size))return;
     const volume=size.x*size.y*size.z;
@@ -444,6 +471,7 @@ function buildResidentialWallpaper(root,rec){
     const size=new THREE.Vector3(),center=new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
+    if(isWallpaperGroundMesh(o,size,box))return;
     const kind=residentialClass(size);
     if(!kind)return;
 

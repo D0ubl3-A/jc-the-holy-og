@@ -980,6 +980,26 @@ function addBreakthroughScar(box,axis,impact,strength){
   scene.add(ring);
   breakthroughScars.push(ring);
 }
+function restoreHolyDamage(){
+  if(powerState.controller!=="JC")return;
+  for(const scar of breakthroughScars){
+    if(scar&&scar.parent)scar.parent.remove(scar);
+    if(scar?.geometry)scar.geometry.dispose();
+    if(scar?.material)scar.material.dispose();
+  }
+  breakthroughScars.length=0;
+  powerState.health=100;
+  powerState.divine=100;
+  powerState.resurrectionReady=true;
+  powerState.lastAbility="HOLY RESTORATION";
+  const center=powerOrigin();
+  radialRingAt(center,0xffffff,18,1.35);
+  radialRingAt(center,0xffe783,11,0.9);
+  orbBurst(0xffffff,72,22,2.1,center);
+  verticalBeamAt(center,0xfff4c2,34,1.5);
+  flashPower("#fff8d6",0.72);
+  shakePower(0.28);
+}
 function breakthroughImpact(box,axis){
   const now=performance.now();
   if(now-lastBreakthroughFx<70)return;
@@ -2008,7 +2028,7 @@ function updatePowers(dt){
   const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
   const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
   const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · T switch</span>";
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · Y HOLY RESTORE · T switch</span>";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
@@ -2091,6 +2111,7 @@ addEventListener("keydown",function(e){
   if(e.code==="KeyQ"&&!e.repeat)selectDestination(1);
   if(e.code==="KeyH"&&!e.repeat)beginHyperspeed();
   if(e.code==="KeyT"&&!e.repeat)togglePowerController();
+  if(e.code==="KeyY"&&!e.repeat)restoreHolyDamage();
   if(e.code==="Digit1"&&!e.repeat)usePower(1);
   if(e.code==="Digit2"&&!e.repeat)usePower(2);
   if(e.code==="Digit3"&&!e.repeat)usePower(3);

@@ -18,7 +18,13 @@
         "casino",
         "hell-vegas",
         "night"
-      ]
+      ],
+      "runtime_path": "./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg",
+      "apply": {
+        "target": "strip_buildings",
+        "mode": "outer_cover",
+        "enabled": true
+      }
     },
     {
       "id": "vegas-residential-wallpaper-v1",
@@ -36,7 +42,13 @@
         "single-family",
         "townhome",
         "apartment"
-      ]
+      ],
+      "runtime_path": "./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg",
+      "apply": {
+        "target": "residential_buildings",
+        "mode": "instanced_outer_cover",
+        "enabled": true
+      }
     }
   ]
 }

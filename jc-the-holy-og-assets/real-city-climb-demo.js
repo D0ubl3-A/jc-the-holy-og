@@ -1028,12 +1028,30 @@ function canBreakThroughBuilding(){
 }
 const breakthroughScars=[];
 const obliteratedStructures=[];
+function buildingShellsForBox(box){
+  const matches=[];
+  for(const item of loadedTiles.values()){
+    if(!item.wallpaperGroup)continue;
+    item.wallpaperGroup.traverse(function(o){
+      if(!o.isMesh||!o.userData?.wallpaper)return;
+      const wb=new THREE.Box3().setFromObject(o);
+      if(wb.intersectsBox(box))matches.push(o);
+    });
+  }
+  return matches;
+}
 function obliterateStructure(box,impact,strength){
   if(!box||box.userData?.destroyed)return;
   box.userData=box.userData||{};
   box.userData.damage=(box.userData.damage||0)+Math.max(.35,strength+.35);
   if(box.userData.damage<1.05)return;
   box.userData.destroyed=true;
+  const affectedShells=buildingShellsForBox(box);
+  for(const shell of affectedShells){
+    shell.userData.preObliterationVisible=shell.visible;
+    shell.visible=false;
+  }
+  box.userData.affectedShells=affectedShells;
   const size=new THREE.Vector3(),center=new THREE.Vector3();
   box.getSize(size); box.getCenter(center);
   const marker=new THREE.Group();
@@ -1262,7 +1280,14 @@ function restoreHolyDamage(){
   }
   breakthroughScars.length=0;
   for(const damaged of obliteratedStructures){
-    if(damaged.box&&damaged.box.userData){damaged.box.userData.destroyed=false;damaged.box.userData.damage=0;}
+    if(damaged.box&&damaged.box.userData){
+      damaged.box.userData.destroyed=false;
+      damaged.box.userData.damage=0;
+      for(const shell of (damaged.box.userData.affectedShells||[])){
+        if(shell) shell.visible=shell.userData.preObliterationVisible!==false;
+      }
+      damaged.box.userData.affectedShells=[];
+    }
     if(damaged.marker&&damaged.marker.parent)damaged.marker.parent.remove(damaged.marker);
   }
   obliteratedStructures.length=0;

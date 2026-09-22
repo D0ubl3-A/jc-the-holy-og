@@ -1057,6 +1057,7 @@ function soulTakerHit(npc){
   possessNpc(npc,"SATAN");
 }
 function updateLivingSinCity(dt){
+  soulWeaponCooldown=Math.max(0,soulWeaponCooldown-dt);
   const corruptionPressure=Math.max(0,cityState.corruption-cityState.redemption);
   cityState.chaos=THREE.MathUtils.clamp(cityState.chaos+(corruptionPressure*.002-cityState.restoration*.0015)*dt,0,100);
   for(const npc of influenceNpcs){
@@ -1067,6 +1068,40 @@ function updateLivingSinCity(dt){
   }
 }
 window.JC_SOUL_SYSTEM={register:function(npc){registerInfluenceNpc(npc);ensureSoulState(npc);return npc;},influence:setNpcInfluence,possess:possessNpc,worship:setNpcWorship,soulTakerHit:soulTakerHit,divineLightHit:divineLightHit,redeem:expelDemonSpirit,city:cityState};
+const soulWeaponRay=new THREE.Raycaster();
+let soulWeaponCooldown=0;
+function soulWeaponTarget(){
+  soulWeaponRay.set(camera.position,viewForward());
+  const meshes=[];
+  for(const npc of influenceNpcs){
+    if(!npc)continue;
+    if(npc.isObject3D)npc.traverse(function(o){if(o.isMesh){o.userData.soulNpcRoot=npc;meshes.push(o);}});
+  }
+  const hits=soulWeaponRay.intersectObjects(meshes,false);
+  if(!hits.length)return null;
+  return hits[0].object.userData.soulNpcRoot||null;
+}
+function fireSoulWeapon(){
+  if(soulWeaponCooldown>0)return;
+  soulWeaponCooldown=powerState.controller==="JC"?.12:.28;
+  const origin=powerOrigin();
+  const dir=viewForward();
+  const target=soulWeaponTarget();
+  const end=target?.position?target.position.clone().add(new THREE.Vector3(0,1,0)):origin.clone().addScaledVector(dir,85);
+  const color=powerState.controller==="JC"?0xffe879:0x6a00a8;
+  const length=origin.distanceTo(end);
+  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,length,6),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:.95}));
+  beam.position.copy(origin).lerp(end,.5);
+  beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),end.clone().sub(origin).normalize());
+  scene.add(beam);
+  addPowerFx(beam,.13,function(f){if(f.obj.material)f.obj.material.opacity=Math.max(0,f.life/f.maxLife);});
+  orbBurst(color,8,2,.35,origin);
+  if(target){
+    if(powerState.controller==="JC")divineLightHit(target);
+    else soulTakerHit(target);
+  }
+}
+window.JC_FIRE_SOUL_WEAPON=fireSoulWeapon;
 
 const influenceNpcs=[];
 function registerInfluenceNpc(npc){
@@ -2155,7 +2190,7 @@ function updatePowers(dt){
   const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
   const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
   const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · I INFLUENCE · Y HOLY RESTORE · T switch</span>";
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · G SOUL WEAPON · I INFLUENCE · Y RESTORE · T switch</span>";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
@@ -2240,6 +2275,7 @@ addEventListener("keydown",function(e){
   if(e.code==="KeyT"&&!e.repeat)togglePowerController();
   if(e.code==="KeyY"&&!e.repeat)restoreHolyDamage();
   if(e.code==="KeyI"&&!e.repeat)influenceNearbyNpcs();
+  if(e.code==="KeyG"&&!e.repeat)fireSoulWeapon();
   if(e.code==="Digit1"&&!e.repeat)usePower(1);
   if(e.code==="Digit2"&&!e.repeat)usePower(2);
   if(e.code==="Digit3"&&!e.repeat)usePower(3);

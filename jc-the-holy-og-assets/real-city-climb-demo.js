@@ -980,6 +980,44 @@ function addBreakthroughScar(box,axis,impact,strength){
   scene.add(ring);
   breakthroughScars.push(ring);
 }
+const influenceNpcs=[];
+function registerInfluenceNpc(npc){
+  if(npc&&!influenceNpcs.includes(npc))influenceNpcs.push(npc);
+  return npc;
+}
+function influenceNearbyNpcs(){
+  const controller=powerState.controller;
+  const origin=player.pos;
+  let affected=0;
+  for(const npc of influenceNpcs){
+    if(!npc||!npc.position)continue;
+    const d=npc.position.distanceTo(origin);
+    if(d>55)continue;
+    npc.userData=npc.userData||{};
+    const falloff=1-THREE.MathUtils.clamp(d/55,0,1);
+    if(controller==="JC"){
+      npc.userData.influence="HOLY";
+      npc.userData.courage=Math.min(100,(npc.userData.courage||50)+35*falloff);
+      npc.userData.fear=Math.max(0,(npc.userData.fear||20)-45*falloff);
+      npc.userData.hostile=false;
+      npc.userData.aiIntent="protect_help_reconcile";
+    }else{
+      npc.userData.influence="INFERNAL";
+      npc.userData.fear=Math.min(100,(npc.userData.fear||20)+55*falloff);
+      npc.userData.courage=Math.max(0,(npc.userData.courage||50)-30*falloff);
+      npc.userData.aiIntent="fear_temptation_chaos";
+    }
+    npc.userData.influencedBy=controller;
+    npc.userData.influenceStrength=Math.round(falloff*100);
+    affected++;
+  }
+  powerState.lastAbility=controller+" INFLUENCE · "+affected+" NPC";
+  const color=controller==="JC"?0xfff2a8:0x8b20ff;
+  radialRingAt(powerOrigin(),color,28,1.4);
+  orbBurst(color,36,14,1.5,powerOrigin());
+  shakePower(0.12);
+}
+window.JC_REGISTER_AI_NPC=registerInfluenceNpc;
 function restoreHolyDamage(){
   if(powerState.controller!=="JC")return;
   for(const scar of breakthroughScars){
@@ -2028,7 +2066,7 @@ function updatePowers(dt){
   const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
   const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
   const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · Y HOLY RESTORE · T switch</span>";
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · I INFLUENCE · Y HOLY RESTORE · T switch</span>";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
@@ -2112,6 +2150,7 @@ addEventListener("keydown",function(e){
   if(e.code==="KeyH"&&!e.repeat)beginHyperspeed();
   if(e.code==="KeyT"&&!e.repeat)togglePowerController();
   if(e.code==="KeyY"&&!e.repeat)restoreHolyDamage();
+  if(e.code==="KeyI"&&!e.repeat)influenceNearbyNpcs();
   if(e.code==="Digit1"&&!e.repeat)usePower(1);
   if(e.code==="Digit2"&&!e.repeat)usePower(2);
   if(e.code==="Digit3"&&!e.repeat)usePower(3);

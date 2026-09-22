@@ -241,13 +241,21 @@ function landmarkWallpaperRule(rec,o){
     return n.includes(rule.name)||((rule.aliases||[]).some(function(a){return n.includes(a);}));
   })||null;
 }
+function stableModelHash(value){
+  let h=2166136261;
+  for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619);}
+  return h>>>0;
+}
 function wallpaperProfileIndex(rec,center,slot,name){
   const n=(name||"").toUpperCase();
   for(const rule of LANDMARK_WALLPAPER_RULES){
     if(rule.col===rec.col&&rule.row===rec.row&&(n.includes(rule.name)||(rule.aliases||[]).some(function(a){return n.includes(a);})) )return rule.profile;
   }
-  const h=(rec.col*17+rec.row*31+Math.round(center.x*0.11)+Math.round(center.z*0.07)+slot*13);
-  return Math.abs(h)%6;
+  // Every remaining model gets a deterministic profile from its exact tile,
+  // source model name and quantized footprint. It will never reshuffle between loads.
+  const identity=tileKey(rec.col,rec.row)+"|"+n+"|"+
+    Math.round(center.x*4)+"|"+Math.round(center.z*4)+"|"+slot;
+  return stableModelHash(identity)%6;
 }
 function buildStripWallpaper(root,rec){
   if(!wallpaperAssetsReady||!stripWallpaperAtlas)return null;
@@ -392,8 +400,8 @@ function residentialClass(size){
 }
 function residentialVariant(rec,center,kind){
   const count=kind==="single"?8:kind==="town"?4:2;
-  const h=rec.col*37+rec.row*53+Math.round(center.x*0.31)+Math.round(center.z*0.23);
-  return Math.abs(h)%count;
+  const identity=tileKey(rec.col,rec.row)+"|"+kind+"|"+Math.round(center.x*4)+"|"+Math.round(center.z*4);
+  return stableModelHash(identity)%count;
 }
 function buildResidentialWallpaper(root,rec){
   if(!wallpaperAssetsReady||!residentialWallpaperAtlas)return null;

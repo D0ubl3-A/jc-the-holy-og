@@ -939,7 +939,11 @@ function buildTileColliders(root,rec){
   });
 
   candidates.sort(function(a,b){return b.volume-a.volume;});
-  const boxes=candidates.slice(0,MAX_COLLIDERS_PER_TILE).map(function(x){return x.box;});
+  const boxes=candidates.slice(0,MAX_COLLIDERS_PER_TILE).map(function(x){
+    const box=x.box;
+    box.userData={tileKey:tileKey(rec.col,rec.row),destroyed:false,damage:0};
+    return box;
+  });
   tileColliders.set(tileKey(rec.col,rec.row),{rec:rec,boxes:boxes});
   return boxes.length;
 }
@@ -957,6 +961,7 @@ function nearbyCollisionBoxes(){
   return out;
 }
 function horizontalOverlap(x,z,box,pad){
+  if(box.userData&&box.userData.destroyed)return false;
   return x>=box.min.x-pad&&x<=box.max.x+pad&&z>=box.min.z-pad&&z<=box.max.z+pad;
 }
 function verticalBodyOverlap(y,box){
@@ -969,6 +974,41 @@ function canBreakThroughBuilding(){
   return player.flying&&player.speed>=BREAKTHROUGH_SPEED;
 }
 const breakthroughScars=[];
+const obliteratedStructures=[];
+function obliterateStructure(box,impact,strength){
+  if(!box||box.userData?.destroyed)return;
+  box.userData=box.userData||{};
+  box.userData.damage=(box.userData.damage||0)+Math.max(.35,strength+.35);
+  if(box.userData.damage<1.05)return;
+  box.userData.destroyed=true;
+  const size=new THREE.Vector3(),center=new THREE.Vector3();
+  box.getSize(size); box.getCenter(center);
+  const marker=new THREE.Group();
+  marker.name="OBLITERATED_STRUCTURE";
+  marker.userData.sourceBox=box;
+  scene.add(marker);
+  const count=Math.min(lowSpec?18:42,Math.max(12,Math.round((size.x+size.y+size.z)*.18)));
+  for(let i=0;i<count;i++){
+    const shard=new THREE.Mesh(
+      new THREE.BoxGeometry(.25+Math.random()*1.2,.18+Math.random()*1.4,.25+Math.random()*1.2),
+      new THREE.MeshStandardMaterial({color:Math.random()>.45?0x332a2b:0x6a5144,roughness:.85})
+    );
+    shard.position.set(
+      center.x+(Math.random()-.5)*Math.min(size.x,12),
+      THREE.MathUtils.clamp(impact.y+(Math.random()-.5)*5,box.min.y+.2,box.max.y),
+      center.z+(Math.random()-.5)*Math.min(size.z,12)
+    );
+    marker.add(shard);
+    const away=shard.position.clone().sub(impact).normalize().multiplyScalar(8+Math.random()*18+strength*24);
+    transientFx.push({obj:shard,life:1.2+Math.random()*1.4,maxLife:2.6,v:away});
+  }
+  const smoke=new THREE.Mesh(new THREE.SphereGeometry(2.5+strength*4,10,7),new THREE.MeshBasicMaterial({color:0x211b1c,transparent:true,opacity:.55,depthWrite:false}));
+  smoke.position.copy(impact); marker.add(smoke);
+  addPowerFx(smoke,1.8,function(f,dt){f.obj.scale.multiplyScalar(1+dt*1.6);f.obj.position.y+=dt*4;if(f.obj.material)f.obj.material.opacity=Math.max(0,.55*f.life/f.maxLife);});
+  obliteratedStructures.push({box:box,marker:marker});
+  cityState.chaos=Math.min(100,cityState.chaos+1.5);
+}
+
 function addBreakthroughScar(box,axis,impact,strength){
   if(!box||breakthroughScars.length>=180)return;
   const radius=0.72+strength*0.72;
@@ -1155,6 +1195,13 @@ function restoreHolyDamage(){
     if(scar?.material)scar.material.dispose();
   }
   breakthroughScars.length=0;
+  for(const damaged of obliteratedStructures){
+    if(damaged.box&&damaged.box.userData){damaged.box.userData.destroyed=false;damaged.box.userData.damage=0;}
+    if(damaged.marker&&damaged.marker.parent)damaged.marker.parent.remove(damaged.marker);
+  }
+  obliteratedStructures.length=0;
+  cityState.restoration=Math.min(100,cityState.restoration+8);
+  cityState.chaos=Math.max(0,cityState.chaos-8);
   powerState.health=100;
   powerState.divine=100;
   powerState.resurrectionReady=true;
@@ -1174,6 +1221,7 @@ function breakthroughImpact(box,axis){
   const impact=player.pos.clone().add(new THREE.Vector3(0,PLAYER_HEIGHT*0.55,0));
   const strength=THREE.MathUtils.clamp((player.speed-BREAKTHROUGH_SPEED)/260,0,1);
   addBreakthroughScar(box,axis,impact,strength);
+  obliterateStructure(box,impact,strength);
   radialRingAt(impact,0xffd75e,3.5+strength*8,0.35+strength*0.35);
   orbBurst(0xffb45a,10+Math.round(strength*18),2.5+strength*5,0.45+strength*0.3,impact);
   shakePower(0.18+strength*0.5);

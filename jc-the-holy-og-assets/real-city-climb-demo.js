@@ -980,9 +980,98 @@ function addBreakthroughScar(box,axis,impact,strength){
   scene.add(ring);
   breakthroughScars.push(ring);
 }
+// --- Living Sin City morality / soul simulation --------------------------------
+const cityState={corruption:35,redemption:15,chaos:20,restoration:10};
+function ensureSoulState(npc){
+  npc.userData=npc.userData||{};
+  const u=npc.userData;
+  if(!u.soulState)u.soulState="FREE";
+  if(!u.worship)u.worship="NONE";
+  if(!u.influence)u.influence="NONE";
+  if(!u.possession)u.possession="NONE";
+  if(u.influenceStrength==null)u.influenceStrength=0;
+  return u;
+}
+function setNpcInfluence(npc,source,strength){
+  const u=ensureSoulState(npc);
+  u.influence=source;
+  u.influenceStrength=THREE.MathUtils.clamp(strength,0,100);
+  u.influencedBy=source;
+}
+function possessNpc(npc,source){
+  const u=ensureSoulState(npc);
+  u.possession=source;
+  u.aiBeforePossession=u.aiIntent||"normal";
+  u.aiIntent=source==="SATAN"?"possessed_infernal":"protected_holy";
+  if(source==="SATAN")cityState.corruption=Math.min(100,cityState.corruption+1.5);
+}
+function setNpcWorship(npc,target){
+  const u=ensureSoulState(npc);
+  u.worship=target; // persistent allegiance; deliberately separate from influence/possession
+}
+function takeSoul(npc){
+  const u=ensureSoulState(npc);
+  u.soulState="TAKEN";
+  u.soulTakenBy="SATAN";
+  u.aiIntent="soul_taken";
+  cityState.corruption=Math.min(100,cityState.corruption+2);
+  cityState.chaos=Math.min(100,cityState.chaos+1);
+}
+function expelDemonSpirit(npc){
+  if(!npc||!npc.position)return;
+  const u=ensureSoulState(npc);
+  if(u.possession!=="SATAN"&&u.soulState!=="TAKEN")return;
+  const spirit=new THREE.Mesh(
+    new THREE.SphereGeometry(0.45,8,6),
+    new THREE.MeshBasicMaterial({color:0x050007,transparent:true,opacity:.88})
+  );
+  spirit.scale.set(.75,1.8,.75);
+  spirit.position.copy(npc.position).add(new THREE.Vector3(0,1.3,0));
+  scene.add(spirit);
+  addPowerFx(spirit,1.35,function(f,dt){
+    f.obj.position.y+=dt*5.5;
+    f.obj.scale.multiplyScalar(1+dt*1.3);
+    if(f.obj.material)f.obj.material.opacity=Math.max(0,f.life/f.maxLife);
+  });
+  orbBurst(0xfff0a0,30,7,1.1,npc.position.clone().add(new THREE.Vector3(0,1,0)));
+  u.possession="NONE";
+  u.soulState="FREE";
+  u.soulTakenBy=null;
+  u.aiIntent=u.aiBeforePossession||"normal";
+  u.fear=Math.max(0,(u.fear||20)-55);
+  u.hostile=false;
+  cityState.redemption=Math.min(100,cityState.redemption+2);
+  cityState.corruption=Math.max(0,cityState.corruption-2);
+}
+function divineLightHit(npc){
+  if(!npc)return;
+  expelDemonSpirit(npc);
+  const u=ensureSoulState(npc);
+  u.influence="HOLY";
+  u.influenceStrength=Math.max(u.influenceStrength||0,55);
+  u.courage=Math.min(100,(u.courage||50)+25);
+}
+function soulTakerHit(npc){
+  if(!npc)return;
+  takeSoul(npc);
+  possessNpc(npc,"SATAN");
+}
+function updateLivingSinCity(dt){
+  const corruptionPressure=Math.max(0,cityState.corruption-cityState.redemption);
+  cityState.chaos=THREE.MathUtils.clamp(cityState.chaos+(corruptionPressure*.002-cityState.restoration*.0015)*dt,0,100);
+  for(const npc of influenceNpcs){
+    if(!npc)continue;
+    const u=ensureSoulState(npc);
+    if(u.influenceStrength>0)u.influenceStrength=Math.max(0,u.influenceStrength-dt*1.25);
+    if(u.influenceStrength===0&&u.possession==="NONE")u.influence="NONE";
+  }
+}
+window.JC_SOUL_SYSTEM={register:function(npc){registerInfluenceNpc(npc);ensureSoulState(npc);return npc;},influence:setNpcInfluence,possess:possessNpc,worship:setNpcWorship,soulTakerHit:soulTakerHit,divineLightHit:divineLightHit,redeem:expelDemonSpirit,city:cityState};
+
 const influenceNpcs=[];
 function registerInfluenceNpc(npc){
   if(npc&&!influenceNpcs.includes(npc))influenceNpcs.push(npc);
+  if(npc)ensureSoulState(npc);
   return npc;
 }
 function influenceNearbyNpcs(){
@@ -996,19 +1085,18 @@ function influenceNearbyNpcs(){
     npc.userData=npc.userData||{};
     const falloff=1-THREE.MathUtils.clamp(d/55,0,1);
     if(controller==="JC"){
-      npc.userData.influence="HOLY";
+      setNpcInfluence(npc,"JC",Math.round(falloff*100));
       npc.userData.courage=Math.min(100,(npc.userData.courage||50)+35*falloff);
       npc.userData.fear=Math.max(0,(npc.userData.fear||20)-45*falloff);
       npc.userData.hostile=false;
       npc.userData.aiIntent="protect_help_reconcile";
     }else{
-      npc.userData.influence="INFERNAL";
+      setNpcInfluence(npc,"SATAN",Math.round(falloff*100));
       npc.userData.fear=Math.min(100,(npc.userData.fear||20)+55*falloff);
       npc.userData.courage=Math.max(0,(npc.userData.courage||50)-30*falloff);
       npc.userData.aiIntent="fear_temptation_chaos";
     }
     npc.userData.influencedBy=controller;
-    npc.userData.influenceStrength=Math.round(falloff*100);
     affected++;
   }
   powerState.lastAbility=controller+" INFLUENCE · "+affected+" NPC";
@@ -2013,6 +2101,7 @@ function togglePowerController(){
   else player.root.position.copy(player.pos);
 }
 function updatePowers(dt){
+  updateLivingSinCity(dt);
   const regen=powerState.secondComing>0?35:(powerState.timeGrace>0?15:7);
   powerState.divine=Math.min(100,powerState.divine+regen*dt);
   powerState.infernal=Math.min(100,powerState.infernal+6*dt);

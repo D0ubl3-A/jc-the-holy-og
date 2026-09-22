@@ -121,21 +121,58 @@ const MAX_COLLIDERS_PER_TILE=lowSpec?120:240;
 
 const gltfLoader=new GLTFLoader();
 
-const STRIP_WALLPAPER_URL="./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg";
+const STRIP_WALLPAPER_FALLBACK_URL="./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg";
+const RESIDENTIAL_WALLPAPER_FALLBACK_URL="./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg";
 const STRIP_MIN_COL=15;
 const STRIP_MAX_COL=16;
 const STRIP_MIN_ROW=12;
 const STRIP_MAX_ROW=15;
 const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?4:9;
 const wallpaperTextureLoader=new THREE.TextureLoader();
-const stripWallpaperAtlas=wallpaperTextureLoader.load(STRIP_WALLPAPER_URL,function(tex){
-  tex.colorSpace=THREE.SRGBColorSpace;
-  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-  tex.minFilter=THREE.LinearMipmapLinearFilter;
-  tex.magFilter=THREE.LinearFilter;
-  tex.needsUpdate=true;
-});
+let stripWallpaperAtlas=null;
+let residentialWallpaperAtlas=null;
+let wallpaperAssetsReady=false;
 const wallpaperMaterials={facade:[],roof:[],side:[]};
+
+function loadWallpaperTexture(url){
+  return new Promise(function(resolve,reject){
+    wallpaperTextureLoader.load(url,function(tex){
+      tex.colorSpace=THREE.SRGBColorSpace;
+      tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+      tex.minFilter=THREE.LinearMipmapLinearFilter;
+      tex.magFilter=THREE.LinearFilter;
+      tex.needsUpdate=true;
+      resolve(tex);
+    },undefined,reject);
+  });
+}
+function factoryRuntimePath(id,fallback){
+  const asset=getAIAsset(id);
+  if(!asset||!asset.apply||asset.apply.enabled===false)return fallback;
+  return asset.runtime_path||fallback;
+}
+async function initializeFactoryWallpapers(){
+  const stripUrl=factoryRuntimePath("hell-vegas-strip-wallpaper-v1",STRIP_WALLPAPER_FALLBACK_URL);
+  const residentialUrl=factoryRuntimePath("vegas-residential-wallpaper-v1",RESIDENTIAL_WALLPAPER_FALLBACK_URL);
+  try{
+    const textures=await Promise.all([
+      loadWallpaperTexture(stripUrl),
+      loadWallpaperTexture(residentialUrl)
+    ]);
+    stripWallpaperAtlas=textures[0];
+    residentialWallpaperAtlas=textures[1];
+    wallpaperAssetsReady=true;
+  }catch(err){
+    console.warn("Factory wallpaper load failed; using fallback textures",err);
+    const textures=await Promise.all([
+      loadWallpaperTexture(STRIP_WALLPAPER_FALLBACK_URL),
+      loadWallpaperTexture(RESIDENTIAL_WALLPAPER_FALLBACK_URL)
+    ]);
+    stripWallpaperAtlas=textures[0];
+    residentialWallpaperAtlas=textures[1];
+    wallpaperAssetsReady=true;
+  }
+}
 let wallpaperShellCount=0;
 
 function atlasSliceTexture(index,kind){
@@ -191,6 +228,7 @@ function wallpaperProfileIndex(rec,center,slot){
   return Math.abs(h)%6;
 }
 function buildStripWallpaper(root,rec){
+  if(!wallpaperAssetsReady||!stripWallpaperAtlas)return null;
   if(!isStripWallpaperTile(rec))return null;
 
   root.updateMatrixWorld(true);
@@ -268,14 +306,6 @@ function disposeWallpaperGroup(group){
   });
 }
 
-const RESIDENTIAL_WALLPAPER_URL="./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg";
-const residentialWallpaperAtlas=wallpaperTextureLoader.load(RESIDENTIAL_WALLPAPER_URL,function(tex){
-  tex.colorSpace=THREE.SRGBColorSpace;
-  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-  tex.minFilter=THREE.LinearMipmapLinearFilter;
-  tex.magFilter=THREE.LinearFilter;
-  tex.needsUpdate=true;
-});
 const residentialMaterials={single:[],town:[],apartment:[],roof:[]};
 const residentialUnitBox=new THREE.BoxGeometry(1,1,1);
 let residentialWallpaperCount=0;
@@ -338,6 +368,7 @@ function residentialVariant(rec,center,kind){
   return Math.abs(h)%count;
 }
 function buildResidentialWallpaper(root,rec){
+  if(!wallpaperAssetsReady||!residentialWallpaperAtlas)return null;
   root.updateMatrixWorld(true);
   const byKey=new Map();
 
@@ -2292,6 +2323,7 @@ async function boot(){
   if(locationEl)locationEl.textContent="LAS VEGAS STRIP";
   if(creditEl)creditEl.textContent="JC Map • START: Las Vegas Strip • streaming C##_R## GLB tiles";
   await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
+  await initializeFactoryWallpapers();
   rebuildDestinations();
   await loadWorldLod();
   await loadRoadRuntime();
@@ -2342,6 +2374,7 @@ async function boot(){
     manifestVersion:manifestVersion,
     aiAssetManifest:aiAssetManifest,
     aiAssetById:aiAssetById,
+    get wallpaperAssetsReady(){return wallpaperAssetsReady},
     getAIAsset:getAIAsset,
     listAIAssets:listAIAssets,
     reloadAIAssetManifest:loadAIAssetFactoryManifest,

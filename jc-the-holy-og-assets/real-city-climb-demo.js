@@ -226,7 +226,26 @@ function isStripWallpaperTile(rec){
   return rec.col>=STRIP_MIN_COL&&rec.col<=STRIP_MAX_COL&&
     rec.row>=STRIP_MIN_ROW&&rec.row<=STRIP_MAX_ROW;
 }
-function wallpaperProfileIndex(rec,center,slot){
+const LANDMARK_WALLPAPER_RULES=[
+  {name:"LUXOR",col:15,row:14,profile:0},
+  {name:"END OF HIM",aliases:["MGM GRAND"],col:16,row:14,profile:1},
+  {name:"BEAZLEBUBIO",aliases:["BELLAGIO"],col:15,row:13,profile:2},
+  {name:"SATAN'S PLACE",aliases:["CAESARS PALACE"],col:15,row:13,profile:3},
+  {name:"PSALMS",aliases:["PALMS"],col:14,row:13,profile:4},
+  {name:"ALLEGIANT STADIUM",col:14,row:15,profile:5}
+];
+function landmarkWallpaperRule(rec,o){
+  const n=((o&&o.name)||"").toUpperCase();
+  return LANDMARK_WALLPAPER_RULES.find(function(rule){
+    if(rule.col!==rec.col||rule.row!==rec.row)return false;
+    return n.includes(rule.name)||((rule.aliases||[]).some(function(a){return n.includes(a);}));
+  })||null;
+}
+function wallpaperProfileIndex(rec,center,slot,name){
+  const n=(name||"").toUpperCase();
+  for(const rule of LANDMARK_WALLPAPER_RULES){
+    if(rule.col===rec.col&&rule.row===rec.row&&(n.includes(rule.name)||(rule.aliases||[]).some(function(a){return n.includes(a);})) )return rule.profile;
+  }
   const h=(rec.col*17+rec.row*31+Math.round(center.x*0.11)+Math.round(center.z*0.07)+slot*13);
   return Math.abs(h)%6;
 }
@@ -250,7 +269,7 @@ function buildStripWallpaper(root,rec){
     if(residentialClass(size))return;
     const volume=size.x*size.y*size.z;
     if(volume<28)return;
-    candidates.push({box:box,size:size,center:center,volume:volume});
+    candidates.push({box:box,size:size,center:center,volume:volume,name:o.name||"",source:o});
   });
 
   candidates.sort(function(a,b){return b.volume-a.volume;});
@@ -274,7 +293,7 @@ function buildStripWallpaper(root,rec){
   group.name="CITY_BUILDING_WALLPAPER_"+tileKey(rec.col,rec.row);
 
   chosen.forEach(function(c,slot){
-    const idx=wallpaperProfileIndex(rec,c.center,slot);
+    const idx=wallpaperProfileIndex(rec,c.center,slot,c.name);
     const facade=wallpaperMaterial(idx,"facade");
     const side=wallpaperMaterial(idx,"side");
     const roof=wallpaperMaterial(idx,"roof");
@@ -294,6 +313,9 @@ function buildStripWallpaper(root,rec){
     shell.frustumCulled=true;
     shell.userData.wallpaperProfile=idx;
     shell.userData.wallpaper=true;
+    shell.userData.sourceTile=tileKey(rec.col,rec.row);
+    shell.userData.sourceModel=c.name||"unnamed";
+    shell.userData.landmarkRule=landmarkWallpaperRule(rec,c.source)?.name||null;
     group.add(shell);
   });
 
@@ -421,6 +443,9 @@ function buildResidentialWallpaper(root,rec){
     const mats=[facade,facade,roof,wallpaperBottomMaterial,facade,facade];
     const mesh=new THREE.InstancedMesh(residentialUnitBox,mats,bucket.items.length);
     mesh.name="HOMES_"+bucket.kind.toUpperCase()+"_"+bucket.variant;
+    mesh.userData.sourceTile=tileKey(rec.col,rec.row);
+    mesh.userData.wallpaperClass=bucket.kind;
+    mesh.userData.wallpaperVariant=bucket.variant;
     mesh.renderOrder=4;
     mesh.frustumCulled=true;
 

@@ -962,12 +962,31 @@ let lastBreakthroughFx=0;
 function canBreakThroughBuilding(){
   return player.flying&&player.speed>=BREAKTHROUGH_SPEED;
 }
+const breakthroughScars=[];
+function addBreakthroughScar(box,axis,impact,strength){
+  if(!box||breakthroughScars.length>=180)return;
+  const radius=0.72+strength*0.72;
+  const ring=new THREE.Mesh(
+    new THREE.RingGeometry(radius*0.62,radius,18),
+    new THREE.MeshBasicMaterial({color:0x120a08,transparent:true,opacity:0.9,side:THREE.DoubleSide,depthWrite:false})
+  );
+  ring.position.copy(impact);
+  if(axis==="x"){
+    ring.rotation.y=Math.PI/2;
+    ring.position.x=player.velocity.x>=0?box.min.x-0.025:box.max.x+0.025;
+  }else{
+    ring.position.z=player.velocity.z>=0?box.min.z-0.025:box.max.z+0.025;
+  }
+  scene.add(ring);
+  breakthroughScars.push(ring);
+}
 function breakthroughImpact(box,axis){
   const now=performance.now();
   if(now-lastBreakthroughFx<70)return;
   lastBreakthroughFx=now;
   const impact=player.pos.clone().add(new THREE.Vector3(0,PLAYER_HEIGHT*0.55,0));
   const strength=THREE.MathUtils.clamp((player.speed-BREAKTHROUGH_SPEED)/260,0,1);
+  addBreakthroughScar(box,axis,impact,strength);
   radialRingAt(impact,0xffd75e,3.5+strength*8,0.35+strength*0.35);
   orbBurst(0xffb45a,10+Math.round(strength*18),2.5+strength*5,0.45+strength*0.3,impact);
   shakePower(0.18+strength*0.5);

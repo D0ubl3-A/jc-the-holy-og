@@ -104,6 +104,9 @@ const FAST_ACTIVE_TILE_RADIUS=lowSpec?2:3;
 const ACTIVE_LOOKAHEAD_TILES=lowSpec?2:3;
 const DECODE_KEEP_EXTRA=1;
 const VISIBILITY_UPDATE_INTERVAL=0.16;
+const MASS_TILE_THRESHOLD=512;
+const MASS_PREFETCH_EXTRA_RADIUS=2;
+const MASS_PREFETCH_BATCH=2;
 const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.8:3.2;
 const MAX_LOOKAHEAD_TILES=lowSpec?5:11;
 const HIGH_SPEED_STREAM_THRESHOLD=260;
@@ -612,6 +615,10 @@ function unloadRoadTile(key,item){
 }
 async function preloadAllRoadTiles(){
   if(!roadRuntimeReady)return;
+  if(massTileMode){
+    await prefetchRollingWindow();
+    return;
+  }
   const playableKeys=new Set(manifest.map(function(t){return tileKey(t.col,t.row);}));
   const wanted=roadManifest.filter(function(t){
     return playableKeys.has(tileKey(t.col,t.row));
@@ -680,6 +687,8 @@ let fpsEstimate=60;
 const rawBufferedTiles=new Set();
 const rawBufferedRoads=new Set();
 let activeDecodeBusy=false;
+let massTileMode=false;
+let rollingPrefetchBusy=false;
 
 function tileKey(col,row){
   return "C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
@@ -713,6 +722,7 @@ async function loadManifest(){
   const data=await res.json();
   manifest=(data.tiles||[]).filter(function(t){return Number.isFinite(t.col)&&Number.isFinite(t.row)&&t.url});
   manifestByKey=new Map(manifest.map(function(t){return [tileKey(t.col,t.row),t]}));
+  massTileMode=manifest.length>=MASS_TILE_THRESHOLD;
   manifestVersion=data.generatedAt||String(manifest.length);
   if(!manifest.length)throw new Error("No C##_R## GLB tiles found in manifest");
   return data;
@@ -875,9 +885,12 @@ function nearbyCollisionBoxes(){
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return [];
   const cell=worldCell(player.pos.x,player.pos.z);
   const out=[];
-  for(const item of tileColliders.values()){
-    if(Math.abs(item.rec.col-cell.col)>COLLISION_TILE_RADIUS||Math.abs(item.rec.row-cell.row)>COLLISION_TILE_RADIUS)continue;
-    for(const box of item.boxes)out.push(box);
+  for(let dc=-COLLISION_TILE_RADIUS;dc<=COLLISION_TILE_RADIUS;dc++){
+    for(let dr=-COLLISION_TILE_RADIUS;dr<=COLLISION_TILE_RADIUS;dr++){
+      const item=tileColliders.get(tileKey(cell.col+dc,cell.row+dr));
+      if(!item)continue;
+      for(const box of item.boxes)out.push(box);
+    }
   }
   return out;
 }
@@ -989,6 +1002,26 @@ function recordWithinActiveWindow(rec,info){
   }
   return false;
 }
+function recordsInWindow(index,info,extraRadius){
+  const radius=info.radius+(extraRadius||0);
+  const out=[];
+  const seen=new Set();
+  for(const c of info.cells){
+    for(let dc=-radius;dc<=radius;dc++){
+      for(let dr=-radius;dr<=radius;dr++){
+        const key=tileKey(c.col+dc,c.row+dr);
+        if(seen.has(key))continue;
+        seen.add(key);
+        const rec=index.get(key);
+        if(rec)out.push(rec);
+      }
+    }
+  }
+  return out;
+}
+function recordsAroundCell(index,cell,radius){
+  return recordsInWindow(index,{cells:[cell],radius:radius||0},0);
+}
 function setTileVisualState(item,visible){
   if(!item)return;
   item.root.visible=visible;
@@ -1066,6 +1099,35 @@ async function prefetchRawRoad(rec){
     console.warn("Road prefetch skipped",key,err);
   }
 }
+async function prefetchRollingWindow(){
+  if(!massTileMode||rollingPrefetchBusy)return;
+  rollingPrefetchBusy=true;
+  try{
+    const info=activeRenderCells();
+    const tiles=recordsInWindow(manifestByKey,info,MASS_PREFETCH_EXTRA_RADIUS)
+      .filter(function(rec){
+        const key=tileKey(rec.col,rec.row);
+        return !rawBufferedTiles.has(key)&&!loadedTiles.has(key);
+      });
+    const roads=recordsInWindow(roadManifestByKey,info,MASS_PREFETCH_EXTRA_RADIUS)
+      .filter(function(rec){
+        const key=tileKey(rec.col,rec.row);
+        return !rawBufferedRoads.has(key)&&!loadedRoadTiles.has(key);
+      });
+
+    let ti=0,ri=0;
+    while(ti<tiles.length||ri<roads.length){
+      const jobs=[];
+      while(ti<tiles.length&&jobs.length<MASS_PREFETCH_BATCH)jobs.push(prefetchRawTile(tiles[ti++]));
+      while(ri<roads.length&&jobs.length<MASS_PREFETCH_BATCH)jobs.push(prefetchRawRoad(roads[ri++]));
+      if(jobs.length)await Promise.all(jobs);
+      await yieldToBrowser();
+      if(fpsEstimate<32)break;
+    }
+  }finally{
+    rollingPrefetchBusy=false;
+  }
+}
 function expandedActiveInfo(extra){
   const info=activeRenderCells();
   return {cells:info.cells,radius:info.radius+(extra||0)};
@@ -1093,21 +1155,33 @@ async function ensureActiveWindowDecoded(){
   activeDecodeBusy=true;
   try{
     const info=activeRenderCells();
-    const tileWanted=manifest
-      .filter(function(rec){return recordWithinActiveWindow(rec,info)&&!loadedTiles.has(tileKey(rec.col,rec.row));})
-      .sort(function(a,b){return streamPriority(a,streamPlan())-streamPriority(b,streamPlan());});
+    const plan=streamPlan();
+    const tileWanted=recordsInWindow(manifestByKey,info,0)
+      .filter(function(rec){return !loadedTiles.has(tileKey(rec.col,rec.row));})
+      .sort(function(a,b){return streamPriority(a,plan)-streamPriority(b,plan);});
 
+    // Decode in tiny batches and re-check player position between batches.
     for(let i=0;i<tileWanted.length;i+=2){
-      await Promise.all(tileWanted.slice(i,i+2).map(loadOneTile));
+      const currentInfo=activeRenderCells();
+      const batch=tileWanted.slice(i,i+2).filter(function(rec){
+        return recordWithinActiveWindow(rec,currentInfo);
+      });
+      if(batch.length)await Promise.all(batch.map(loadOneTile));
       await yieldToBrowser();
+      if(fpsEstimate<26)break;
     }
 
-    const roadWanted=roadManifest
-      .filter(function(rec){return recordWithinActiveWindow(rec,info)&&!loadedRoadTiles.has(tileKey(rec.col,rec.row));});
+    const roadWanted=recordsInWindow(roadManifestByKey,info,0)
+      .filter(function(rec){return !loadedRoadTiles.has(tileKey(rec.col,rec.row));});
 
     for(let i=0;i<roadWanted.length;i+=2){
-      await Promise.all(roadWanted.slice(i,i+2).map(loadRoadTile));
+      const currentInfo=activeRenderCells();
+      const batch=roadWanted.slice(i,i+2).filter(function(rec){
+        return recordWithinActiveWindow(rec,currentInfo);
+      });
+      if(batch.length)await Promise.all(batch.map(loadRoadTile));
       await yieldToBrowser();
+      if(fpsEstimate<26)break;
     }
 
     pruneDecodedScene();
@@ -1261,10 +1335,7 @@ function streamPriority(rec,plan){
 
 function initialTileRecords(){
   const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
-  return manifest.filter(function(t){
-    return Math.abs(t.col-spawnCell.col)<=INITIAL_BUFFER_RADIUS&&
-      Math.abs(t.row-spawnCell.row)<=INITIAL_BUFFER_RADIUS;
-  });
+  return recordsAroundCell(manifestByKey,spawnCell,INITIAL_BUFFER_RADIUS);
 }
 async function preloadInitialTiles(){
   const wanted=initialTileRecords();
@@ -1276,8 +1347,8 @@ async function preloadInitialTiles(){
 }
 async function preloadInitialRoadTiles(){
   if(!roadRuntimeReady)return;
-  const keys=new Set(initialTileRecords().map(function(t){return tileKey(t.col,t.row);}));
-  const wanted=roadManifest.filter(function(t){return keys.has(tileKey(t.col,t.row));});
+  const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
+  const wanted=recordsAroundCell(roadManifestByKey,spawnCell,INITIAL_BUFFER_RADIUS);
   for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
     await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadRoadTile));
     updateHud();
@@ -1288,6 +1359,19 @@ async function bufferRemainingMap(){
   if(bufferState.active||bufferState.complete)return;
   bufferState.active=true;
   bufferState.total=manifest.length;
+
+  if(massTileMode){
+    try{
+      // Massive maps use rolling cache only. Never flood the network by
+      // prefetching thousands of files that may never be visited.
+      await prefetchRollingWindow();
+      bufferState.complete=true;
+      return;
+    }finally{
+      bufferState.active=false;
+      updateHud();
+    }
+  }
 
   try{
     const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
@@ -2171,7 +2255,7 @@ function updateHud(){
   const bufferText=DATA_BUFFERING?
     (" · CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
   const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+aheadText+roadText+solidText+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -2204,6 +2288,8 @@ async function boot(){
     stripSpawn:STRIP_SPAWN.clone(),
     fullMapMode:FULL_MAP_MODE,
     dataBuffering:DATA_BUFFERING,
+    get massTileMode(){return massTileMode},
+    massTileThreshold:MASS_TILE_THRESHOLD,
     bufferState:bufferState,
     rawBufferedTiles:rawBufferedTiles,
     rawBufferedRoads:rawBufferedRoads,
@@ -2278,6 +2364,7 @@ function frame(){
     visibilityClock=0;
     updateBufferedVisibility(false);
     ensureActiveWindowDecoded();
+    if(massTileMode)prefetchRollingWindow();
   }
   updateAdaptiveResolution(dt);
   if(!frame._hudClock)frame._hudClock=0;

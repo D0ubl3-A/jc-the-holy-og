@@ -86,6 +86,15 @@ scene.add(holeGround);
 const TILE_SOURCE_SIZE=1000;
 const TILE_SCALE=0.1;
 const TILE_WORLD_SIZE=TILE_SOURCE_SIZE*TILE_SCALE;
+const SATELLITE_FOOTPRINT_AUDIT={
+  enabled:true,
+  source:"City of Las Vegas Building Footprints GIS",
+  service:"https://mapdata.lasvegasnevada.gov/clvgis/rest/services/DevelopmentServices/BuildingFootprints/MapServer",
+  exactTileModelBinding:true,
+  runtimeCounts:{tiles:0,models:0,wallpapered:0,residential:0}
+};
+window.JC_SATELLITE_FOOTPRINT_AUDIT=SATELLITE_FOOTPRINT_AUDIT;
+
 const ORIGIN_COL=8;
 const ORIGIN_ROW=8;
 const TILE_GROUND_Y=0;
@@ -334,6 +343,7 @@ function buildStripWallpaper(root,rec){
     group.add(fxAnchor);
     shell.userData.fxAnchor=fxAnchor;
     group.add(shell);
+    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.wallpapered++;
   });
 
   mapGroup.add(group);
@@ -480,6 +490,7 @@ function buildResidentialWallpaper(root,rec){
     });
     mesh.instanceMatrix.needsUpdate=true;
     group.add(mesh);
+    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.residential+=bucket.matrices.length;
   }
 
   mapGroup.add(group);
@@ -1644,6 +1655,8 @@ async function loadOneTile(rec){
       residentialGroup:residentialGroup
     };
     loadedTiles.set(key,item);
+    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.tiles=loadedTiles.size;
+    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.models+=colliderCount;
     freezeStaticRoot(root);
     if(wallpaperGroup)freezeStaticRoot(wallpaperGroup);
     if(residentialGroup)freezeStaticRoot(residentialGroup);

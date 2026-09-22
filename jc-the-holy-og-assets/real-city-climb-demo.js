@@ -34,7 +34,9 @@ const FLIGHT_SPEEDS={
 const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,300000);
 const renderer=new THREE.WebGLRenderer({antialias:!lowSpec,powerPreference:lowSpec?"low-power":"high-performance"});
 renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,lowSpec?1:1.4));
+const MAX_RENDER_PIXEL_RATIO=lowSpec?0.85:1.15;
+let dynamicPixelRatio=Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO);
+renderer.setPixelRatio(dynamicPixelRatio);
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.08;
@@ -93,7 +95,13 @@ const LOAD_RADIUS=lowSpec?1:2;
 const KEEP_RADIUS=lowSpec?2:4;
 const MAX_CONCURRENT=lowSpec?2:4;
 const FULL_MAP_MODE=true;
-const FULL_MAP_BATCH=lowSpec?3:8;
+const DATA_BUFFERING=true;
+const FULL_MAP_BATCH=lowSpec?2:5;
+const INITIAL_BUFFER_RADIUS=2;
+const ACTIVE_TILE_RADIUS=lowSpec?2:3;
+const FAST_ACTIVE_TILE_RADIUS=lowSpec?3:4;
+const ACTIVE_LOOKAHEAD_TILES=lowSpec?2:4;
+const VISIBILITY_UPDATE_INTERVAL=0.12;
 const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.8:3.2;
 const MAX_LOOKAHEAD_TILES=lowSpec?5:11;
 const HIGH_SPEED_STREAM_THRESHOLD=260;
@@ -582,7 +590,11 @@ async function loadRoadTile(rec){
     root.name="ROADS_"+key;
     root.position.copy(tileWorldPosition(rec.col,rec.row));
     roadTileGroup.add(root);
-    loadedRoadTiles.set(key,{root:root,rec:rec,count:(data.roads||[]).length});
+    const item={root:root,rec:rec,count:(data.roads||[]).length};
+    loadedRoadTiles.set(key,item);
+    freezeStaticRoot(root);
+    if(DATA_BUFFERING)item.root.visible=recordWithinActiveWindow(rec,activeRenderCells());
+    bufferState.roadsLoaded=loadedRoadTiles.size;
   }catch(err){
     console.warn("Road tile failed",key,err);
   }finally{
@@ -598,22 +610,22 @@ function unloadRoadTile(key,item){
 }
 async function preloadAllRoadTiles(){
   if(!roadRuntimeReady)return;
-
-  // Only load detailed road packs for tiles that actually have a GLB in the
-  // playable map. The citywide major-road overview remains loaded separately.
   const playableKeys=new Set(manifest.map(function(t){return tileKey(t.col,t.row);}));
   const wanted=roadManifest.filter(function(t){
     return playableKeys.has(tileKey(t.col,t.row));
   });
+  bufferState.roadsTotal=wanted.length;
 
   for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
     await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadRoadTile));
+    bufferState.roadsLoaded=loadedRoadTiles.size;
     updateHud();
+    await yieldToBrowser();
   }
 }
 async function streamRoadTiles(force){
   if(FULL_MAP_MODE){
-    if(force&&loadedRoadTiles.size===0)await preloadAllRoadTiles();
+    if(force&&loadedRoadTiles.size===0)await preloadInitialRoadTiles();
     return;
   }
   if(!roadRuntimeReady||player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
@@ -635,7 +647,7 @@ async function streamRoadTiles(force){
 function updateRoadLod(){
   const y=player.pos.y;
   roadTileGroup.visible=FULL_MAP_MODE||y<LOW_DETAIL_ONLY_ALTITUDE;
-  majorRoadGroup.visible=majorRoadReady&&y>=FULL_DETAIL_ALTITUDE;
+  majorRoadGroup.visible=majorRoadReady&&(DATA_BUFFERING||y>=FULL_DETAIL_ALTITUDE);
   const overviewOpacity=y>=LOW_DETAIL_ONLY_ALTITUDE?0.95:
     THREE.MathUtils.lerp(0.2,0.82,THREE.MathUtils.smoothstep(y,FULL_DETAIL_ALTITUDE,LOW_DETAIL_ONLY_ALTITUDE));
   roadMats.majorOverview.opacity=overviewOpacity;
@@ -651,6 +663,18 @@ const tileColliders=new Map();
 let streamBusy=false;
 let lastStreamCell="";
 let manifestVersion="";
+const bufferState={
+  active:false,
+  complete:false,
+  total:0,
+  loaded:0,
+  roadsTotal:0,
+  roadsLoaded:0
+};
+let visibilityClock=0;
+let perfClock=0;
+let perfFrames=0;
+let fpsEstimate=60;
 
 function tileKey(col,row){
   return "C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
@@ -773,6 +797,17 @@ function updateWorldLod(){
   const y=player.pos.y;
 
   const fastFallback=player.speed>=HIGH_SPEED_STREAM_THRESHOLD||loadingTiles.size>0;
+
+  if(FULL_MAP_MODE&&DATA_BUFFERING){
+    mapGroup.visible=true;
+    worldLodGroup.visible=worldLodReady;
+    if(worldLodReady){
+      const opacity=player.pos.y<600?0.42:
+        THREE.MathUtils.lerp(0.48,0.9,THREE.MathUtils.smoothstep(player.pos.y,600,LOW_DETAIL_ONLY_ALTITUDE));
+      setLodOpacity(opacity);
+    }
+    return;
+  }
 
   if(FULL_MAP_MODE){
     mapGroup.visible=true;
@@ -925,6 +960,83 @@ function collisionCount(){
   return n;
 }
 
+function activeRenderCells(){
+  const current=worldCell(player.pos.x,player.pos.z);
+  const speed=Math.hypot(player.velocity.x,player.velocity.z);
+  const radius=speed>=HIGH_SPEED_STREAM_THRESHOLD?FAST_ACTIVE_TILE_RADIUS:ACTIVE_TILE_RADIUS;
+  const dir=new THREE.Vector2(player.velocity.x,player.velocity.z);
+  if(dir.lengthSq()<0.0001)dir.set(-Math.sin(camYaw),-Math.cos(camYaw));
+  else dir.normalize();
+
+  const cells=[current];
+  const ahead=speed>=HIGH_SPEED_STREAM_THRESHOLD?ACTIVE_LOOKAHEAD_TILES:1;
+  for(let i=1;i<=ahead;i++){
+    cells.push(worldCell(
+      player.pos.x+dir.x*i*TILE_WORLD_SIZE,
+      player.pos.z+dir.y*i*TILE_WORLD_SIZE
+    ));
+  }
+  return {cells:cells,radius:radius};
+}
+function recordWithinActiveWindow(rec,info){
+  for(const c of info.cells){
+    if(Math.abs(rec.col-c.col)<=info.radius&&Math.abs(rec.row-c.row)<=info.radius)return true;
+  }
+  return false;
+}
+function setTileVisualState(item,visible){
+  if(!item)return;
+  item.root.visible=visible;
+  if(item.wallpaperGroup)item.wallpaperGroup.visible=visible;
+  if(item.residentialGroup)item.residentialGroup.visible=visible;
+}
+function updateBufferedVisibility(force){
+  if(!DATA_BUFFERING)return;
+  const info=activeRenderCells();
+  for(const item of loadedTiles.values()){
+    setTileVisualState(item,recordWithinActiveWindow(item.rec,info));
+  }
+  for(const item of loadedRoadTiles.values()){
+    item.root.visible=recordWithinActiveWindow(item.rec,info);
+  }
+}
+function freezeStaticRoot(root){
+  root.updateMatrixWorld(true);
+  root.traverse(function(o){
+    if(o===root)return;
+    if(o.matrixAutoUpdate){
+      o.updateMatrix();
+      o.matrixAutoUpdate=false;
+    }
+  });
+  root.updateMatrix();
+  root.matrixAutoUpdate=false;
+}
+function updateAdaptiveResolution(dt){
+  perfClock+=dt;
+  perfFrames++;
+  if(perfClock<1)return;
+  fpsEstimate=perfFrames/perfClock;
+  perfClock=0;
+  perfFrames=0;
+
+  let target=dynamicPixelRatio;
+  if(fpsEstimate<38)target=Math.max(0.65,dynamicPixelRatio-0.10);
+  else if(fpsEstimate>56)target=Math.min(Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO),dynamicPixelRatio+0.05);
+
+  if(Math.abs(target-dynamicPixelRatio)>=0.045){
+    dynamicPixelRatio=target;
+    renderer.setPixelRatio(dynamicPixelRatio);
+    renderer.setSize(innerWidth,innerHeight,false);
+  }
+}
+function yieldToBrowser(){
+  return new Promise(function(resolve){
+    if("requestIdleCallback" in window)requestIdleCallback(function(){resolve();},{timeout:35});
+    else setTimeout(resolve,0);
+  });
+}
+
 async function loadOneTile(rec){
   const key=tileKey(rec.col,rec.row);
   if(loadedTiles.has(key)||loadingTiles.has(key)||failedTiles.has(key))return;
@@ -976,13 +1088,19 @@ async function loadOneTile(rec){
     const wallpaperGroup=buildStripWallpaper(root,rec);
     const residentialGroup=buildResidentialWallpaper(root,rec);
     const colliderCount=buildTileColliders(root,rec);
-    loadedTiles.set(key,{
+    const item={
       root:root,
       rec:rec,
       colliderCount:colliderCount,
       wallpaperGroup:wallpaperGroup,
       residentialGroup:residentialGroup
-    });
+    };
+    loadedTiles.set(key,item);
+    freezeStaticRoot(root);
+    if(wallpaperGroup)freezeStaticRoot(wallpaperGroup);
+    if(residentialGroup)freezeStaticRoot(residentialGroup);
+    if(DATA_BUFFERING)setTileVisualState(item,recordWithinActiveWindow(rec,activeRenderCells()));
+    bufferState.loaded=loadedTiles.size;
   }catch(err){
     console.error("GLB tile load failed",key,err);
     failedTiles.add(key);
@@ -1061,30 +1179,65 @@ function streamPriority(rec,plan){
   return (-bestStep*100)+bestDistance;
 }
 
-async function preloadAllTiles(){
-  streamBusy=true;
-  try{
-    // Load nearest-to-Strip first for faster initial progress, but gameplay does
-    // not begin until every manifest tile is resident.
-    const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
-    const wanted=manifest.slice().sort(function(a,b){
-      const da=Math.abs(a.col-spawnCell.col)+Math.abs(a.row-spawnCell.row);
-      const db=Math.abs(b.col-spawnCell.col)+Math.abs(b.row-spawnCell.row);
-      return da-db;
-    });
-
-    for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
-      await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadOneTile));
-      if(progressEl)progressEl.textContent="FULL MAP "+loadedTiles.size+"/"+manifest.length+" tiles loaded";
-      updateHud();
-    }
-  }finally{
-    streamBusy=false;
+function initialTileRecords(){
+  const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
+  return manifest.filter(function(t){
+    return Math.abs(t.col-spawnCell.col)<=INITIAL_BUFFER_RADIUS&&
+      Math.abs(t.row-spawnCell.row)<=INITIAL_BUFFER_RADIUS;
+  });
+}
+async function preloadInitialTiles(){
+  const wanted=initialTileRecords();
+  for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
+    await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadOneTile));
+    updateHud();
+    await yieldToBrowser();
   }
 }
+async function preloadInitialRoadTiles(){
+  if(!roadRuntimeReady)return;
+  const keys=new Set(initialTileRecords().map(function(t){return tileKey(t.col,t.row);}));
+  const wanted=roadManifest.filter(function(t){return keys.has(tileKey(t.col,t.row));});
+  for(let i=0;i<wanted.length;i+=FULL_MAP_BATCH){
+    await Promise.all(wanted.slice(i,i+FULL_MAP_BATCH).map(loadRoadTile));
+    updateHud();
+    await yieldToBrowser();
+  }
+}
+async function bufferRemainingMap(){
+  if(bufferState.active||bufferState.complete)return;
+  bufferState.active=true;
+  bufferState.total=manifest.length;
+
+  try{
+    const spawnCell=worldCell(STRIP_SPAWN.x,STRIP_SPAWN.z);
+    const remaining=manifest
+      .filter(function(t){return !loadedTiles.has(tileKey(t.col,t.row));})
+      .sort(function(a,b){
+        const da=Math.abs(a.col-spawnCell.col)+Math.abs(a.row-spawnCell.row);
+        const db=Math.abs(b.col-spawnCell.col)+Math.abs(b.row-spawnCell.row);
+        return da-db;
+      });
+
+    for(let i=0;i<remaining.length;i+=FULL_MAP_BATCH){
+      await Promise.all(remaining.slice(i,i+FULL_MAP_BATCH).map(loadOneTile));
+      bufferState.loaded=loadedTiles.size;
+      updateBufferedVisibility(true);
+      updateHud();
+      await yieldToBrowser();
+    }
+
+    await preloadAllRoadTiles();
+    bufferState.complete=true;
+  }finally{
+    bufferState.active=false;
+    updateHud();
+  }
+}
+
 async function streamTiles(force){
   if(FULL_MAP_MODE){
-    if(force&&loadedTiles.size<manifest.length)await preloadAllTiles();
+    if(force&&loadedTiles.size===0)await preloadInitialTiles();
     return;
   }
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return;
@@ -1936,8 +2089,10 @@ function updateHud(){
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
   const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · STRIP "+wallpaperShellCount+" · HOMES "+residentialWallpaperCount;
   const plan=streamPlan();
-  const aheadText=FULL_MAP_MODE?" · FULL MAP RESIDENT":(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
+  const bufferText=DATA_BUFFERING?
+    (" · BUFFER "+loadedTiles.size+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
+  const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+aheadText+roadText+solidText+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
@@ -1949,13 +2104,13 @@ async function boot(){
   if(creditEl)creditEl.textContent="JC Map • START: Las Vegas Strip • streaming C##_R## GLB tiles";
   await loadManifest();
   rebuildDestinations();
-  loadWorldLod();
+  await loadWorldLod();
   await loadRoadRuntime();
-  if(progressEl)progressEl.textContent="FULL MAP loading all GLB tiles…";
-  await streamTiles(true);
-  if(progressEl)progressEl.textContent="FULL MAP loading all road surfaces…";
-  await streamRoadTiles(true);
-  if(progressEl)progressEl.textContent="FULL MAP READY · "+loadedTiles.size+" tiles · "+loadedRoadTiles.size+" road tiles";
+  bufferState.total=manifest.length;
+  if(progressEl)progressEl.textContent="BUFFERING STRIP START AREA…";
+  await Promise.all([streamTiles(true),streamRoadTiles(true)]);
+  updateBufferedVisibility(true);
+  if(progressEl)progressEl.textContent="STRIP READY · background map buffering active";
   toggleFlight();
   toggleFlight();
   updateHud();
@@ -1969,6 +2124,9 @@ async function boot(){
     player:player,
     stripSpawn:STRIP_SPAWN.clone(),
     fullMapMode:FULL_MAP_MODE,
+    dataBuffering:DATA_BUFFERING,
+    bufferState:bufferState,
+    updateBufferedVisibility:updateBufferedVisibility,
     tileWorldSize:TILE_WORLD_SIZE,
     tileScale:TILE_SCALE,
     tileGroundY:TILE_GROUND_Y,
@@ -2007,6 +2165,7 @@ async function boot(){
     togglePowerController:togglePowerController
   };
   requestAnimationFrame(frame);
+  if(DATA_BUFFERING)bufferRemainingMap();
 }
 let streamClock=0;
 const clock=new THREE.Clock();
@@ -2031,6 +2190,12 @@ function frame(){
       streamRoadTiles(false);
     }
   }
+  visibilityClock+=dt;
+  if(DATA_BUFFERING&&visibilityClock>=VISIBILITY_UPDATE_INTERVAL){
+    visibilityClock=0;
+    updateBufferedVisibility(false);
+  }
+  updateAdaptiveResolution(dt);
   updateHud();
   renderer.render(scene,camera);
 }

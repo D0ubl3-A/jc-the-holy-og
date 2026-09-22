@@ -255,6 +255,152 @@ function disposeWallpaperGroup(group){
   });
 }
 
+const RESIDENTIAL_WALLPAPER_URL="./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg";
+const residentialWallpaperAtlas=wallpaperTextureLoader.load(RESIDENTIAL_WALLPAPER_URL,function(tex){
+  tex.colorSpace=THREE.SRGBColorSpace;
+  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+  tex.minFilter=THREE.LinearMipmapLinearFilter;
+  tex.magFilter=THREE.LinearFilter;
+  tex.needsUpdate=true;
+});
+const residentialMaterials={single:[],town:[],apartment:[],roof:[]};
+const residentialUnitBox=new THREE.BoxGeometry(1,1,1);
+let residentialWallpaperCount=0;
+
+function residentialAtlasSlice(kind,index){
+  const tex=residentialWallpaperAtlas.clone();
+  tex.colorSpace=THREE.SRGBColorSpace;
+  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+  tex.minFilter=THREE.LinearMipmapLinearFilter;
+  tex.magFilter=THREE.LinearFilter;
+
+  if(kind==="single"){
+    tex.repeat.set(1/8,0.265);
+    tex.offset.set((index%8)/8,0.715);
+  }else if(kind==="town"){
+    tex.repeat.set(1/4,0.205);
+    tex.offset.set((index%4)/4,0.505);
+  }else if(kind==="apartment"){
+    tex.repeat.set(0.3125,0.205);
+    tex.offset.set((index%2)*0.3125,0.300);
+  }else{
+    tex.repeat.set(1/8,0.155);
+    tex.offset.set((index%8)/8,0.145);
+  }
+  tex.needsUpdate=true;
+  return tex;
+}
+function residentialMaterial(kind,index){
+  const cache=residentialMaterials[kind];
+  if(cache[index])return cache[index];
+  const tex=residentialAtlasSlice(kind,index);
+  const mat=new THREE.MeshBasicMaterial({
+    map:tex,
+    color:0xffffff,
+    side:THREE.DoubleSide,
+    depthWrite:true,
+    toneMapped:false
+  });
+  cache[index]=mat;
+  return mat;
+}
+function residentialClass(size){
+  const footprint=size.x*size.z;
+  const widest=Math.max(size.x,size.z);
+  const narrowest=Math.min(size.x,size.z);
+
+  // Residential-scale structure filters. These intentionally exclude terrain,
+  // tiny props, huge casinos and towers.
+  if(size.y<2.2||size.y>24)return null;
+  if(narrowest<2.4||widest>58)return null;
+  if(footprint<16||footprint>2300)return null;
+
+  if(size.y<=9.5&&widest<=28&&footprint<=520)return "single";
+  if(size.y<=14.5&&widest<=44&&footprint<=1200)return "town";
+  return "apartment";
+}
+function residentialVariant(rec,center,kind){
+  const count=kind==="single"?8:kind==="town"?4:2;
+  const h=rec.col*37+rec.row*53+Math.round(center.x*0.31)+Math.round(center.z*0.23);
+  return Math.abs(h)%count;
+}
+function buildResidentialWallpaper(root,rec){
+  root.updateMatrixWorld(true);
+  const byKey=new Map();
+
+  root.traverse(function(o){
+    if(!o.isMesh||!o.visible)return;
+    const box=new THREE.Box3().setFromObject(o);
+    if(box.isEmpty())return;
+    const size=new THREE.Vector3(),center=new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    const kind=residentialClass(size);
+    if(!kind)return;
+
+    // Collapse duplicate/nested component meshes that describe the same house.
+    const key=[
+      Math.round(center.x*2),
+      Math.round(center.z*2),
+      Math.round(size.x),
+      Math.round(size.z)
+    ].join(":");
+    const volume=size.x*size.y*size.z;
+    const old=byKey.get(key);
+    if(!old||volume>old.volume)byKey.set(key,{box,size,center,kind,volume});
+  });
+
+  const homes=Array.from(byKey.values());
+  if(!homes.length)return null;
+
+  const buckets=new Map();
+  homes.forEach(function(h){
+    const variant=residentialVariant(rec,h.center,h.kind);
+    const key=h.kind+":"+variant;
+    if(!buckets.has(key))buckets.set(key,{kind:h.kind,variant:variant,items:[]});
+    buckets.get(key).items.push(h);
+  });
+
+  const group=new THREE.Group();
+  group.name="RESIDENTIAL_WALLPAPER_"+tileKey(rec.col,rec.row);
+  const dummy=new THREE.Object3D();
+
+  for(const bucket of buckets.values()){
+    const facade=residentialMaterial(bucket.kind,bucket.variant);
+    const roof=residentialMaterial("roof",bucket.variant%8);
+    const mats=[facade,facade,roof,wallpaperBottomMaterial,facade,facade];
+    const mesh=new THREE.InstancedMesh(residentialUnitBox,mats,bucket.items.length);
+    mesh.name="HOMES_"+bucket.kind.toUpperCase()+"_"+bucket.variant;
+    mesh.renderOrder=4;
+    mesh.frustumCulled=true;
+
+    bucket.items.forEach(function(h,i){
+      const pad=0.06;
+      dummy.position.copy(h.center);
+      dummy.rotation.set(0,0,0);
+      dummy.scale.set(
+        Math.max(0.5,h.size.x+pad),
+        Math.max(0.5,h.size.y+pad),
+        Math.max(0.5,h.size.z+pad)
+      );
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i,dummy.matrix);
+    });
+    mesh.instanceMatrix.needsUpdate=true;
+    group.add(mesh);
+  }
+
+  mapGroup.add(group);
+  residentialWallpaperCount+=homes.length;
+  group.userData.homeCount=homes.length;
+  return group;
+}
+function disposeResidentialWallpaperGroup(group){
+  if(!group)return;
+  residentialWallpaperCount=Math.max(0,residentialWallpaperCount-(group.userData.homeCount||0));
+  mapGroup.remove(group);
+}
+
 const mapGroup=new THREE.Group();
 mapGroup.name="JC_GLB_TILE_MAP";
 scene.add(mapGroup);
@@ -828,8 +974,15 @@ async function loadOneTile(rec){
 
     mapGroup.add(root);
     const wallpaperGroup=buildStripWallpaper(root,rec);
+    const residentialGroup=buildResidentialWallpaper(root,rec);
     const colliderCount=buildTileColliders(root,rec);
-    loadedTiles.set(key,{root:root,rec:rec,colliderCount:colliderCount,wallpaperGroup:wallpaperGroup});
+    loadedTiles.set(key,{
+      root:root,
+      rec:rec,
+      colliderCount:colliderCount,
+      wallpaperGroup:wallpaperGroup,
+      residentialGroup:residentialGroup
+    });
   }catch(err){
     console.error("GLB tile load failed",key,err);
     failedTiles.add(key);
@@ -961,6 +1114,7 @@ async function streamTiles(force){
       const key=entry[0],item=entry[1];
       if(!tileNearStreamCorridor(item.rec,plan,keepRadius)){
         if(item.wallpaperGroup)disposeWallpaperGroup(item.wallpaperGroup);
+        if(item.residentialGroup)disposeResidentialWallpaperGroup(item.residentialGroup);
         mapGroup.remove(item.root);
         disposeTile(item.root);
         loadedTiles.delete(key);
@@ -1780,7 +1934,7 @@ function updateHud(){
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · WALLPAPER "+wallpaperShellCount;
+  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · STRIP "+wallpaperShellCount+" · HOMES "+residentialWallpaperCount;
   const plan=streamPlan();
   const aheadText=FULL_MAP_MODE?" · FULL MAP RESIDENT":(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" nearby GLBs"+aheadText+roadText+solidText;
@@ -1820,11 +1974,15 @@ async function boot(){
     tileGroundY:TILE_GROUND_Y,
     roadSurfaceY:ROAD_SURFACE_Y,
     wallpaperAtlas:stripWallpaperAtlas,
+    residentialWallpaperAtlas:residentialWallpaperAtlas,
     get wallpaperShellCount(){return wallpaperShellCount},
+    get residentialWallpaperCount(){return residentialWallpaperCount},
     rebuildWallpaper:function(){
       for(const item of loadedTiles.values()){
         if(item.wallpaperGroup)disposeWallpaperGroup(item.wallpaperGroup);
+        if(item.residentialGroup)disposeResidentialWallpaperGroup(item.residentialGroup);
         item.wallpaperGroup=buildStripWallpaper(item.root,item.rec);
+        item.residentialGroup=buildResidentialWallpaper(item.root,item.rec);
       }
     },
     origin:{col:ORIGIN_COL,row:ORIGIN_ROW},

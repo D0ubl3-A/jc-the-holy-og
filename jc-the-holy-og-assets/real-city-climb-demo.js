@@ -32,7 +32,7 @@ const FLIGHT_SPEEDS={
   space:12000
 };
 const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,120000);
-const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:"high-performance",alpha:false,stencil:false,preserveDrawingBuffer:false});
+const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:lowSpec?"default":"high-performance",alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setSize(innerWidth,innerHeight);
 const MAX_RENDER_PIXEL_RATIO=lowSpec?0.75:1.0;
 let dynamicPixelRatio=Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO);
@@ -41,6 +41,16 @@ renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.08;
 mount.appendChild(renderer.domElement);
+let webglContextLost=false;
+renderer.domElement.addEventListener("webglcontextlost",function(event){
+  event.preventDefault();
+  webglContextLost=true;
+  if(statusEl)statusEl.textContent="GPU CONTEXT PAUSED · restoring graphics…";
+});
+renderer.domElement.addEventListener("webglcontextrestored",function(){
+  webglContextLost=false;
+  if(statusEl)statusEl.textContent="GRAPHICS RESTORED · resuming mission";
+});
 
 const hemi=new THREE.HemisphereLight(0xb9d7ff,0x2e241d,2.4);
 scene.add(hemi);
@@ -2777,6 +2787,7 @@ async function boot(){
     takeDivineDamage:takeDivineDamage,
     togglePowerController:togglePowerController
   };
+  if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
   if(DATA_BUFFERING)bufferRemainingMap();
 }
@@ -2784,6 +2795,7 @@ let streamClock=0;
 const clock=new THREE.Clock();
 function frame(){
   requestAnimationFrame(frame);
+  if(webglContextLost)return;
   const dt=Math.min(0.033,clock.getDelta());
   updateLook(dt);
   updatePlayer(dt);
@@ -2827,4 +2839,5 @@ addEventListener("resize",function(){
 boot().catch(function(e){
   console.error(e);
   statusEl.textContent="GLB MAP LOAD ERROR: "+e.message;
+  if(window.JC_BOOT_FAIL)window.JC_BOOT_FAIL(e);
 });

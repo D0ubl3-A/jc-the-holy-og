@@ -202,13 +202,16 @@ function wallpaperMaterial(index,kind){
   const cache=wallpaperMaterials[kind];
   if(cache[index])return cache[index];
   const map=atlasSliceTexture(index,kind);
-  const mat=new THREE.MeshBasicMaterial({
+  const palette=[0x261018,0x171b35,0x3b1a12,0x132b2a,0x25133b,0x35220f];
+  const mat=new THREE.MeshStandardMaterial({
     map:map,
-    color:0xffffff,
-    transparent:false,
+    color:palette[index%palette.length],
+    emissive:new THREE.Color(palette[index%palette.length]).multiplyScalar(0.22),
+    emissiveIntensity:0.9,
+    roughness:0.42,
+    metalness:0.16,
     side:THREE.DoubleSide,
-    depthWrite:true,
-    toneMapped:false
+    depthWrite:true
   });
   cache[index]=mat;
   return mat;
@@ -338,12 +341,14 @@ function residentialMaterial(kind,index){
   const cache=residentialMaterials[kind];
   if(cache[index])return cache[index];
   const tex=residentialAtlasSlice(kind,index);
-  const mat=new THREE.MeshBasicMaterial({
+  const residentialPalette=[0xc3aa8b,0xa9917c,0xd0c0a5,0x9f846d,0xb6a48d,0x8e7868,0xc8b397,0x776a61];
+  const mat=new THREE.MeshStandardMaterial({
     map:tex,
-    color:0xffffff,
+    color:residentialPalette[index%residentialPalette.length],
+    roughness:0.72,
+    metalness:0.03,
     side:THREE.DoubleSide,
-    depthWrite:true,
-    toneMapped:false
+    depthWrite:true
   });
   cache[index]=mat;
   return mat;

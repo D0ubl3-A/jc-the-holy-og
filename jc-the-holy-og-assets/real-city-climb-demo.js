@@ -17,7 +17,7 @@ const lowSpec=matchMedia("(pointer:coarse)").matches||(navigator.hardwareConcurr
 const scene=new THREE.Scene();
 const SKY_GROUND=new THREE.Color(0x101722),SKY_SPACE=new THREE.Color(0x000003);
 scene.background=SKY_GROUND.clone();
-scene.fog=new THREE.FogExp2(0x17202b,0.00055);
+scene.fog=new THREE.FogExp2(0x17202b,0.00018);
 const MAX_ALTITUDE=120000;
 const SPACE_ALTITUDE=100000;
 const ATMOSPHERE_FADE_START=2500;
@@ -31,7 +31,7 @@ const FLIGHT_SPEEDS={
   upperAtmosphere:6000,
   space:12000
 };
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,300000);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,120000);
 const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:"high-performance",alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setSize(innerWidth,innerHeight);
 const MAX_RENDER_PIXEL_RATIO=lowSpec?0.75:1.0;
@@ -99,16 +99,16 @@ const DATA_BUFFERING=true;
 const FULL_MAP_BATCH=lowSpec?1:2;
 const RAW_PREFETCH_CONCURRENCY=2;
 const INITIAL_BUFFER_RADIUS=1;
-const ACTIVE_TILE_RADIUS=lowSpec?1:2;
-const FAST_ACTIVE_TILE_RADIUS=lowSpec?2:3;
-const ACTIVE_LOOKAHEAD_TILES=lowSpec?2:3;
+const ACTIVE_TILE_RADIUS=lowSpec?2:4;
+const FAST_ACTIVE_TILE_RADIUS=lowSpec?3:6;
+const ACTIVE_LOOKAHEAD_TILES=lowSpec?4:8;
 const DECODE_KEEP_EXTRA=1;
 const VISIBILITY_UPDATE_INTERVAL=0.16;
 const MASS_TILE_THRESHOLD=512;
 const MASS_PREFETCH_EXTRA_RADIUS=2;
 const MASS_PREFETCH_BATCH=2;
-const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.8:3.2;
-const MAX_LOOKAHEAD_TILES=lowSpec?5:11;
+const STREAM_LOOKAHEAD_SECONDS=lowSpec?3.5:7.0;
+const MAX_LOOKAHEAD_TILES=lowSpec?10:24;
 const HIGH_SPEED_STREAM_THRESHOLD=260;
 const VERY_HIGH_SPEED_STREAM_THRESHOLD=900;
 const PLAYER_RADIUS=0.38;

@@ -2347,12 +2347,58 @@ function updatePowers(dt){
   const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
   const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
   const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · G SOUL WEAPON · I INFLUENCE · Y RESTORE · T switch</span>";
+  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · E ABILITY WHEEL · G SOUL WEAPON · I INFLUENCE · Y RESTORE · T switch</span>";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
 }
 // -----------------------------------------------------------------------------
+
+
+const abilityWheel=document.createElement("div");
+abilityWheel.id="abilityWheel";
+abilityWheel.style.cssText="position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.28);backdrop-filter:blur(2px);";
+abilityWheel.innerHTML="<div id='abilityWheelRing' style='position:relative;width:360px;height:360px;border-radius:50%;border:2px solid rgba(255,226,111,.7);background:radial-gradient(circle,rgba(10,10,16,.92) 0 28%,rgba(10,10,16,.72) 29% 62%,rgba(255,215,80,.10) 63% 100%);box-shadow:0 0 55px rgba(255,210,70,.22)'></div>";
+document.body.appendChild(abilityWheel);
+const abilityWheelRing=abilityWheel.querySelector("#abilityWheelRing");
+let abilityWheelOpen=false,abilityWheelIndex=0;
+function wheelAbilities(){
+  return powerState.controller==="JC"?[
+    ["HOLY SHOCKWAVE",holyShockwave],["DIVINE SHIELD",divineShield],["JUDGMENT BEAM",judgmentBeam],["SECOND COMING",secondComing],
+    ["DIVINE DASH",divineDash],["HEAVEN SLAM",heavenSlam],["TIME GRACE",timeGrace],["MIRACLE HEAL",miracleHeal]
+  ]:[
+    ["HELLFIRE STORM",hellfireStorm],["SOUL WEAPON",fireSoulWeapon],["INFLUENCE",influenceNearbyNpcs],["POSSESSION",function(){powerState.lastAbility="POSSESSION SELECT";}],
+    ["SOUL TAKER",fireSoulWeapon],["CORRUPTION",function(){cityState.corruption=Math.min(100,cityState.corruption+4);powerState.lastAbility="CITY CORRUPTION";}],
+    ["CHAOS",function(){cityState.chaos=Math.min(100,cityState.chaos+5);powerState.lastAbility="CHAOS";}],["SWITCH",togglePowerController]
+  ];
+}
+function renderAbilityWheel(){
+  const a=wheelAbilities();
+  abilityWheelRing.innerHTML="";
+  a.forEach(function(item,i){
+    const ang=(Math.PI*2*i/a.length)-Math.PI/2;
+    const b=document.createElement("div");
+    b.textContent=item[0];
+    b.style.cssText="position:absolute;width:112px;text-align:center;padding:8px 5px;border-radius:9px;font:bold 11px Arial;color:"+(i===abilityWheelIndex?"#111":"white")+";background:"+(i===abilityWheelIndex?"#ffe477":"rgba(18,18,26,.9)")+";border:1px solid rgba(255,229,130,.65);transform:translate(-50%,-50%);left:"+(180+Math.cos(ang)*132)+"px;top:"+(180+Math.sin(ang)*132)+"px;";
+    abilityWheelRing.appendChild(b);
+  });
+  const mid=document.createElement("div");
+  mid.textContent=(powerState.controller==="JC"?"DIVINE":"INFERNAL")+"\nABILITIES";
+  mid.style.cssText="white-space:pre;text-align:center;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:bold 13px Arial;color:#ffe477;";
+  abilityWheelRing.appendChild(mid);
+}
+function setAbilityWheel(open){
+  abilityWheelOpen=open;
+  abilityWheel.style.display=open?"flex":"none";
+  if(open)renderAbilityWheel();
+}
+function selectWheelFromPointer(e){
+  const r=abilityWheelRing.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  let ang=Math.atan2(e.clientY-cy,e.clientX-cx)+Math.PI/2;if(ang<0)ang+=Math.PI*2;
+  abilityWheelIndex=Math.round(ang/(Math.PI*2)*wheelAbilities().length)%wheelAbilities().length;
+  renderAbilityWheel();
+}
+abilityWheel.addEventListener("pointermove",selectWheelFromPointer);
 
 const keys={};
 let camYaw=Math.PI,camPitch=0.24,targetYaw=Math.PI,targetPitch=0.24,camDist=9.5,drag=false,lx=0,ly=0;
@@ -2433,6 +2479,7 @@ addEventListener("keydown",function(e){
   if(e.code==="KeyY"&&!e.repeat)restoreHolyDamage();
   if(e.code==="KeyI"&&!e.repeat)influenceNearbyNpcs();
   if(e.code==="KeyG"&&!e.repeat)fireSoulWeapon();
+  if(e.code==="KeyE"&&!e.repeat){abilityWheelIndex=0;setAbilityWheel(true);}
   if(e.code==="Digit1"&&!e.repeat)usePower(1);
   if(e.code==="Digit2"&&!e.repeat)usePower(2);
   if(e.code==="Digit3"&&!e.repeat)usePower(3);
@@ -2443,7 +2490,14 @@ addEventListener("keydown",function(e){
   if(e.code==="Digit8"&&!e.repeat)usePower(8);
   if(e.code==="Space")e.preventDefault();
 });
-addEventListener("keyup",function(e){keys[e.code]=false;});
+addEventListener("keyup",function(e){
+  keys[e.code]=false;
+  if(e.code==="KeyE"&&abilityWheelOpen){
+    const chosen=wheelAbilities()[abilityWheelIndex];
+    setAbilityWheel(false);
+    if(chosen&&chosen[1])chosen[1]();
+  }
+});
 addEventListener("blur",function(){drag=false;solarHolding=false;Object.keys(keys).forEach(function(k){keys[k]=false;});});
 
 document.querySelectorAll("[data-key]").forEach(function(button){

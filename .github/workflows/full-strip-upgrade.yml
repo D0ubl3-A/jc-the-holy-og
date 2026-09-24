@@ -54,6 +54,8 @@ jobs:
               "collectTileGroundMeshes(tileItem)",
               "conformRoadTileToGlb(key);",
               "jcRoadSurfaceOffset",
+              "function samplePlayableSurfaceY(x,z)",
+              "samplePlayableSurfaceY(player.pos.x,player.pos.z)",
           ]
           for marker in required:
               assert marker in src, marker

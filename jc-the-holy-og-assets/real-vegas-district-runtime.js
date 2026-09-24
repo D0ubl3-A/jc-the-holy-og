@@ -12,6 +12,7 @@ const ORIGIN_ROW=8;
 
 if (!window[KEY]) {
   const mobile = matchMedia("(pointer:coarse)").matches;
+  const proceduralFallbackEnabled=new URLSearchParams(location.search).get("districtFallback")==="1";
   const state = window[KEY] = {
     installed:true, ready:false, active:false, activeDistrict:null,
     loadedDistricts:[], builtTiles:0, visibleTiles:0, sourceBuildingCount:0,
@@ -263,7 +264,12 @@ if (!window[KEY]) {
     else setTimeout(run,0);
   }
 
-  loadScript(INDEX_URL,"jcRealDistrictIndex").then(()=>{
+  if(!proceduralFallbackEnabled){
+    state.ready=false;
+    state.active=false;
+    state.disabledForPerformance=true;
+    window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,disabledForPerformance:true};
+  }else loadScript(INDEX_URL,"jcRealDistrictIndex").then(()=>{
     const index=window.JC_REAL_DISTRICT_INDEX;if(!index?.districts?.length)throw new Error("district index missing or empty");
     const c=roadContract();
     state.contract=c;state.toGame=transformer(c);state.index=index;state.districts=new Map();state.loading=new Set();state.errors={};state.ready=true;

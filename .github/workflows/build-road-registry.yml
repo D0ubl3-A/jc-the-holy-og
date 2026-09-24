@@ -10,7 +10,7 @@ on:
       - "world/canonical-world-contract.json"
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 concurrency:
@@ -43,12 +43,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p work/road-registry/output
-          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
-          if [ -n "$RUN_ID" ]; then
-            echo "Reusing successful road registry from run $RUN_ID"
-            gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D work/road-registry/output
+          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId' || true)"
+          if [ -n "$RUN_ID" ] && gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D work/road-registry/output; then
+            echo "Reused successful road registry from run $RUN_ID"
           else
-            echo "No prior successful registry artifact; querying OSM"
+            echo "No reusable road artifact; rebuilding registry from source."
+            rm -rf work/road-registry/output
+            mkdir -p work/road-registry/output
             python tools/build_citywide_road_registry.py --output work/road-registry/output
           fi
       - name: Validate evidence gates
@@ -154,19 +155,21 @@ jobs:
           print('road tiles',len(manifest['tiles']),'segments',sum(x['count'] for x in manifest['tiles']),'major',len(overview))
           PY
 
-      - name: Publish runtime road packs
+      - name: Validate generated runtime road packs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git rebase origin/main
-          git add jc-map/roads
-          if git diff --cached --quiet; then
-            echo "Road runtime packs unchanged"
-          else
-            git commit -m "Update citywide JC road runtime packs"
-            git push origin HEAD:main
-          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path("jc-map/roads/manifest.json").read_text())
+          tiles=m.get("tiles",[])
+          assert tiles, "no runtime road tiles"
+          total=sum(int(t.get("count",0)) for t in tiles)
+          assert total>0, "runtime road tiles contain no segments"
+          for t in tiles:
+              p=Path("jc-map/roads")/t["file"].removeprefix("./")
+              assert p.is_file() and p.stat().st_size>0, p
+          print("runtime road tiles",len(tiles),"segments",total)
+          PY
 
       - name: Add run summary
         if: always()

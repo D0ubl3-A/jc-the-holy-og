@@ -79,13 +79,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p _road_artifact
-          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId' || true)"
           if [ -z "$RUN_ID" ]; then
-            echo "No successful road registry artifact available; continuing without roads"
+            echo "No successful road-registry artifact available; retaining checked-in road packs."
+            test -s _site/jc-map/roads/manifest.json
+            test -s _site/jc-map/roads/major-roads.json
             exit 0
           fi
           echo "Using road registry run $RUN_ID"
-          gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D _road_artifact
+          if ! gh run download "$RUN_ID" -n sincity-road-registry-epsg32611 -D _road_artifact; then
+            echo "Artifact download failed; retaining checked-in road packs."
+            test -s _site/jc-map/roads/manifest.json
+            test -s _site/jc-map/roads/major-roads.json
+            exit 0
+          fi
 
           python - <<'PY'
           import json, re, shutil
@@ -175,6 +182,26 @@ jobs:
           PY
 
           rm -rf _road_artifact
+
+      - name: Validate deployable road surface
+        run: |
+          set -euo pipefail
+          node --check _site/jc-the-holy-og-assets/real-city-climb-demo.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=Path("_site/jc-map/roads/manifest.json")
+          major=Path("_site/jc-map/roads/major-roads.json")
+          assert manifest.is_file() and manifest.stat().st_size>0
+          assert major.is_file() and major.stat().st_size>0
+          data=json.loads(manifest.read_text())
+          tiles=data.get("tiles",[])
+          assert tiles
+          assert sum(int(t.get("count",0)) for t in tiles)>0
+          src=Path("_site/jc-the-holy-og-assets/real-city-climb-demo.js").read_text()
+          assert "function conformRoadTileToGlb(key)" in src
+          print("Deploy road surface validation passed")
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

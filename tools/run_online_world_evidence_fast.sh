@@ -72,13 +72,21 @@ def sha(p):
  with open(p,'rb') as f:
   for c in iter(lambda:f.read(1<<20),b''):h.update(c)
  return h.hexdigest()
-ao=json.load(open(root/'aoext/clark_aoext_acquisition_report.json'))
+ao_report=root/'aoext/clark_aoext_acquisition_report.json'
+ao_records=root/'aoext/clark_aoext_world_records.jsonl.gz'
+ao=json.load(open(ao_report)) if ao_report.exists() else None
 gi=json.load(open(root/'terrain/sincity-terrain-10m-epsg32611.gdalinfo.json'))
-outputs={'aoext_records':root/'aoext/clark_aoext_world_records.jsonl.gz','osm_world':root/'osm/sincity-world.osm.pbf','osm_context':root/'osm/sincity-context.osm.pbf','terrain':root/'terrain/sincity-terrain-10m-epsg32611.tif'}
-assert ao['records_written']>0
+outputs={'osm_world':root/'osm/sincity-world.osm.pbf','osm_context':root/'osm/sincity-context.osm.pbf','terrain':root/'terrain/sincity-terrain-10m-epsg32611.tif'}
+if ao and ao_records.exists() and ao_records.stat().st_size>0:
+ outputs['aoext_records']=ao_records
 assert gi.get('size')==[3500,3500],gi.get('size')
 for p in outputs.values():assert p.exists() and p.stat().st_size>0,p
-manifest={'schema':'sincity-online-world-evidence-v4','status':'PASS','github_run_id':os.environ.get('GITHUB_RUN_ID'),'github_sha':os.environ.get('GITHUB_SHA'),'world':{'crs':'EPSG:32611','bounds_epsg32611':[648949.782,3983561.814,683949.782,4018561.814],'bounds_wgs84':[-115.34772749444959,35.97916144800393,-114.95149523108,36.300553215303474],'grid':'35x35 km; 1225 1-km tiles'},'sources':{'clark_county_aoext':{'url':'https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/Address/MapServer/2/query','records':ao['records_written'],'unique_apns':ao['unique_apns'],'records_with_address':ao['records_with_address'],'records_with_landuse':ao['records_with_landuse'],'records_with_construction_year':ao['records_with_construction_year']},'openstreetmap_geofabrik':{'url':'https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf','license':'ODbL 1.0'},'usgs_3dep':{'url':'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage','product':'3DEP Bare Earth DEM dynamic service','output_crs':'EPSG:32611','output_size':[3500,3500],'pixel_size_m':10}},'outputs':{k:{'path':str(p.relative_to(root)),'bytes':p.stat().st_size,'sha256':sha(p)} for k,p in outputs.items()},'hard_rules':{'synthetic_source_records':0,'fabricated_addresses':0,'fabricated_architecture':0,'fabricated_elevations':0,'owner_personal_data_ingested':False}}
+ao_source={'url':'https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/Address/MapServer/2/query','status':'UNAVAILABLE_THIS_RUN'}
+status='PASS_CORE_SOURCES_AOEXT_UNAVAILABLE'
+if ao and int(ao.get('records_written',0))>0:
+ ao_source.update({'status':'PASS','records':ao['records_written'],'unique_apns':ao['unique_apns'],'records_with_address':ao['records_with_address'],'records_with_landuse':ao['records_with_landuse'],'records_with_construction_year':ao['records_with_construction_year']})
+ status='PASS'
+manifest={'schema':'sincity-online-world-evidence-v4','status':status,'github_run_id':os.environ.get('GITHUB_RUN_ID'),'github_sha':os.environ.get('GITHUB_SHA'),'world':{'crs':'EPSG:32611','bounds_epsg32611':[648949.782,3983561.814,683949.782,4018561.814],'bounds_wgs84':[-115.34772749444959,35.97916144800393,-114.95149523108,36.300553215303474],'grid':'35x35 km; 1225 1-km tiles'},'sources':{'clark_county_aoext':ao_source,'openstreetmap_geofabrik':{'url':'https://download.geofabrik.de/north-america/us/nevada-latest.osm.pbf','license':'ODbL 1.0'},'usgs_3dep':{'url':'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage','product':'3DEP Bare Earth DEM dynamic service','output_crs':'EPSG:32611','output_size':[3500,3500],'pixel_size_m':10}},'outputs':{k:{'path':str(p.relative_to(root)),'bytes':p.stat().st_size,'sha256':sha(p)} for k,p in outputs.items()},'hard_rules':{'synthetic_source_records':0,'fabricated_addresses':0,'fabricated_architecture':0,'fabricated_elevations':0,'owner_personal_data_ingested':False}}
 (root/'online_evidence_manifest.json').write_text(json.dumps(manifest,indent=2))
 print(json.dumps(manifest,indent=2))
 PY

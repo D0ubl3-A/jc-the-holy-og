@@ -162,26 +162,105 @@ if (!window[KEY]) {
     const renamed=state.scene?.getObjectByName("Renamed Strip Landmark Districts");if(renamed)renamed.visible=!(on&&state.activeDistrict==="strip");
   }
 
-  let tick=0;
+  const buildQueue=[];
+  const queuedBuilds=new Set();
+  let buildPumpActive=false;
+  let updateQueued=false;
+  let nextUpdateAt=0;
+
+  function enqueueTileBuild(district,tile) {
+    if(!district||!tile||tile.built)return;
+    const key=district.meta.id+":"+tile.id;
+    if(queuedBuilds.has(key))return;
+    queuedBuilds.add(key);
+    buildQueue.push({district,tile,key});
+    pumpBuildQueue();
+  }
+
+  function pumpBuildQueue() {
+    if(buildPumpActive||!buildQueue.length)return;
+    buildPumpActive=true;
+    const run=()=>{
+      const job=buildQueue.shift();
+      try{
+        if(job&&!job.tile.built&&job.district.root.visible)buildTile(job.district,job.tile);
+      }catch(e){
+        state.errors=state.errors||{};
+        if(job)state.errors[job.key]=String(e?.message||e);
+      }finally{
+        if(job)queuedBuilds.delete(job.key);
+        buildPumpActive=false;
+        if(buildQueue.length)pumpBuildQueue();
+      }
+    };
+    if("requestIdleCallback" in window)requestIdleCallback(run,{timeout:120});
+    else setTimeout(run,16);
+  }
+
   function update(camera) {
-    if(!state.ready||!camera)return;tick++;if(tick%(mobile?10:6)!==0)return;
-    const metas=state.index.districts.map(m=>{const b=m.bbox_utm,c=state.toGame((b[0]+b[2])/2,(b[1]+b[3])/2),d2=(camera.position.x-c.x)**2+(camera.position.z-c.z)**2;return{m,c,d2}}).sort((a,b)=>a.d2-b.d2);
-    const nearest=metas[0];const loadRadius=mobile?1900:2600;if(nearest&&nearest.d2<loadRadius*loadRadius)loadDistrict(nearest.m);
-    const activeRadius=mobile?1300:1800;const d=nearest&&nearest.d2<activeRadius*activeRadius?state.districts.get(nearest.m.id):null;
-    for(const x of state.districts.values())x.root.visible=x===d;
-    state.active=!!d;state.activeDistrict=d?.meta.id||null;state.visibleTiles=0;
-    if(!d){setProceduralSuppressed(false);window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,district:null,visibleTiles:0,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};return}
-    const ranked=[];for(const tile of d.tiles.values()){const c=tile.center||d.center;ranked.push({tile,d2:(camera.position.x-c.x)**2+(camera.position.z-c.z)**2})}ranked.sort((a,b)=>a.d2-b.d2);
-    const maxTiles=mobile?4:10;const tileRadius=mobile?720:1150;let builds=0;
+    if(!state.ready||!camera)return;
+
+    let nearest=null;
+    for(const m of state.index.districts){
+      const b=m.bbox_utm;
+      const c=state.toGame((b[0]+b[2])/2,(b[1]+b[3])/2);
+      const d2=(camera.position.x-c.x)**2+(camera.position.z-c.z)**2;
+      if(!nearest||d2<nearest.d2)nearest={m,c,d2};
+    }
+
+    const loadRadius=mobile?1700:2400;
+    if(nearest&&nearest.d2<loadRadius*loadRadius)loadDistrict(nearest.m);
+
+    const activeRadius=mobile?1150:1650;
+    const active=nearest&&nearest.d2<activeRadius*activeRadius?state.districts.get(nearest.m.id):null;
+    for(const x of state.districts.values())x.root.visible=x===active;
+    state.active=!!active;
+    state.activeDistrict=active?.meta.id||null;
+    state.visibleTiles=0;
+
+    if(!active){
+      setProceduralSuppressed(false);
+      window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,district:null,visibleTiles:0,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};
+      return;
+    }
+
+    const tileRadius=mobile?560:900;
+    const tileRadius2=tileRadius*tileRadius;
+    const ranked=[];
+    for(const tile of active.tiles.values()){
+      const c=tile.center||active.center;
+      const d2=(camera.position.x-c.x)**2+(camera.position.z-c.z)**2;
+      if(d2<tileRadius2)ranked.push({tile,d2});
+      else if(tile.group)tile.group.visible=false;
+    }
+    ranked.sort((a,b)=>a.d2-b.d2);
+
+    const maxTiles=mobile?3:6;
     for(let i=0;i<ranked.length;i++){
       const tile=ranked[i].tile;
-      const on=i<maxTiles&&ranked[i].d2<tileRadius*tileRadius&&!hasAuthoritativeGlb(tile.id);
-      if(on&&!tile.built&&builds<(mobile?1:2)){buildTile(d,tile);builds++}
-      if(tile.group)tile.group.visible=on;if(on&&tile.group)state.visibleTiles++;
+      const on=i<maxTiles&&!hasAuthoritativeGlb(tile.id);
+      if(on&&!tile.built)enqueueTileBuild(active,tile);
+      if(tile.group)tile.group.visible=on;
+      if(on&&tile.group)state.visibleTiles++;
     }
+
     setProceduralSuppressed(true);
-    const stream=document.getElementById("streamStatus");if(stream)stream.innerHTML=`REAL ${d.meta.label.toUpperCase()}: ${state.visibleTiles} TILES<br>${d.meta.selected_buildings.toLocaleString()} VERIFIED FOOTPRINTS`;
-    window.JC_REAL_VEGAS_DISTRICT_STATUS={active:true,district:d.meta.id,visibleTiles:state.visibleTiles,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};
+    const stream=document.getElementById("streamStatus");
+    if(stream)stream.innerHTML=`REAL ${active.meta.label.toUpperCase()}: ${state.visibleTiles} TILES<br>${active.meta.selected_buildings.toLocaleString()} VERIFIED FOOTPRINTS`;
+    window.JC_REAL_VEGAS_DISTRICT_STATUS={active:true,district:active.meta.id,visibleTiles:state.visibleTiles,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};
+  }
+
+  function scheduleUpdate(camera){
+    const now=performance.now();
+    if(updateQueued||now<nextUpdateAt)return;
+    nextUpdateAt=now+(mobile?320:220);
+    updateQueued=true;
+    const run=()=>{
+      updateQueued=false;
+      update(camera);
+    };
+    if("requestIdleCallback" in window)requestIdleCallback(run,{timeout:80});
+    else setTimeout(run,0);
   }
 
   loadScript(INDEX_URL,"jcRealDistrictIndex").then(()=>{
@@ -189,6 +268,6 @@ if (!window[KEY]) {
     const c=roadContract();
     state.contract=c;state.toGame=transformer(c);state.index=index;state.districts=new Map();state.loading=new Set();state.errors={};state.ready=true;
     const previous=THREE.WebGLRenderer.prototype.render;
-    if(!THREE.WebGLRenderer.prototype.__jcRealVegasDistrictsV1){Object.defineProperty(THREE.WebGLRenderer.prototype,"__jcRealVegasDistrictsV1",{value:true});THREE.WebGLRenderer.prototype.render=function(scene,camera){if(!state.scene)state.scene=scene;update(camera);return previous.call(this,scene,camera)}}
+    if(!THREE.WebGLRenderer.prototype.__jcRealVegasDistrictsV1){Object.defineProperty(THREE.WebGLRenderer.prototype,"__jcRealVegasDistrictsV1",{value:true});THREE.WebGLRenderer.prototype.render=function(scene,camera){if(!state.scene)state.scene=scene;scheduleUpdate(camera);return previous.call(this,scene,camera)}}
   }).catch(e=>{state.error=String(e.message||e);window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,error:state.error}});
 }

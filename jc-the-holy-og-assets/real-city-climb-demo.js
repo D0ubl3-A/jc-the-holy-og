@@ -1199,16 +1199,24 @@ async function loadWorldLod(){
     console.warn("Global city LOD unavailable",err);
   }
 }
+let lastWorldLodOpacity=-1;
 function setLodOpacity(value){
   if(!worldLodRoot)return;
+  const quantized=Math.round(THREE.MathUtils.clamp(value,0,1)*40)/40;
+  if(quantized===lastWorldLodOpacity)return;
+  lastWorldLodOpacity=quantized;
   worldLodRoot.traverse(function(o){
     if(!o.isMesh)return;
     const mats=Array.isArray(o.material)?o.material:[o.material];
     mats.forEach(function(m){
       if(!m)return;
-      m.transparent=value<1;
-      m.opacity=value;
-      m.depthWrite=value>0.55;
+      const transparent=quantized<0.999;
+      const depthWrite=quantized>0.55;
+      const pipelineChanged=m.transparent!==transparent;
+      m.transparent=transparent;
+      m.opacity=quantized;
+      m.depthWrite=depthWrite;
+      if(pipelineChanged)m.needsUpdate=true;
     });
   });
 }

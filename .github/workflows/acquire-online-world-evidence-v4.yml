@@ -46,6 +46,8 @@ jobs:
           python -m pip install requests
 
       - name: Acquire Clark County AOEXT online
+        id: aoext
+        continue-on-error: true
         run: |
           mkdir -p work/online-evidence-v4
           python tools/acquire_online_world_evidence.py --output work/online-evidence-v4/aoext

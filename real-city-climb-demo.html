@@ -5,20 +5,111 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>JC: Real GLB Las Vegas Map</title>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;color:#fff;font-family:Arial,sans-serif}#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%;touch-action:none}#bootGuard{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#05070a;text-align:center;padding:24px}#bootGuard[hidden]{display:none}.boot-card{width:min(520px,88vw);padding:24px;border:1px solid #ffd45a55;background:#090d13}.boot-title{font-size:clamp(28px,8vw,54px);font-weight:1000;color:#ffd45a}.boot-copy{margin:12px 0;color:#cfe7f5;line-height:1.45}.boot-actions{display:none;gap:8px;justify-content:center;flex-wrap:wrap}.boot-actions button,.boot-actions a{border:0;background:#ffd45a;color:#090b0f;font-weight:900;padding:12px 16px;text-decoration:none;cursor:pointer}.boot-actions a{background:#273246;color:#fff}#hud{position:fixed;left:14px;top:14px;z-index:5;max-width:470px;padding:12px 14px;background:rgba(4,6,9,.86);border-left:3px solid #ffd45a;line-height:1.45;font-size:13px;pointer-events:none}#hud b{color:#ffd45a}#status{margin-top:6px;color:#bdefff}#mission{margin-top:7px;color:#fff}#location{color:#ffd45a}#flightState{color:#7de6ff;font-weight:900}.solar-row{display:flex;align-items:center;gap:8px;margin-top:7px}.solar-track{width:190px;height:8px;border:1px solid #ffe58a;background:#1a1608}.solar-fill{height:100%;width:55%;background:linear-gradient(90deg,#f6a51f,#fff4a3);box-shadow:0 0 10px #ffd45a}.target{color:#a9efff;margin-top:3px}#crosshair{position:fixed;left:50%;top:50%;width:10px;height:10px;margin:-5px;border:1px solid #fff;border-radius:50%;pointer-events:none;z-index:6}#hyperFx{position:fixed;inset:-20%;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(circle,transparent 0 7%,rgba(125,230,255,.16) 14%,transparent 42%),repeating-radial-gradient(circle,transparent 0 8px,rgba(255,238,160,.16) 10px,transparent 13px);transform:scale(.6);transition:opacity .12s}#credit{position:fixed;right:10px;bottom:8px;font-size:10px;background:rgba(0,0,0,.65);padding:6px 8px;color:#ddd;z-index:5}.touch{display:none;position:fixed;inset:0;z-index:8;pointer-events:none}.dpad,.touch-actions{position:absolute;bottom:20px;display:grid;gap:7px;pointer-events:auto}.dpad{left:18px;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px}.touch-actions{right:18px;grid-template-columns:58px 58px 58px}.touch button{border:1px solid #ffffff55;border-radius:50%;background:#08101dcc;color:#fff;font-weight:900;min-height:52px;font-size:10px;touch-action:none}.touch .up{grid-column:2}.touch .left{grid-column:1;grid-row:2}.touch .down{grid-column:2;grid-row:2}.touch .right{grid-column:3;grid-row:2}.touch .jump{background:#c99b24dd;color:#080a0e}.touch .climb{background:#346c8ddd}.touch .fly{background:#5841aadd}.touch .descend{background:#28394ddd}.touch .charge{background:#b47818dd}.touch .target-button{background:#256272dd}.touch .hyper{background:#8a276fdd}
-.power-touch{display:none;position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:9;grid-template-columns:repeat(4,54px);gap:6px}
-.power-touch button{min-height:42px;border:1px solid #ffe58a66;background:#18140dcc;color:#ffeaa1;border-radius:10px;font:800 9px Arial,sans-serif}
-@media(max-width:800px),(pointer:coarse){#hud{font-size:10px;max-width:280px}.solar-track{width:125px}.touch{display:block}.power-touch{display:grid}#credit{display:none}}
+:root{
+  --gold:#d9ad4c;--gold2:#f2d179;--ink:#06070a;--panel:rgba(8,9,12,.86);
+  --panel2:rgba(15,15,17,.72);--line:rgba(240,205,113,.36);--text:#f5f1e7;
+  --muted:#b6b0a4;--red:#b92c2c;--blue:#5bb7df;--green:#78c88a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;color:var(--text);font-family:Inter,Arial,sans-serif}
+#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%;touch-action:none}
+#bootGuard{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#19140c,#05070a 58%);text-align:center;padding:24px}
+#bootGuard[hidden]{display:none}.boot-card{width:min(560px,90vw);padding:28px;border:1px solid var(--line);background:#080a0ee8;box-shadow:0 24px 80px #000}
+.boot-title{font-size:clamp(28px,8vw,58px);font-weight:1000;letter-spacing:.06em;color:var(--gold2)}.boot-copy{margin:12px 0;color:#d8d3c7;line-height:1.45}
+.boot-actions{display:none;gap:8px;justify-content:center;flex-wrap:wrap}.boot-actions button,.boot-actions a{border:0;background:var(--gold2);color:#090b0f;font-weight:900;padding:12px 16px;text-decoration:none;cursor:pointer}.boot-actions a{background:#273246;color:#fff}
+.panel{background:linear-gradient(135deg,var(--panel),rgba(15,13,10,.76));border:1px solid var(--line);box-shadow:0 10px 35px rgba(0,0,0,.38),inset 0 0 28px rgba(255,215,110,.025);backdrop-filter:blur(6px)}
+#hud{position:fixed;left:18px;top:18px;z-index:6;width:min(390px,42vw);padding:13px 14px 12px;border-left:4px solid var(--gold);pointer-events:none}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.brand-title{font:1000 17px/1 Arial,sans-serif;letter-spacing:.14em;color:var(--gold2)}
+#controllerLabel{font:900 10px/1 Arial,sans-serif;padding:5px 8px;border:1px solid var(--line);color:#fff;background:#15120c}
+.meter-row{display:grid;grid-template-columns:56px 1fr 58px;align-items:center;gap:8px;margin:7px 0}.meter-label{font:900 9px/1 Arial,sans-serif;letter-spacing:.09em;color:#cfc6b4}
+.track{height:8px;background:#14161b;border:1px solid #ffffff1c;overflow:hidden}.fill{height:100%;width:100%;transition:width .16s linear}
+#healthFill{background:linear-gradient(90deg,#732020,#d24b3d)}#divineFill{background:linear-gradient(90deg,#b88a2b,#ffe08a)}#solarFill{background:linear-gradient(90deg,#c27d1d,#fff0a8);box-shadow:0 0 10px #ffd45a88}
+.meter-value{font:800 9px/1 Arial,sans-serif;text-align:right;color:#eee}
+.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px}.quick-stat{padding:7px 5px;border:1px solid #ffffff12;background:#05070a80;text-align:center}.quick-stat b{display:block;font-size:10px;color:#fff}.quick-stat span{display:block;margin-top:3px;font-size:7px;color:var(--muted);letter-spacing:.08em}
+#status{margin-top:8px;font:600 8px/1.35 Arial,sans-serif;color:#aaa;max-height:24px;overflow:hidden}
+#flightState{color:#8edcff;font-weight:900}
+#missionPanel{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:5;width:min(520px,42vw);padding:10px 16px;text-align:center;pointer-events:none}
+.mission-kicker{font:900 8px/1 Arial,sans-serif;color:var(--gold);letter-spacing:.18em}.target{font:900 12px/1.2 Arial,sans-serif;color:#fff;margin:5px 0}.mission-copy{font:600 9px/1.3 Arial,sans-serif;color:#bdb7aa}
+#location{color:var(--gold2);font-weight:800}
+#radar{position:fixed;left:20px;bottom:22px;width:154px;height:154px;border-radius:50%;z-index:6;overflow:hidden;border:3px solid #9c8248;background:
+ radial-gradient(circle at center,transparent 0 13%,#ffffff0c 14% 15%,transparent 16% 29%,#ffffff0c 30% 31%,transparent 32%),
+ linear-gradient(32deg,transparent 48%,#83745f55 49% 51%,transparent 52%),
+ linear-gradient(-27deg,transparent 48%,#83745f55 49% 51%,transparent 52%),
+ linear-gradient(90deg,transparent 46%,#94856b44 47% 53%,transparent 54%),
+ #0a0c10e8;box-shadow:0 8px 28px #000}
+#radar:before{content:"N";position:absolute;left:50%;top:5px;transform:translateX(-50%);font:900 10px Arial;color:#eee}
+#radarArrow{position:absolute;left:50%;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:19px solid #80e4ff;filter:drop-shadow(0 0 4px #25bde8);transform-origin:50% 70%}
+.radar-ring{position:absolute;inset:11px;border:1px solid #ffffff14;border-radius:50%}.radar-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#e1b853;box-shadow:0 0 7px #e1b853}
+.radar-dot.a{left:32%;top:37%}.radar-dot.b{right:25%;top:58%}.radar-dot.c{left:55%;bottom:19%}
+#abilityBar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:7;display:flex;gap:6px;padding:7px 9px;background:#050609b8;border:1px solid #d7ae5550;backdrop-filter:blur(5px)}
+#abilityBar button{width:46px;height:46px;border:1px solid #d7ae555e;background:linear-gradient(145deg,#18191d,#090a0d);color:#f0cf77;font:900 10px Arial;cursor:pointer;box-shadow:inset 0 0 12px #000}
+#abilityBar button:hover{border-color:#f1d381;background:#242016}.ability-caption{position:absolute;bottom:57px;left:50%;transform:translateX(-50%);white-space:nowrap;font:800 8px Arial;color:#d5cab3;letter-spacing:.1em}
+#combatPanel{position:fixed;right:20px;bottom:22px;z-index:6;width:220px;padding:11px 12px;border-right:4px solid var(--gold);pointer-events:none}
+.weapon-row{display:flex;justify-content:space-between;align-items:center}.weapon-name{font:1000 12px Arial;color:#fff;letter-spacing:.06em}.weapon-ammo{font:1000 20px Arial;color:#f2d27e}.weapon-sub{font:700 8px Arial;color:#aaa;margin-top:2px}
+#abilityStatus{margin-top:9px;padding-top:8px;border-top:1px solid #ffffff16;font:900 9px Arial;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#crosshair{position:fixed;left:50%;top:50%;width:18px;height:18px;margin:-9px;pointer-events:none;z-index:6;border:0}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#ffffffbd;box-shadow:0 0 3px #000}#crosshair:before{left:8px;top:1px;width:1px;height:16px}#crosshair:after{left:1px;top:8px;width:16px;height:1px}
+#hyperFx{position:fixed;inset:-20%;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(circle,transparent 0 7%,rgba(125,230,255,.16) 14%,transparent 42%),repeating-radial-gradient(circle,transparent 0 8px,rgba(255,238,160,.16) 10px,transparent 13px);transform:scale(.6);transition:opacity .12s}
+#credit{position:fixed;left:50%;bottom:3px;transform:translateX(-50%);font:600 7px Arial;background:#0008;padding:3px 6px;color:#777;z-index:5}
+.touch{display:none;position:fixed;inset:0;z-index:12;pointer-events:none}.dpad,.touch-actions{position:absolute;bottom:18px;display:grid;gap:7px;pointer-events:auto}.dpad{left:14px;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px}.touch-actions{right:14px;grid-template-columns:54px 54px 54px}.touch button{border:1px solid #ffffff55;border-radius:50%;background:#08101ddd;color:#fff;font-weight:900;min-height:48px;font-size:9px;touch-action:none}.touch .up{grid-column:2}.touch .left{grid-column:1;grid-row:2}.touch .down{grid-column:2;grid-row:2}.touch .right{grid-column:3;grid-row:2}.touch .jump{background:#9f7a28dd}.touch .climb{background:#346c8ddd}.touch .fly{background:#5841aadd}.touch .descend{background:#28394ddd}.touch .charge{background:#b47818dd}.touch .target-button{background:#256272dd}.touch .hyper{background:#8a276fdd}
+.power-touch{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:13;grid-template-columns:repeat(4,48px);gap:5px}.power-touch button{min-height:38px;border:1px solid #ffe58a66;background:#18140ddd;color:#ffeaa1;border-radius:8px;font:800 8px Arial,sans-serif}
+@media(max-width:900px){#missionPanel{width:min(430px,48vw)}#abilityBar button{width:40px;height:40px}#combatPanel{width:190px}}
+@media(max-width:800px),(pointer:coarse){
+  #hud{left:8px;top:8px;width:250px;padding:9px}.brand-title{font-size:12px}.meter-row{grid-template-columns:42px 1fr 44px}.quick-stats{grid-template-columns:repeat(2,1fr)}
+  #missionPanel{top:8px;width:44vw;padding:7px 8px}.mission-copy{display:none}.target{font-size:9px}
+  #radar{width:105px;height:105px;left:9px;bottom:112px}
+  #combatPanel,#abilityBar{display:none}.touch{display:block}.power-touch{display:grid}#credit{display:none}
+}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 </head>
 <body>
 <div id="bootGuard"><div class="boot-card"><div class="boot-title">JC: SIN CITY</div><div id="bootGuardCopy" class="boot-copy">Starting the real Las Vegas mission…</div><div id="bootGuardActions" class="boot-actions"><button id="bootRetry" type="button">RETRY MISSION</button><a href="./index.html?safe=1">PLAY SAFE MODE</a></div></div></div>
 <div id="game"></div>
-<div id="hud"><b>JC: SOLAR ASCENSION</b><br>Click/drag aim • T switch JC/Satan • 1-8 JC powers • RMB/H hyper-jump • Q target<br>WASD fly • mouse aim • SHIFT boost • SHIFT+SPACE ROCKET ASCENT • ALT precision • X air brake • C descend<div id="status">Loading uploaded GLB map tiles…</div><div><span id="flightState">FLIGHT OFF</span></div><div class="solar-row"><b>SOLAR</b><div class="solar-track"><div id="solarFill" class="solar-fill"></div></div><span id="solarText">55%</span></div><div id="destination" class="target">TARGET: acquiring city landmarks…</div><div id="mission">MISSION: explore the real uploaded GLB Las Vegas map • nearby tiles stream automatically<br><span id="progress">indexing tiles…</span> · <span id="location">JC GLB MAP</span></div></div>
+<div id="hud" class="panel">
+  <div class="brand"><div class="brand-title">JC // SIN CITY</div><div id="controllerLabel">JC</div></div>
+  <div class="meter-row"><span class="meter-label">HEALTH</span><div class="track"><div id="healthFill" class="fill"></div></div><span id="healthText" class="meter-value">100 / 100</span></div>
+  <div class="meter-row"><span class="meter-label">DIVINE</span><div class="track"><div id="divineFill" class="fill"></div></div><span id="divineText" class="meter-value">100%</span></div>
+  <div class="meter-row"><span class="meter-label">SOLAR</span><div class="track"><div id="solarFill" class="fill" style="width:55%"></div></div><span id="solarText" class="meter-value">55%</span></div>
+  <div class="quick-stats">
+    <div class="quick-stat"><b id="flightState">GROUND</b><span>MODE</span></div>
+    <div class="quick-stat"><b id="hudSpeed">0 m/s</b><span>SPEED</span></div>
+    <div class="quick-stat"><b id="hudAltitude">0 m</b><span>ALTITUDE</span></div>
+    <div class="quick-stat"><b id="hudFps">-- FPS</b><span>PERF</span></div>
+  </div>
+  <div id="status">Loading uploaded GLB map tiles…</div>
+</div>
+
+<div id="missionPanel" class="panel">
+  <div class="mission-kicker">LIVE MISSION // REAL GLB LAS VEGAS</div>
+  <div id="destination" class="target">TARGET: acquiring city landmarks…</div>
+  <div id="mission" class="mission-copy"><span id="progress">indexing tiles…</span> · <span id="location">JC GLB MAP</span> · <span id="hudRoads">ROADS --</span></div>
+</div>
+
+<div id="radar">
+  <div class="radar-ring"></div><i class="radar-dot a"></i><i class="radar-dot b"></i><i class="radar-dot c"></i>
+  <div id="radarArrow"></div>
+</div>
+
+<div id="abilityBar">
+  <div class="ability-caption">E · ABILITY WHEEL / 1–8 DIRECT CAST</div>
+  <button data-power="1" title="Shockwave">1<br>⚡</button>
+  <button data-power="2" title="Divine Shield">2<br>◈</button>
+  <button data-power="3" title="Judgment Beam">3<br>✦</button>
+  <button data-power="4" title="Second Coming">4<br>✝</button>
+  <button data-power="5" title="Divine Dash">5<br>»</button>
+  <button data-power="6" title="Heaven Slam">6<br>▼</button>
+  <button data-power="7" title="Time Grace">7<br>◷</button>
+  <button data-power="8" title="Miracle Heal">8<br>+</button>
+</div>
+
+<div id="combatPanel" class="panel">
+  <div class="weapon-row"><div><div class="weapon-name">SOUL SIDEARMS</div><div class="weapon-sub">G · FIRE / I · INFLUENCE / Y · RESTORE</div></div><div class="weapon-ammo">∞</div></div>
+  <div id="abilityStatus">READY</div>
+</div>
 <div id="crosshair"></div>
 <div id="hyperFx"></div>
-<div id="credit">JC Map • C##_R## GLB tile stream</div>
+<div id="credit">JC MAP · REAL GLB TILE STREAM · CINEMATIC HUD v2</div>
 <div class="touch"><div class="dpad"><button class="up" data-key="KeyW">▲</button><button class="left" data-key="KeyA">◀</button><button class="down" data-key="KeyS">▼</button><button class="right" data-key="KeyD">▶</button></div><div class="touch-actions"><button class="jump" data-key="Space">UP</button><button class="descend" data-key="KeyC">DOWN</button><button class="fly" data-flight-toggle>FLY</button><button class="climb" data-key="KeyE">CLIMB</button><button class="charge" data-solar-charge>CHARGE</button><button class="target-button" data-target-cycle>TARGET</button><button class="hyper" data-hyper-launch>HYPER</button></div></div>
 <div class="power-touch">
   <button data-power="1">SHOCK</button>

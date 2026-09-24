@@ -589,6 +589,10 @@ const roadMats={
   lane:new THREE.MeshBasicMaterial({color:0xf1ead5,side:THREE.DoubleSide,depthWrite:false}),
   center:new THREE.MeshBasicMaterial({color:0xe2b84f,side:THREE.DoubleSide,depthWrite:false}),
   edge:new THREE.MeshBasicMaterial({color:0xcfcfc8,side:THREE.DoubleSide,depthWrite:false}),
+  sidewalk:new THREE.MeshBasicMaterial({color:0xb9b5ad,side:THREE.DoubleSide}),
+  curb:new THREE.MeshBasicMaterial({color:0xd0ccc3,side:THREE.DoubleSide}),
+  access:new THREE.MeshBasicMaterial({color:0x4b4c4d,side:THREE.DoubleSide}),
+  crosswalk:new THREE.MeshBasicMaterial({color:0xf3f0e6,side:THREE.DoubleSide,depthWrite:false}),
   majorOverview:new THREE.MeshBasicMaterial({color:0x59616a,transparent:true,opacity:0.78,side:THREE.DoubleSide,depthWrite:false})
 };
 function roadMaterialFor(highway){
@@ -648,21 +652,47 @@ function makeRoadMeshes(roads,materials,worldSpace){
     group.add(m);
   }
 
-  // Detailed mode: center lines + highway edge lines, batched for performance.
+  // Detailed mode: road markings plus GIS/OSM-informed pedestrian/access layers.
+  // Sidewalks are generated only for road classes where a walk edge is plausible.
+  // Driveway/access aprons are restricted to mapped OSM service roads; we do not
+  // invent parcel driveways where the source data does not identify an access way.
   if(!worldSpace){
     const centerVerts=[],laneVerts=[],edgeVerts=[];
+    const sidewalkVerts=[],curbVerts=[],accessVerts=[],crosswalkVerts=[];
+    const junctions=new Map();
     const y=ROAD_SURFACE_Y+0.025;
+
+    function junctionKey(x,z){
+      return Math.round(x*20)+"|"+Math.round(z*20);
+    }
+    function addJunctionIncident(x,z,dx,dz,width,highway){
+      const len=Math.hypot(dx,dz);
+      if(len<0.01)return;
+      const key=junctionKey(x,z);
+      let node=junctions.get(key);
+      if(!node){
+        node={x:x,z:z,incidents:[]};
+        junctions.set(key,node);
+      }
+      node.incidents.push({dx:dx/len,dz:dz/len,width:width,highway:highway||""});
+    }
+
     for(const road of roads||[]){
       const pts=road.p||[];
       const h=road.h||"";
       const roadWidth=Math.max(0.28,Number(road.w)||0.55);
       const major=/motorway|trunk|primary|secondary|tertiary/.test(h);
       const highway=/motorway|trunk/.test(h);
+      const mappedAccess=/^service$|service/.test(h);
+      const pedestrianStreet=/primary|secondary|tertiary|residential|unclassified|living_street/.test(h)&&
+        !/motorway|trunk|service|track|path|footway|cycleway/.test(h);
 
       for(let i=0;i<pts.length-1;i++){
         const a=pts[i],b=pts[i+1];
         const ax=Number(a[0]),az=Number(a[1]),bx=Number(b[0]),bz=Number(b[1]);
         if(![ax,az,bx,bz].every(Number.isFinite))continue;
+        const dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
+        if(len<0.01)continue;
 
         if(roadWidth>=0.65){
           stripeQuad(centerVerts,ax,az,bx,bz,major?0.026:0.018,y,0);
@@ -675,10 +705,54 @@ function makeRoadMeshes(roads,materials,worldSpace){
           stripeQuad(laneVerts,ax,az,bx,bz,0.014,y, roadWidth*0.25);
           stripeQuad(laneVerts,ax,az,bx,bz,0.014,y,-roadWidth*0.25);
         }
+
+        if(pedestrianStreet){
+          const walkWidth=major?0.24:0.18;
+          const curbGap=0.045;
+          const walkOffset=roadWidth*0.5+curbGap+walkWidth*0.5;
+          stripeQuad(sidewalkVerts,ax,az,bx,bz,walkWidth,y+0.008, walkOffset);
+          stripeQuad(sidewalkVerts,ax,az,bx,bz,walkWidth,y+0.008,-walkOffset);
+          stripeQuad(curbVerts,ax,az,bx,bz,0.028,y+0.012, roadWidth*0.5+0.014);
+          stripeQuad(curbVerts,ax,az,bx,bz,0.028,y+0.012,-roadWidth*0.5-0.014);
+
+          addJunctionIncident(ax,az, dx,dz,roadWidth,h);
+          addJunctionIncident(bx,bz,-dx,-dz,roadWidth,h);
+        }
+
+        if(mappedAccess){
+          // OSM service roads represent mapped driveway, alley, parking-lot and
+          // property-access connections. A slightly wider apron makes those real
+          // access paths readable without fabricating unmapped driveways.
+          stripeQuad(accessVerts,ax,az,bx,bz,roadWidth+0.12,y+0.004,0);
+        }
       }
     }
 
-    const addBatch=function(verts,mat,order){
+    // Intersection-derived zebra crossings. These are intentionally inferred from
+    // the connected road graph rather than claimed as authoritative crossing data.
+    for(const node of junctions.values()){
+      if(node.incidents.length<3)continue;
+      const unique=[];
+      for(const inc of node.incidents){
+        if(unique.some(function(other){return Math.abs(inc.dx*other.dx+inc.dz*other.dz)>0.94;}))continue;
+        unique.push(inc);
+      }
+      for(const inc of unique.slice(0,4)){
+        const shift=Math.max(0.22,inc.width*0.72);
+        const cx=node.x+inc.dx*shift,cz=node.z+inc.dz*shift;
+        const nx=-inc.dz,nz=inc.dx;
+        const half=inc.width*0.5+0.05;
+        for(let stripe=-2;stripe<=2;stripe++){
+          const along=stripe*0.065;
+          const sx=cx+inc.dx*along,sz=cz+inc.dz*along;
+          const ax=sx+nx*half,az=sz+nz*half;
+          const bx=sx-nx*half,bz=sz-nz*half;
+          stripeQuad(crosswalkVerts,ax,az,bx,bz,0.028,y+0.016,0);
+        }
+      }
+    }
+
+    const addBatch=function(verts,mat,order,kind,offset){
       if(!verts.length)return;
       const g=new THREE.BufferGeometry();
       g.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));
@@ -687,12 +761,24 @@ function makeRoadMeshes(roads,materials,worldSpace){
       m.frustumCulled=true;
       m.renderOrder=order;
       m.userData.jcRoadSurface=true;
-      m.userData.jcRoadSurfaceOffset=order>=4?0.12:0.08;
+      m.userData.jcStreetFeature=kind||"road-detail";
+      m.userData.jcRoadSurfaceOffset=offset==null?(order>=4?0.12:0.08):offset;
       group.add(m);
     };
-    addBatch(centerVerts,roadMats.center,4);
-    addBatch(laneVerts,roadMats.lane,4);
-    addBatch(edgeVerts,roadMats.edge,4);
+    addBatch(centerVerts,roadMats.center,4,"center-line",0.12);
+    addBatch(laneVerts,roadMats.lane,4,"lane-line",0.12);
+    addBatch(edgeVerts,roadMats.edge,4,"edge-line",0.12);
+    addBatch(sidewalkVerts,roadMats.sidewalk,3,"sidewalk",0.105);
+    addBatch(curbVerts,roadMats.curb,4,"curb",0.115);
+    addBatch(accessVerts,roadMats.access,3,"mapped-service-access",0.095);
+    addBatch(crosswalkVerts,roadMats.crosswalk,5,"inferred-crosswalk",0.125);
+
+    group.userData.streetFeatureCounts={
+      sidewalks:Math.floor(sidewalkVerts.length/18),
+      curbs:Math.floor(curbVerts.length/18),
+      mappedServiceAccess:Math.floor(accessVerts.length/18),
+      inferredCrosswalkStripes:Math.floor(crosswalkVerts.length/18)
+    };
   }
 
   return group;

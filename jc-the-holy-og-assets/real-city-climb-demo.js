@@ -691,11 +691,12 @@ const roadSurfaceDown=new THREE.Vector3(0,-1,0);
 const roadSurfaceProbe=new THREE.Vector3();
 
 function collectTileGroundMeshes(tileItem){
+  if(Array.isArray(tileItem?.groundSurfaceMeshes))return tileItem.groundSurfaceMeshes;
   const ground=[];
   if(!tileItem?.root)return ground;
   tileItem.root.updateMatrixWorld(true);
   tileItem.root.traverse(function(o){
-    if(!o.isMesh||!o.visible||!o.geometry)return;
+    if(!o.isMesh||!o.geometry)return;
     const box=new THREE.Box3().setFromObject(o);
     if(box.isEmpty())return;
     const size=new THREE.Vector3();
@@ -707,7 +708,7 @@ function collectTileGroundMeshes(tileItem){
   // Last-resort fallback for source GLBs with anonymous mesh names: only accept
   // low, broad geometry near the tile base so building roofs can never become roads.
   tileItem.root.traverse(function(o){
-    if(!o.isMesh||!o.visible||!o.geometry)return;
+    if(!o.isMesh||!o.geometry)return;
     const box=new THREE.Box3().setFromObject(o);
     if(box.isEmpty())return;
     const size=new THREE.Vector3();
@@ -715,7 +716,52 @@ function collectTileGroundMeshes(tileItem){
     const footprint=size.x*size.z;
     if(box.min.y<=TILE_GROUND_Y+0.75&&size.y<=8&&footprint>=120)ground.push(o);
   });
+  tileItem.groundSurfaceMeshes=ground;
   return ground;
+}
+
+const actorSurfaceRaycaster=new THREE.Raycaster();
+const actorSurfaceDown=new THREE.Vector3(0,-1,0);
+const actorSurfaceOrigin=new THREE.Vector3();
+
+function samplePlayableSurfaceY(x,z){
+  const cell=worldCell(x,z);
+  const key=tileKey(cell.col,cell.row);
+  const roadItem=loadedRoadTiles.get(key);
+
+  if(roadItem?.root){
+    if(!Array.isArray(roadItem.actorSurfaceMeshes)){
+      roadItem.actorSurfaceMeshes=[];
+      roadItem.root.traverse(function(o){
+        if(o.isMesh&&o.geometry&&o.userData?.jcRoadSurface&&o.renderOrder===2){
+          roadItem.actorSurfaceMeshes.push(o);
+        }
+      });
+    }
+    roadItem.root.updateMatrixWorld(true);
+    actorSurfaceOrigin.set(x,5000,z);
+    actorSurfaceRaycaster.set(actorSurfaceOrigin,actorSurfaceDown);
+    actorSurfaceRaycaster.near=0;
+    actorSurfaceRaycaster.far=10000;
+    const roadHits=actorSurfaceRaycaster.intersectObjects(roadItem.actorSurfaceMeshes,false);
+    if(roadHits.length&&Number.isFinite(roadHits[0].point.y))return roadHits[0].point.y;
+  }
+
+  const tileItem=loadedTiles.get(key);
+  if(tileItem?.root){
+    const groundMeshes=collectTileGroundMeshes(tileItem);
+    if(groundMeshes.length){
+      tileItem.root.updateMatrixWorld(true);
+      actorSurfaceOrigin.set(x,5000,z);
+      actorSurfaceRaycaster.set(actorSurfaceOrigin,actorSurfaceDown);
+      actorSurfaceRaycaster.near=0;
+      actorSurfaceRaycaster.far=10000;
+      const groundHits=actorSurfaceRaycaster.intersectObjects(groundMeshes,false);
+      if(groundHits.length&&Number.isFinite(groundHits[0].point.y))return groundHits[0].point.y;
+    }
+  }
+
+  return GROUND_Y;
 }
 
 function conformRoadTileToGlb(key){
@@ -1469,8 +1515,9 @@ function movePlayerSolid(delta){
   const boxes=nearbyCollisionBoxes();
   if(!boxes.length){
     player.pos.add(delta);
-    if(player.pos.y<GROUND_Y){
-      player.pos.y=GROUND_Y;
+    const surfaceY=samplePlayableSurfaceY(player.pos.x,player.pos.z);
+    if(player.pos.y<=surfaceY+0.04){
+      player.pos.y=surfaceY+0.04;
       if(player.velocity.y<0)player.velocity.y=0;
       player.grounded=true;
     }else player.grounded=false;
@@ -1529,8 +1576,9 @@ function movePlayerSolid(delta){
     }
   }
 
-  if(targetY<=GROUND_Y){
-    targetY=GROUND_Y;
+  const surfaceY=samplePlayableSurfaceY(p.x,p.z)+0.04;
+  if(targetY<=surfaceY){
+    targetY=surfaceY;
     if(player.velocity.y<0)player.velocity.y=0;
     player.grounded=true;
   }
@@ -2961,6 +3009,8 @@ async function boot(){
     loadedRoadTiles:loadedRoadTiles,
     tileColliders:tileColliders,
     movePlayerSolid:movePlayerSolid,
+    samplePlayableSurfaceY:samplePlayableSurfaceY,
+    get surfaceY(){return samplePlayableSurfaceY(player.pos.x,player.pos.z)},
     get collisionCount(){return collisionCount()},
     powers:powerState,
     usePower:usePower,

@@ -46,7 +46,7 @@ const FLIGHT_SPEEDS={
 const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,120000);
 const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:lowSpec?"default":"high-performance",alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setSize(innerWidth,innerHeight);
-const MAX_RENDER_PIXEL_RATIO=lowSpec?0.75:1.0;
+const MAX_RENDER_PIXEL_RATIO=lowSpec?0.60:0.85;
 let dynamicPixelRatio=Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO);
 renderer.setPixelRatio(dynamicPixelRatio);
 renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -122,24 +122,24 @@ const ORIGIN_ROW=8;
 const TILE_GROUND_Y=0;
 const ROAD_SURFACE_Y=0.10;
 const MAP_Y_OFFSET=TILE_GROUND_Y;
-const LOAD_RADIUS=lowSpec?1:2;
-const KEEP_RADIUS=lowSpec?2:4;
-const MAX_CONCURRENT=lowSpec?2:4;
-const FULL_MAP_MODE=true;
-const DATA_BUFFERING=true;
-const FULL_MAP_BATCH=lowSpec?1:2;
-const RAW_PREFETCH_CONCURRENCY=2;
-const INITIAL_BUFFER_RADIUS=1;
-const ACTIVE_TILE_RADIUS=lowSpec?2:4;
-const FAST_ACTIVE_TILE_RADIUS=lowSpec?3:6;
-const ACTIVE_LOOKAHEAD_TILES=lowSpec?4:8;
-const DECODE_KEEP_EXTRA=1;
-const VISIBILITY_UPDATE_INTERVAL=0.16;
+const LOAD_RADIUS=1;
+const KEEP_RADIUS=2;
+const MAX_CONCURRENT=1;
+const FULL_MAP_MODE=false;
+const DATA_BUFFERING=false;
+const FULL_MAP_BATCH=1;
+const RAW_PREFETCH_CONCURRENCY=1;
+const INITIAL_BUFFER_RADIUS=0;
+const ACTIVE_TILE_RADIUS=1;
+const FAST_ACTIVE_TILE_RADIUS=2;
+const ACTIVE_LOOKAHEAD_TILES=lowSpec?2:3;
+const DECODE_KEEP_EXTRA=0;
+const VISIBILITY_UPDATE_INTERVAL=0.35;
 const MASS_TILE_THRESHOLD=512;
-const MASS_PREFETCH_EXTRA_RADIUS=2;
-const MASS_PREFETCH_BATCH=2;
-const STREAM_LOOKAHEAD_SECONDS=lowSpec?3.5:7.0;
-const MAX_LOOKAHEAD_TILES=lowSpec?10:24;
+const MASS_PREFETCH_EXTRA_RADIUS=1;
+const MASS_PREFETCH_BATCH=1;
+const STREAM_LOOKAHEAD_SECONDS=lowSpec?1.5:2.5;
+const MAX_LOOKAHEAD_TILES=lowSpec?4:8;
 const HIGH_SPEED_STREAM_THRESHOLD=260;
 const VERY_HIGH_SPEED_STREAM_THRESHOLD=900;
 const PLAYER_RADIUS=0.38;
@@ -147,7 +147,7 @@ const PLAYER_HEIGHT=1.85;
 const GRAVITY=38;
 const GROUND_Y=ROAD_SURFACE_Y+0.04;
 const COLLISION_TILE_RADIUS=1;
-const MAX_COLLIDERS_PER_TILE=lowSpec?120:240;
+const MAX_COLLIDERS_PER_TILE=lowSpec?48:96;
 
 
 const gltfLoader=new GLTFLoader();
@@ -158,7 +158,7 @@ const STRIP_MIN_COL=15;
 const STRIP_MAX_COL=16;
 const STRIP_MIN_ROW=12;
 const STRIP_MAX_ROW=15;
-const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?48:160;
+const MAX_WALLPAPER_BUILDINGS_PER_TILE=lowSpec?20:48;
 const wallpaperTextureLoader=new THREE.TextureLoader();
 let stripWallpaperAtlas=null;
 let residentialWallpaperAtlas=null;
@@ -552,7 +552,7 @@ function buildResidentialWallpaper(root,rec){
     });
     mesh.instanceMatrix.needsUpdate=true;
     group.add(mesh);
-    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.residential+=bucket.matrices.length;
+    SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.residential+=bucket.items.length;
   }
 
   mapGroup.add(group);
@@ -1789,8 +1789,8 @@ function updateAdaptiveResolution(dt){
   perfFrames=0;
 
   let target=dynamicPixelRatio;
-  if(fpsEstimate<28)target=Math.max(0.50,dynamicPixelRatio-0.16);
-  else if(fpsEstimate<42)target=Math.max(0.58,dynamicPixelRatio-0.10);
+  if(fpsEstimate<24)target=Math.max(0.40,dynamicPixelRatio-0.18);\n  else if(fpsEstimate<32)target=Math.max(0.48,dynamicPixelRatio-0.14);
+  else if(fpsEstimate<42)target=Math.max(0.55,dynamicPixelRatio-0.10);
   else if(fpsEstimate>57)target=Math.min(Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO),dynamicPixelRatio+0.04);
 
   if(Math.abs(target-dynamicPixelRatio)>=0.045){
@@ -1990,6 +1990,17 @@ async function loadOneTile(rec){
     bufferState.loaded=loadedTiles.size;
   }catch(err){
     console.error("GLB tile load failed",key,err);
+    const orphan=mapGroup.getObjectByName(key);
+    if(orphan){
+      mapGroup.remove(orphan);
+      disposeTile(orphan);
+    }
+    const orphanWallpaper=mapGroup.getObjectByName("CITY_BUILDING_WALLPAPER_"+key);
+    if(orphanWallpaper)disposeWallpaperGroup(orphanWallpaper);
+    const orphanResidential=mapGroup.getObjectByName("RESIDENTIAL_WALLPAPER_"+key);
+    if(orphanResidential)disposeResidentialWallpaperGroup(orphanResidential);
+    tileColliders.delete(key);
+    loadedTiles.delete(key);
     failedTiles.add(key);
   }finally{
     loadingTiles.delete(key);

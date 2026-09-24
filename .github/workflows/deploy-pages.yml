@@ -36,27 +36,45 @@ jobs:
           mkdir -p _site
           rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='release-electron' ./ _site/
           python - <<'PY'
-          import glob, hashlib, json, os, re
+          import glob, hashlib, json, os, re, shutil
           from datetime import datetime, timezone
 
-          tiles = []
-          for path in sorted(glob.glob("_site/C*_R*.glb")):
+          # Discover every checked-in JC tile, including historical/secondary
+          # asset folders, then publish one canonical copy of each unique C##_R##.
+          # Root-level files win; otherwise the first stable sorted path is used.
+          candidates = {}
+          for path in sorted(glob.glob("_site/**/C*_R*.glb", recursive=True)):
               name = os.path.basename(path)
               m = re.fullmatch(r"C(\d+)_R(\d+)\.glb", name, re.I)
               if not m:
                   continue
+              key = (int(m.group(1)), int(m.group(2)))
+              priority = 0 if os.path.dirname(path) == "_site" else 1
+              prev = candidates.get(key)
+              current = (priority, path)
+              if prev is None or current < prev:
+                  candidates[key] = current
+
+          tiles = []
+          for (col, row), (_, source_path) in sorted(candidates.items()):
+              name = f"C{col:02d}_R{row:02d}.glb"
+              canonical_path = os.path.join("_site", name)
+              if os.path.abspath(source_path) != os.path.abspath(canonical_path):
+                  shutil.copy2(source_path, canonical_path)
+
               h = hashlib.sha1()
-              with open(path, "rb") as f:
+              with open(canonical_path, "rb") as f:
                   for chunk in iter(lambda: f.read(1024 * 1024), b""):
                       h.update(chunk)
               tiles.append({
                   "name": name[:-4],
-                  "col": int(m.group(1)),
-                  "row": int(m.group(2)),
+                  "col": col,
+                  "row": row,
                   "file": name,
                   "url": "./" + name,
                   "sha": h.hexdigest(),
-                  "size": os.path.getsize(path),
+                  "size": os.path.getsize(canonical_path),
+                  "source": os.path.relpath(source_path, "_site"),
               })
 
           os.makedirs("_site/jc-map", exist_ok=True)

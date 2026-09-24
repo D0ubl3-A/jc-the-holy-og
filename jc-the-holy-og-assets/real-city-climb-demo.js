@@ -147,6 +147,9 @@ const PLAYER_HEIGHT=1.85;
 const GRAVITY=38;
 const GROUND_Y=ROAD_SURFACE_Y+0.04;
 const COLLISION_TILE_RADIUS=1;
+const PERF_SAFE_SURFACE=true;
+const ROAD_VERTEX_CONFORM=false;
+const FULL_RESIDENTIAL_WALLPAPER=new URLSearchParams(location.search).get("fullWallpaper")==="1";
 const MAX_COLLIDERS_PER_TILE=lowSpec?48:96;
 
 
@@ -484,6 +487,7 @@ function residentialVariant(rec,center,kind){
   return stableModelHash(identity)%count;
 }
 function buildResidentialWallpaper(root,rec){
+  if(!FULL_RESIDENTIAL_WALLPAPER)return null;
   if(!wallpaperAssetsReady||!residentialWallpaperAtlas)return null;
   root.updateMatrixWorld(true);
   const byKey=new Map();
@@ -835,6 +839,7 @@ const actorSurfaceDown=new THREE.Vector3(0,-1,0);
 const actorSurfaceOrigin=new THREE.Vector3();
 
 function samplePlayableSurfaceY(x,z){
+  if(PERF_SAFE_SURFACE)return GROUND_Y;
   const cell=worldCell(x,z);
   const key=tileKey(cell.col,cell.row);
   const roadItem=loadedRoadTiles.get(key);
@@ -876,6 +881,13 @@ function samplePlayableSurfaceY(x,z){
 
 function conformRoadTileToGlb(key){
   const roadItem=loadedRoadTiles.get(key);
+  if(!ROAD_VERTEX_CONFORM){
+    if(roadItem?.root){
+      roadItem.surfaceConform={status:"PERF_SAFE_FLAT",hits:0,total:0,coverage:1};
+      roadItem.root.userData.surfaceConform=roadItem.surfaceConform;
+    }
+    return !!roadItem;
+  }
   const tileItem=loadedTiles.get(key);
   if(!roadItem?.root||!tileItem?.root)return false;
 

@@ -3,8 +3,12 @@ import { mergeGeometries } from "https://cdn.jsdelivr.net/npm/three@0.170.0/exam
 
 const KEY = "__JC_REAL_VEGAS_DISTRICTS_V1__";
 const INDEX_URL = "./jc-the-holy-og-assets/generated/districts/index.js";
-const WORLD = 11000;
+const WORLD = 3500;
 const CANONICAL = { minE:648949.782, minN:3983561.814, maxE:683949.782, maxN:4018561.814 };
+const TILE_SOURCE_SIZE=1000;
+const TILE_SCALE=0.1;
+const ORIGIN_COL=8;
+const ORIGIN_ROW=8;
 
 if (!window[KEY]) {
   const mobile = matchMedia("(pointer:coarse)").matches;
@@ -30,43 +34,81 @@ if (!window[KEY]) {
   }
 
   function roadContract() {
-    const data=window.JC_VEGAS_OSM||window.VEGAS_ROADS||{roads:[]};
-    let minX=Infinity,minZ=Infinity,maxX=-Infinity,maxZ=-Infinity,count=0;
-    for(const road of data.roads||[])for(const p of road.p||[]){const x=Number(p[0]),z=Number(p[1]);if(!Number.isFinite(x)||!Number.isFinite(z))continue;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minZ=Math.min(minZ,z);maxZ=Math.max(maxZ,z);count++}
-    if(!count||!Number.isFinite(minX)||maxX<=minX||maxZ<=minZ)return null;
-    const scale=(WORLD*.91)/Math.max(maxX-minX,maxZ-minZ);
-    return {minX,minZ,maxX,maxZ,scale,cx:(minX+maxX)/2,cz:(minZ+maxZ)/2,projected:minX>100000&&maxX<1000000&&minZ>1000000&&maxZ<5000000};
+    // Exact shared C##_R## contract used by the GLB streamer.
+    return {
+      minX:CANONICAL.minE,
+      minZ:CANONICAL.minN,
+      maxX:CANONICAL.maxE,
+      maxZ:CANONICAL.maxN,
+      scale:TILE_SCALE,
+      projected:true
+    };
   }
 
   function transformer(c) {
-    const w=CANONICAL.maxE-CANONICAL.minE,h=CANONICAL.maxN-CANONICAL.minN;
-    state.transformMode=c.projected?"direct-utm":"canonical-normalized";
-    return (e,n)=>{
-      const sx=c.projected?e:c.minX+((e-CANONICAL.minE)/w)*(c.maxX-c.minX);
-      const sz=c.projected?n:c.minZ+((n-CANONICAL.minN)/h)*(c.maxZ-c.minZ);
-      return {x:(sx-c.cx)*c.scale,z:(sz-c.cz)*c.scale};
-    };
+    state.transformMode="canonical-glb-grid";
+    const originE=CANONICAL.minE+ORIGIN_COL*TILE_SOURCE_SIZE;
+    const originN=CANONICAL.minN+ORIGIN_ROW*TILE_SOURCE_SIZE;
+    return (e,n)=>({
+      x:(e-originE)*TILE_SCALE,
+      z:-(n-originN)*TILE_SCALE
+    });
   }
 
   const mats=[];
   function materials() {
     if(mats.length)return mats;
     const defs=[
-      {color:0x8d969b,roughness:.5,metalness:.18},
-      {color:0xb0a68f,roughness:.78,metalness:.04},
-      {color:0x4d5960,roughness:.38,metalness:.28},
+      {name:"residential",color:0xbca68e,roughness:.82,metalness:.02,url:"./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg"},
+      {name:"commercial",color:0x929aa0,roughness:.56,metalness:.12,url:"./jc-the-holy-og-assets/swarm/buildings/facade-atlas-02.jpg"},
+      {name:"industrial",color:0x667077,roughness:.66,metalness:.22,url:"./jc-the-holy-og-assets/swarm/buildings/facade-atlas-03.jpg"},
+      {name:"casino",color:0x3b1617,roughness:.40,metalness:.18,url:"./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg",emissive:0x5a120d}
     ];
     const loader=new THREE.TextureLoader();
-    defs.forEach((d,i)=>{
-      const m=new THREE.MeshStandardMaterial(d);mats.push(m);
-      loader.load(`./jc-the-holy-og-assets/swarm/buildings/facade-atlas-0${i+1}.jpg`,t=>{t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(.5,.5);t.anisotropy=mobile?1:2;m.map=t;m.needsUpdate=true},undefined,()=>{});
+    defs.forEach((d)=>{
+      const m=new THREE.MeshStandardMaterial({
+        color:d.color,roughness:d.roughness,metalness:d.metalness,
+        emissive:d.emissive||0x000000,emissiveIntensity:d.emissive?0.55:0
+      });
+      m.userData={jcLandUse:d.name};
+      mats.push(m);
+      loader.load(d.url,t=>{
+        t.colorSpace=THREE.SRGBColorSpace;
+        t.wrapS=t.wrapT=THREE.RepeatWrapping;
+        t.repeat.set(.5,.5);
+        t.anisotropy=mobile?1:2;
+        m.map=t;m.needsUpdate=true;
+      },undefined,()=>{});
     });
     return mats;
+  }
+
+  function materialClassForBuilding(d,b,heightM){
+    const area=Math.max(1,Number(b.a)||1);
+    // Large/tall Strip footprints are the only procedural buildings eligible
+    // for the full casino treatment.
+    if(d.meta.id==="strip"&&(heightM>=18||area>=1100))return 3;
+    // Typical low-rise small footprints are homes: stucco/stone/tile family.
+    if(heightM<=12&&area<=750)return 0;
+    // Broad low footprints read as warehouses/service/industrial.
+    if(heightM<=16&&area>=2200)return 2;
+    return 1;
   }
 
   function tileCenter(tileId,toGame){
     const m=/Tile_LV_X(\d+)_Y(\d+)/.exec(tileId||"");if(!m)return null;
     const x=Number(m[1]),y=Number(m[2]);return toGame(CANONICAL.minE+(x+.5)*1000,CANONICAL.minN+(y+.5)*1000);
+  }
+
+  function glbKeyForDistrictTile(tileId){
+    const m=/Tile_LV_X(\d+)_Y(\d+)/.exec(tileId||"");
+    if(!m)return null;
+    return "C"+String(Number(m[1])).padStart(2,"0")+"_R"+String(Number(m[2])).padStart(2,"0");
+  }
+  function hasAuthoritativeGlb(tileId){
+    const key=glbKeyForDistrictTile(tileId);
+    const loaded=window.JC_GLB_MAP?.loadedTiles;
+    return !!(key&&loaded&&typeof loaded.has==="function"&&loaded.has(key));
   }
 
   function prepareDistrict(meta,pack,toGame,c) {
@@ -99,16 +141,19 @@ if (!window[KEY]) {
 
   function buildTile(d,tile) {
     if(tile.built)return;tile.built=true;
-    const yScale=Math.max(.24,Math.min(.42,state.contract.scale)),byMat=[[],[],[]];let count=0,sourceHeight=0,runtimeHeight=0;
+    const yScale=1.0,byMat=[[],[],[],[]];let count=0,sourceHeight=0,runtimeHeight=0;
     const rows=tile.rows;
     for(const b of rows){
-      const source=Number.isFinite(Number(b.h))&&Number(b.h)>0;let h=source?Number(b.h):Math.min(14,Math.max(5.5,5+Math.sqrt(Math.max(1,Number(b.a)||1))*.18));h*=yScale;
-      const matIndex=source?0:(Number(b.a||0)>900?2:1);if(source)sourceHeight++;else runtimeHeight++;
+      const source=Number.isFinite(Number(b.h))&&Number(b.h)>0;
+      const sourceH=source?Number(b.h):Math.min(14,Math.max(5.5,5+Math.sqrt(Math.max(1,Number(b.a)||1))*.18));
+      const h=sourceH*yScale;
+      const matIndex=materialClassForBuilding(d,b,sourceH);
+      if(source)sourceHeight++;else runtimeHeight++;
       for(const ring of b.r||[]){const g=ringGeometry(ring,d.pack,state.toGame,h);if(g){byMat[matIndex].push(g);count++}}
     }
     const group=new THREE.Group();group.name=`REAL ${d.meta.id} ${tile.id}`;group.visible=false;group.userData={sourceGrounded:true,buildingRecords:rows.length,polygonParts:count,sourceHeight,runtimeVisualHeight:runtimeHeight};
     const materialSet=materials();
-    for(let i=0;i<byMat.length;i++)if(byMat[i].length){let merged=null;try{merged=mergeGeometries(byMat[i],false)}catch{}if(merged){const mesh=new THREE.Mesh(merged,materialSet[i]);mesh.castShadow=false;mesh.receiveShadow=true;mesh.userData={realBuildingFootprints:true,heightClass:i===0?"SOURCE_ESTIMATED":"RUNTIME_VISUAL_ESTIMATE"};group.add(mesh);for(const g of byMat[i])g.dispose()}else{for(const g of byMat[i]){const mesh=new THREE.Mesh(g,materialSet[i]);mesh.receiveShadow=true;group.add(mesh)}}}
+    for(let i=0;i<byMat.length;i++)if(byMat[i].length){let merged=null;try{merged=mergeGeometries(byMat[i],false)}catch{}if(merged){const mesh=new THREE.Mesh(merged,materialSet[i]);mesh.castShadow=false;mesh.receiveShadow=true;mesh.userData={realBuildingFootprints:true,landUse:["residential","commercial","industrial","casino"][i]||"commercial"};group.add(mesh);for(const g of byMat[i])g.dispose()}else{for(const g of byMat[i]){const mesh=new THREE.Mesh(g,materialSet[i]);mesh.receiveShadow=true;group.add(mesh)}}}
     d.root.add(group);tile.group=group;state.builtTiles++;
   }
 
@@ -129,7 +174,8 @@ if (!window[KEY]) {
     const ranked=[];for(const tile of d.tiles.values()){const c=tile.center||d.center;ranked.push({tile,d2:(camera.position.x-c.x)**2+(camera.position.z-c.z)**2})}ranked.sort((a,b)=>a.d2-b.d2);
     const maxTiles=mobile?4:10;const tileRadius=mobile?720:1150;let builds=0;
     for(let i=0;i<ranked.length;i++){
-      const on=i<maxTiles&&ranked[i].d2<tileRadius*tileRadius;const tile=ranked[i].tile;
+      const tile=ranked[i].tile;
+      const on=i<maxTiles&&ranked[i].d2<tileRadius*tileRadius&&!hasAuthoritativeGlb(tile.id);
       if(on&&!tile.built&&builds<(mobile?1:2)){buildTile(d,tile);builds++}
       if(tile.group)tile.group.visible=on;if(on&&tile.group)state.visibleTiles++;
     }
@@ -140,7 +186,7 @@ if (!window[KEY]) {
 
   loadScript(INDEX_URL,"jcRealDistrictIndex").then(()=>{
     const index=window.JC_REAL_DISTRICT_INDEX;if(!index?.districts?.length)throw new Error("district index missing or empty");
-    const c=roadContract();if(!c)throw new Error("main Vegas road coordinate contract unavailable");
+    const c=roadContract();
     state.contract=c;state.toGame=transformer(c);state.index=index;state.districts=new Map();state.loading=new Set();state.errors={};state.ready=true;
     const previous=THREE.WebGLRenderer.prototype.render;
     if(!THREE.WebGLRenderer.prototype.__jcRealVegasDistrictsV1){Object.defineProperty(THREE.WebGLRenderer.prototype,"__jcRealVegasDistrictsV1",{value:true});THREE.WebGLRenderer.prototype.render=function(scene,camera){if(!state.scene)state.scene=scene;update(camera);return previous.call(this,scene,camera)}}

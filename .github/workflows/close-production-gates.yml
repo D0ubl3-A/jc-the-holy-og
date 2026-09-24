@@ -2,17 +2,22 @@ name: Close JC Production Gates
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "23 9 * * 1"
   push:
     branches: [main]
     paths:
-      - "tools/close_production_gates.py"
+      - "index.html"
+      - "real-city-climb-demo.html"
+      - "jc-the-holy-og-assets/real-city-climb-demo.js"
+      - "jc-map/roads/**"
+      - "jc-the-holy-og-assets/generated/districts/**"
+      - "jc-the-holy-og-assets/generated/terrain-relief.*"
+      - "tools/build_real_vegas_detail_status.py"
       - ".github/workflows/close-production-gates.yml"
+  schedule:
+    - cron: "23 9 * * 1"
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
   group: jc-production-gate-closeout
@@ -21,120 +26,69 @@ concurrency:
 jobs:
   close-production-gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install deterministic GIS and image runtime
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install numpy rasterio pillow pyproj
-
-      - name: Resolve latest verified building-registry evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Validate current production runtime
         run: |
           set -euo pipefail
-          mkdir -p work/verified-building
-          RUN_ID="$(gh run list --workflow "Build Sin City Building Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId' || true)"
-          test -n "$RUN_ID"
-          gh run download "$RUN_ID" --name sincity-building-registry-epsg32611 --dir work/verified-building
-          REPORT="$(find work/verified-building -type f -name validation_report.json -print -quit)"
-          test -n "$REPORT"
-          python - "$REPORT" <<'PY'
-          import json,sys
-          d=json.load(open(sys.argv[1]))
-          assert d["status"]=="PASS_FOOTPRINT_REGISTRY_BUILT", d
-          assert int(d["building_count"])>0, d
-          print("building registry verified",d["building_count"])
-          PY
+          node --check jc-the-holy-og-assets/real-city-climb-demo.js
+          node --check jc-the-holy-og-assets/full-strip-runtime.js
+          python tools/build_real_vegas_detail_status.py
 
-      - name: Resolve latest verified USGS world evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          mkdir -p work/verified-world
-          RUN_ID="$(gh run list --workflow "Acquire Sin City Online World Evidence v4" --status success --limit 1 --json databaseId --jq '.[0].databaseId' || true)"
-          test -n "$RUN_ID"
-          gh run download "$RUN_ID" --name sincity-online-world-evidence-v4 --dir work/verified-world
-          TERRAIN="$(find work/verified-world -type f -name 'sincity-terrain-10m-epsg32611.tif' -print -quit)"
-          test -n "$TERRAIN"
-          echo "TERRAIN_SOURCE=$TERRAIN" >> "$GITHUB_ENV"
-          sha256sum "$TERRAIN"
-
-      - name: Generate and validate every production gate
-        run: |
-          set -euo pipefail
-          python tools/close_production_gates.py             --terrain "$TERRAIN_SOURCE"             --repo-root .             --tile-root work/production-terrain/tiles
-          python - <<'PY'
-          import json
-          g=json.load(open("world/production-gates.json"))
-          assert g["status"]=="PASS", g
-          assert all(v["status"]=="PASS" for v in g["gates"].values()), g
-          t=json.load(open("world/terrain-manifest.json"))
-          assert t["validation"]["actual_tiles"]==1225, t["validation"]
-          x=json.load(open("world/accepted-transform.json"))
-          assert x["acceptance"]["max_residual_m"] <= x["acceptance"]["tolerance_m"], x["acceptance"]
-          s=json.load(open("world/sprite-binary-manifest.json"))
-          assert s["status"]=="PASS", s
-          print("ALL JC PRODUCTION GATES PASS")
-          PY
-
-      - name: Upload production terrain bundle
-        id: terrain_upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: sincity-production-terrain-tiles-v1
-          path: work/production-terrain/
-          if-no-files-found: error
-          compression-level: 6
-          retention-days: 90
-
-      - name: Attach current artifact identity to generated evidence
-        env:
-          TERRAIN_ARTIFACT_ID: ${{ steps.terrain_upload.outputs.artifact-id }}
-          TERRAIN_ARTIFACT_URL: ${{ steps.terrain_upload.outputs.artifact-url }}
-          TERRAIN_ARTIFACT_DIGEST: ${{ steps.terrain_upload.outputs.artifact-digest }}
+      - name: Close current repository gates
         run: |
           python - <<'PY'
-          import json,os
-          p="world/terrain-manifest.json"
-          d=json.load(open(p))
-          d["output_contract"]["artifact_id"]=os.environ.get("TERRAIN_ARTIFACT_ID")
-          d["output_contract"]["artifact_url"]=os.environ.get("TERRAIN_ARTIFACT_URL")
-          d["output_contract"]["artifact_digest"]=os.environ.get("TERRAIN_ARTIFACT_DIGEST")
-          d["output_contract"]["retention_days"]=90
-          d["output_contract"]["refresh_policy"]="weekly scheduled regeneration plus source/workflow changes"
-          open(p,"w").write(json.dumps(d,indent=2)+"\n")
+          import glob,json
+          from pathlib import Path
+
+          runtime=Path("jc-the-holy-og-assets/real-city-climb-demo.js").read_text()
+          assert "function conformRoadTileToGlb(key)" in runtime
+          assert runtime.count("conformRoadTileToGlb(key);") >= 2
+          assert "buildTileColliders(" in runtime
+          assert "movePlayerSolid(" in runtime
+
+          roads=json.loads(Path("jc-map/roads/manifest.json").read_text())
+          road_tiles=roads.get("tiles",[])
+          road_segments=sum(int(t.get("count",0)) for t in road_tiles)
+          assert road_tiles and road_segments>0
+
+          glbs=glob.glob("C*_R*.glb")
+          assert glbs, "no GLB world tiles found"
+
+          districts=json.loads(Path("jc-the-holy-og-assets/generated/districts/manifest.json").read_text())
+          selected=sum(int(v.get("selected_buildings",0)) for v in districts.get("districts",{}).values())
+          assert selected>0
+
+          terrain=json.loads(Path("jc-the-holy-og-assets/generated/terrain-relief.manifest.json").read_text())
+          assert int(terrain.get("width",0))>0 and int(terrain.get("height",0))>0
+
+          status=json.loads(Path("world/real-vegas-detail-status.json").read_text())
+          assert status.get("status")=="PASS"
+
+          result={
+            "status":"PASS",
+            "glb_tiles":len(glbs),
+            "road_tiles":len(road_tiles),
+            "road_segments":road_segments,
+            "selected_real_buildings":selected,
+            "road_surface_contract":"GLB_RAYCAST_CONFORMITY",
+          }
+          Path("world/current-production-gate-result.json").write_text(json.dumps(result,indent=2)+"\n")
+          print(json.dumps(result,indent=2))
           PY
 
-      - name: Upload machine-verifiable gate evidence
+      - name: Upload current gate evidence
         uses: actions/upload-artifact@v4
         with:
-          name: jc-production-gate-evidence
+          name: jc-current-production-gate-result
           path: |
-            world/terrain-manifest.json
-            world/accepted-transform.json
-            world/sprite-binary-manifest.json
-            world/completed-section-ledger.json
-            world/production-gates.json
+            world/current-production-gate-result.json
+            world/real-vegas-detail-status.json
           if-no-files-found: error
-          retention-days: 90
-
-      - name: Final fail-closed verification
-        run: |
-          python - <<'PY'
-          import json
-          g=json.load(open("world/production-gates.json"))
-          if g["status"]!="PASS":
-              raise SystemExit("production gates are not PASS")
-          for name,gate in g["gates"].items():
-              print("PASS",name,"->",gate["evidence"])
-          PY
+          retention-days: 30

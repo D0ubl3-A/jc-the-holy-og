@@ -631,6 +631,8 @@ function makeRoadMeshes(roads,materials,worldSpace){
     const m=new THREE.Mesh(g,materials[type]||roadMats.local);
     m.frustumCulled=true;
     m.renderOrder=2;
+    m.userData.jcRoadSurface=true;
+    m.userData.jcRoadSurfaceOffset=0.08;
     group.add(m);
   }
 
@@ -672,6 +674,8 @@ function makeRoadMeshes(roads,materials,worldSpace){
       const m=new THREE.Mesh(g,mat);
       m.frustumCulled=true;
       m.renderOrder=order;
+      m.userData.jcRoadSurface=true;
+      m.userData.jcRoadSurfaceOffset=order>=4?0.12:0.08;
       group.add(m);
     };
     addBatch(centerVerts,roadMats.center,4);
@@ -680,6 +684,97 @@ function makeRoadMeshes(roads,materials,worldSpace){
   }
 
   return group;
+}
+
+const roadSurfaceRaycaster=new THREE.Raycaster();
+const roadSurfaceDown=new THREE.Vector3(0,-1,0);
+const roadSurfaceProbe=new THREE.Vector3();
+
+function collectTileGroundMeshes(tileItem){
+  const ground=[];
+  if(!tileItem?.root)return ground;
+  tileItem.root.updateMatrixWorld(true);
+  tileItem.root.traverse(function(o){
+    if(!o.isMesh||!o.visible||!o.geometry)return;
+    const box=new THREE.Box3().setFromObject(o);
+    if(box.isEmpty())return;
+    const size=new THREE.Vector3();
+    box.getSize(size);
+    if(isWallpaperGroundMesh(o,size,box))ground.push(o);
+  });
+  if(ground.length)return ground;
+
+  // Last-resort fallback for source GLBs with anonymous mesh names: only accept
+  // low, broad geometry near the tile base so building roofs can never become roads.
+  tileItem.root.traverse(function(o){
+    if(!o.isMesh||!o.visible||!o.geometry)return;
+    const box=new THREE.Box3().setFromObject(o);
+    if(box.isEmpty())return;
+    const size=new THREE.Vector3();
+    box.getSize(size);
+    const footprint=size.x*size.z;
+    if(box.min.y<=TILE_GROUND_Y+0.75&&size.y<=8&&footprint>=120)ground.push(o);
+  });
+  return ground;
+}
+
+function conformRoadTileToGlb(key){
+  const roadItem=loadedRoadTiles.get(key);
+  const tileItem=loadedTiles.get(key);
+  if(!roadItem?.root||!tileItem?.root)return false;
+
+  const groundMeshes=collectTileGroundMeshes(tileItem);
+  if(!groundMeshes.length){
+    roadItem.surfaceConform={status:"NO_GROUND_MESH",hits:0,total:0};
+    return false;
+  }
+
+  tileItem.root.updateMatrixWorld(true);
+  roadItem.root.updateMatrixWorld(true);
+  const tileBox=new THREE.Box3().setFromObject(tileItem.root);
+  const probeY=(Number.isFinite(tileBox.max.y)?tileBox.max.y:TILE_GROUND_Y)+30;
+  const probeFar=Math.max(80,probeY-(Number.isFinite(tileBox.min.y)?tileBox.min.y:TILE_GROUND_Y)+60);
+  const cache=new Map();
+  let hits=0,total=0;
+
+  roadItem.root.traverse(function(o){
+    const position=o.isMesh&&o.geometry?.attributes?.position;
+    if(!position||!o.userData?.jcRoadSurface)return;
+    const offset=Number(o.userData.jcRoadSurfaceOffset)||0.08;
+
+    for(let i=0;i<position.count;i++){
+      const lx=position.getX(i),lz=position.getZ(i);
+      if(!Number.isFinite(lx)||!Number.isFinite(lz))continue;
+      const cacheKey=Math.round(lx*50)+"|"+Math.round(lz*50);
+      let surfaceY;
+      if(cache.has(cacheKey)){
+        surfaceY=cache.get(cacheKey);
+      }else{
+        roadSurfaceProbe.set(roadItem.root.position.x+lx,probeY,roadItem.root.position.z+lz);
+        roadSurfaceRaycaster.set(roadSurfaceProbe,roadSurfaceDown);
+        roadSurfaceRaycaster.near=0;
+        roadSurfaceRaycaster.far=probeFar;
+        const intersections=roadSurfaceRaycaster.intersectObjects(groundMeshes,false);
+        surfaceY=intersections.length?intersections[0].point.y:null;
+        cache.set(cacheKey,surfaceY);
+      }
+      total++;
+      if(surfaceY===null)continue;
+      position.setY(i,(surfaceY-roadItem.root.position.y)+offset);
+      hits++;
+    }
+
+    if(hits){
+      position.needsUpdate=true;
+      o.geometry.computeBoundingBox();
+      o.geometry.computeBoundingSphere();
+    }
+  });
+
+  const coverage=total?hits/total:0;
+  roadItem.surfaceConform={status:hits?"CONFORMED":"NO_HITS",hits,total,coverage};
+  roadItem.root.userData.surfaceConform=roadItem.surfaceConform;
+  return hits>0;
 }
 async function loadRoadRuntime(){
   try{
@@ -725,6 +820,7 @@ async function loadRoadTile(rec){
     roadTileGroup.add(root);
     const item={root:root,rec:rec,count:(data.roads||[]).length};
     loadedRoadTiles.set(key,item);
+    conformRoadTileToGlb(key);
     freezeStaticRoot(root);
     if(DATA_BUFFERING)item.root.visible=recordWithinActiveWindow(rec,activeRenderCells());
     bufferState.roadsLoaded=loadedRoadTiles.size;
@@ -1718,6 +1814,7 @@ async function loadOneTile(rec){
       residentialGroup:residentialGroup
     };
     loadedTiles.set(key,item);
+    conformRoadTileToGlb(key);
     SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.tiles=loadedTiles.size;
     SATELLITE_FOOTPRINT_AUDIT.runtimeCounts.models+=colliderCount;
     freezeStaticRoot(root);
@@ -2830,6 +2927,7 @@ async function boot(){
     tileScale:TILE_SCALE,
     tileGroundY:TILE_GROUND_Y,
     roadSurfaceY:ROAD_SURFACE_Y,
+    conformRoadTileToGlb:conformRoadTileToGlb,
     wallpaperAtlas:stripWallpaperAtlas,
     residentialWallpaperAtlas:residentialWallpaperAtlas,
     get wallpaperShellCount(){return wallpaperShellCount},

@@ -2,10 +2,11 @@
   "asset_type": "character",
   "defaults": {
     "name": "JC",
-    "theme": "photoreal real-life version of the established JC identity",
+    "theme": "photoreal modern apocalyptic street-warrior JC",
     "identity_lock": true,
     "outputs": [
       "identity_sheet",
+      "turnaround_sheet",
       "expression_sheet",
       "outfit_sheet",
       "albedo",
@@ -23,12 +24,30 @@
     }
   },
   "target_height_m": 1.85,
+  "visual_lock": {
+    "hair": "shoulder-length dark brown to black hair, loose and slightly wet/textured",
+    "facial_hair": "full dark beard and mustache",
+    "face": "rugged adult male, intense eyes, realistic skin and facial wear",
+    "outfit": "all-black layered tactical/biker streetwear with distressed hooded long duster, fitted shirt, utility straps, cargo pants, bracers and heavy combat boots",
+    "jewelry": "large antique-metal Christian cross pendant on chain",
+    "silhouette": "athletic muscular realistic human proportions; intimidating but human scale",
+    "palette": "charcoal black, worn leather, dark steel, subtle warm metal cross accents",
+    "forbidden": [
+      "white robe default outfit",
+      "white tracksuit",
+      "cartoon chibi proportions",
+      "default halo",
+      "oversized superhero anatomy"
+    ]
+  },
   "prompt_rules": [
     "preserve the same face and identity across every output",
+    "match the approved modern black-clad JC reference direction",
     "realistic human proportions and anatomy",
-    "neutral front three-quarter and profile identity views",
-    "consistent hair facial hair skin tone scars and clothing cues",
-    "materials must support realistic skin cloth hair and eye shading",
-    "holy variants are effects layered over the same identity, never a new face"
+    "front back left and right turnaround views must align in scale",
+    "keep shoulder-length dark hair full beard black tactical duster and cross pendant consistent",
+    "materials must support realistic skin cloth worn leather dark metal hair and eye shading",
+    "holy variants are VFX layers over the same identity, never a new costume or face",
+    "JC must remain human scale in the Las Vegas world and never tower over houses"
   ]
 }

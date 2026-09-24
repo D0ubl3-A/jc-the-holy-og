@@ -4,6 +4,14 @@ name: Validate JC Full Strip
 # two workflows never fight over the same GitHub Pages environment.
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-strip-upgrade.yml"
+      - "index.html"
+      - "real-city-climb-demo.html"
+      - "jc-the-holy-og-assets/**"
+      - "jc-map/roads/**"
   push:
     branches: [main]
     paths:
@@ -35,10 +43,26 @@ jobs:
           test -s real-city-climb-demo.html
           test -s jc-the-holy-og-assets/real-city-climb-demo.js
           test -s jc-the-holy-og-assets/full-strip-runtime.js
+          test -s jc-the-holy-og-assets/jc-character-atlas-v2-data.js
+          test -s jc-the-holy-og-assets/jc-avatar-data/part01.js
+          test -s jc-the-holy-og-assets/jc-avatar-data/part02.js
+          test -s jc-the-holy-og-assets/jc-avatar-data/part03.js
+          test -s jc-the-holy-og-assets/jc-avatar-data/part04.js
           test -s jc-map/roads/manifest.json
           test -s jc-map/roads/major-roads.json
           node --check jc-the-holy-og-assets/real-city-climb-demo.js
+          node --check jc-the-holy-og-assets/jc-character-atlas-v2-data.js
+          node --check jc-the-holy-og-assets/jc-avatar-data/part01.js
+          node --check jc-the-holy-og-assets/jc-avatar-data/part02.js
+          node --check jc-the-holy-og-assets/jc-avatar-data/part03.js
+          node --check jc-the-holy-og-assets/jc-avatar-data/part04.js
           node --check jc-the-holy-og-assets/full-strip-runtime.js
+          node --input-type=module - <<'JS'
+          import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-the-holy-og-assets/jc-character-atlas-v2-data.js";
+          if (!JC_CHARACTER_ATLAS_DATA_URL.startsWith("data:image/webp;base64,UklGR")) throw new Error("JC avatar data URL is not WebP");
+          if (JC_CHARACTER_ATLAS_DATA_URL.length < 30000) throw new Error("JC avatar atlas payload is unexpectedly small");
+          console.log("JC avatar atlas payload", JC_CHARACTER_ATLAS_DATA_URL.length);
+          JS
           node --check jc-the-holy-og-assets/real-vegas-district-runtime.js
           node --check jc-the-holy-og-assets/real-vegas-collision-runtime.js
 

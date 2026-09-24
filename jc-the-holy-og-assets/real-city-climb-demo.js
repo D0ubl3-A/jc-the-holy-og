@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
+import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -12,6 +13,17 @@ const destinationEl=document.getElementById("destination");
 const hyperFxEl=document.getElementById("hyperFx");
 const missionEl=document.getElementById("mission");
 const creditEl=document.getElementById("credit");
+const healthFillEl=document.getElementById("healthFill");
+const healthTextEl=document.getElementById("healthText");
+const divineFillEl=document.getElementById("divineFill");
+const divineTextEl=document.getElementById("divineText");
+const controllerLabelEl=document.getElementById("controllerLabel");
+const abilityStatusEl=document.getElementById("abilityStatus");
+const hudSpeedEl=document.getElementById("hudSpeed");
+const hudAltitudeEl=document.getElementById("hudAltitude");
+const hudFpsEl=document.getElementById("hudFps");
+const hudRoadsEl=document.getElementById("hudRoads");
+const radarArrowEl=document.getElementById("radarArrow");
 
 const lowSpec=matchMedia("(pointer:coarse)").matches||(navigator.hardwareConcurrency||4)<=4||("deviceMemory" in navigator&&(navigator.deviceMemory||4)<=4);
 const scene=new THREE.Scene();
@@ -2169,16 +2181,24 @@ const player={
   flightMode:"FLIGHT",
   grounded:false
 };
-const jcAtlas=new THREE.TextureLoader().load("./jc-the-holy-og-assets/character-atlas.png");
+const jcAtlas=new THREE.TextureLoader().load(JC_CHARACTER_ATLAS_DATA_URL);
 jcAtlas.colorSpace=THREE.SRGBColorSpace;
 jcAtlas.wrapS=jcAtlas.wrapT=THREE.RepeatWrapping;
-jcAtlas.repeat.set(0.25,0.5);
-jcAtlas.offset.set(0,0.5);
+jcAtlas.repeat.set(0.25,1);
+jcAtlas.offset.set(0,0);
 const jcMaterial=new THREE.SpriteMaterial({map:jcAtlas,transparent:true,depthWrite:false,alphaTest:0.08,toneMapped:false});
 const jcSprite=new THREE.Sprite(jcMaterial);
 jcSprite.center.set(0.5,0);
-jcSprite.scale.set(1.55,1.85,1);
+jcSprite.scale.set(0.88,2.25,1);
 player.root.add(jcSprite);
+const footShadow=new THREE.Mesh(
+  new THREE.CircleGeometry(0.48,20),
+  new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.34,depthWrite:false})
+);
+footShadow.rotation.x=-Math.PI/2;
+footShadow.position.y=0.018;
+footShadow.renderOrder=1;
+player.root.add(footShadow);
 const glow=new THREE.PointLight(0xffd45a,5,30,2);
 glow.position.y=2.4;
 player.root.add(glow);
@@ -2228,7 +2248,7 @@ const powerState={
 const powerFx=[];
 const powerHud=document.createElement("div");
 powerHud.id="powerHud";
-powerHud.style.cssText="position:fixed;right:14px;top:14px;z-index:7;min-width:280px;padding:10px 12px;background:rgba(5,5,9,.84);border-right:3px solid #ffd45a;font:12px/1.45 Arial,sans-serif;color:white;pointer-events:none";
+powerHud.style.cssText="position:fixed;right:18px;top:18px;z-index:7;width:min(310px,38vw);padding:12px 14px;background:linear-gradient(135deg,rgba(7,8,11,.94),rgba(18,15,12,.82));border:1px solid rgba(231,190,94,.42);border-right:4px solid #d8ad4b;border-radius:5px;box-shadow:0 12px 36px rgba(0,0,0,.42),inset 0 0 24px rgba(255,205,90,.035);font:700 11px/1.45 Arial,sans-serif;color:#f7f1df;letter-spacing:.035em;pointer-events:none;text-transform:uppercase";
 document.body.appendChild(powerHud);
 
 const powerFlash=document.createElement("div");
@@ -2619,7 +2639,13 @@ function updatePowers(dt){
   const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
   const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
   const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<b style='color:"+(powerState.controller==="JC"?"#ffe58a":"#ff4b32")+"'>"+powerState.controller+"</b> · POWER "+Math.round(meter)+"%"+health+combo+"<br>"+names.join("<br>")+"<br><span style='opacity:.75'>"+rez+" · E ABILITY WHEEL · G SOUL WEAPON · I INFLUENCE · Y RESTORE · T switch</span>";
+  powerHud.innerHTML="<div style='display:flex;justify-content:space-between;align-items:center;gap:10px'><b style='font-size:16px;color:"+(powerState.controller==="JC"?"#f0c65d":"#ff604b")+"'>"+powerState.controller+"</b><span>POWER "+Math.round(meter)+"%</span></div><div style='margin-top:7px;opacity:.82'>"+names.join(" · ")+"</div><div style='margin-top:7px;color:#d9c89f'>"+(powerState.lastAbility||"READY")+" "+combo+" "+rez+"</div>";
+  if(healthFillEl)healthFillEl.style.width=THREE.MathUtils.clamp(powerState.health/powerState.maxHealth*100,0,100)+"%";
+  if(healthTextEl)healthTextEl.textContent=Math.round(powerState.health)+" / "+Math.round(powerState.maxHealth);
+  if(divineFillEl)divineFillEl.style.width=Math.round(meter)+"%";
+  if(divineTextEl)divineTextEl.textContent=Math.round(meter)+"%";
+  if(controllerLabelEl)controllerLabelEl.textContent=powerState.controller;
+  if(abilityStatusEl)abilityStatusEl.textContent=powerState.lastAbility||"READY";
 }
 function syncControlledAvatar(){
   if(powerState.controller==="SATAN")satanRoot.position.copy(player.pos);
@@ -2953,7 +2979,7 @@ function updatePlayer(dt){
   const rel=Math.atan2(Math.sin(player.yaw-viewYaw),Math.cos(player.yaw-viewYaw));
   let frame=Math.abs(rel)>2.35?1:Math.abs(rel)<0.78?0:rel>0?2:3;
   jcAtlas.offset.x=frame*0.25;
-  jcAtlas.offset.y=0.5;
+  jcAtlas.offset.y=0;
 
   const speedFx=THREE.MathUtils.clamp(player.mach/10,0,1);
   flightRing.material.opacity=THREE.MathUtils.lerp(
@@ -3029,6 +3055,11 @@ function updateHud(){
   const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
+  if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
+  if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
+  if(hudRoadsEl)hudRoadsEl.textContent=roadSegs.toLocaleString()+" ROAD SEG";
+  if(radarArrowEl)radarArrowEl.style.transform="translate(-50%,-50%) rotate("+THREE.MathUtils.radToDeg(-player.yaw)+"deg)";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }

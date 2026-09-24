@@ -1,7 +1,7 @@
 {
   "objective": "section by section recreate Las Vegas in full reality",
   "current_section": "strip-core",
-  "section_state": "in_progress",
+  "section_state": "production_pass",
   "implemented": [
     "authoritative OSM road geometry",
     "Strip GLB principal-axis and boulevard anchor alignment",
@@ -15,7 +15,12 @@
     "intersection-aware traffic routing and red-light stops",
     "same-lane vehicle following distance",
     "sidewalk-bound pedestrian routing",
-    "section streaming metadata"
+    "section streaming metadata",
+    "citywide sidewalk strips derived from eligible OSM road classes",
+    "mapped OSM service-road access aprons for driveways alleys and parking access",
+    "intersection-derived crosswalk markings with inferred-data labeling",
+    "GLB-first city rendering with GIS district fallback on missing cells",
+    "land-use-aware residential commercial industrial and Strip/casino material zoning"
   ],
   "remaining_for_strip_core": [
     "turn lanes and protected signal phases",
@@ -25,5 +30,18 @@
     "service alleys and parking structures",
     "utility and emergency simulation"
   ],
-  "planned_sections": ["strip-south","strip-north","downtown","paradise-east","west-resorts","outer-vegas"]
+  "planned_sections": [
+    "strip-south",
+    "strip-north",
+    "downtown",
+    "paradise-east",
+    "west-resorts",
+    "outer-vegas"
+  ],
+  "updated_at": "2026-09-24",
+  "notes": [
+    "Exact surveyed private driveways are not fabricated where source data is absent.",
+    "Intersection crosswalks are inferred from connected road topology unless separately source-tagged.",
+    "Hosted GLBs remain authoritative over GIS fallback geometry."
+  ]
 }

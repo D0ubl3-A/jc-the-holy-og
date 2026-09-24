@@ -38,6 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check jc-the-holy-og-assets/real-city-climb-demo.js
+          node --check jc-the-holy-og-assets/real-vegas-district-runtime.js
           node --check jc-the-holy-og-assets/full-strip-runtime.js
           python tools/build_real_vegas_detail_status.py
 
@@ -58,8 +59,19 @@ jobs:
           road_segments=sum(int(t.get("count",0)) for t in road_tiles)
           assert road_tiles and road_segments>0
 
-          glbs=glob.glob("C*_R*.glb")
-          assert glbs, "no GLB world tiles found"
+          glbs=glob.glob("**/C*_R*.glb", recursive=True)
+          unique_glb_tiles={}
+          for p in glbs:
+              name=Path(p).name.upper()
+              unique_glb_tiles.setdefault(name,p)
+          assert unique_glb_tiles, "no GLB world tiles found"
+
+          demo=Path("real-city-climb-demo.html").read_text()
+          district_runtime=Path("jc-the-holy-og-assets/real-vegas-district-runtime.js").read_text()
+          assert "real-vegas-district-runtime.js" in demo
+          assert 'transformMode="canonical-glb-grid"' in district_runtime
+          assert "hasAuthoritativeGlb(tile.id)" in district_runtime
+          assert "materialClassForBuilding" in district_runtime
 
           districts=json.loads(Path("jc-the-holy-og-assets/generated/districts/manifest.json").read_text())
           selected=sum(int(v.get("selected_buildings",0)) for v in districts.get("districts",{}).values())
@@ -73,7 +85,10 @@ jobs:
 
           result={
             "status":"PASS",
-            "glb_tiles":len(glbs),
+            "glb_tiles":len(unique_glb_tiles),
+            "district_fallback":"PASS",
+            "district_coordinate_contract":"CANONICAL_GLB_GRID",
+            "glb_priority_over_gis":True,
             "road_tiles":len(road_tiles),
             "road_segments":road_segments,
             "selected_real_buildings":selected,

@@ -2156,7 +2156,8 @@ async function streamTiles(force){
   }
 }
 
-const STRIP_SPAWN=new THREE.Vector3(752.6,4,-630.0);
+const STRIP_SPAWN=new THREE.Vector3(1250,4,-850);
+const SPAWN_TILE="C20_R16";
 const player={
   root:new THREE.Group(),
   pos:STRIP_SPAWN.clone(),
@@ -3035,15 +3036,15 @@ async function boot(){
   player.pos.copy(STRIP_SPAWN);
   player.velocity.set(0,0,0);
   player.yaw=Math.PI;
-  if(locationEl)locationEl.textContent="LAS VEGAS STRIP";
-  if(creditEl)creditEl.textContent="JC Map • START: Las Vegas Strip • streaming C##_R## GLB tiles";
+  if(locationEl)locationEl.textContent="NEW TILE ZONE · "+SPAWN_TILE;
+  if(creditEl)creditEl.textContent="JC Map • START: "+SPAWN_TILE+" • new 163-tile zone";
   await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
   await initializeFactoryWallpapers();
   rebuildDestinations();
   await loadWorldLod();
   await loadRoadRuntime();
   bufferState.total=manifest.length;
-  if(progressEl)progressEl.textContent="BUFFERING STRIP START AREA…";
+  if(progressEl)progressEl.textContent="BUFFERING NEW 163-TILE START AREA…";
   await Promise.all([streamTiles(true),streamRoadTiles(true)]);
   updateBufferedVisibility(true);
   if(progressEl)progressEl.textContent="STRIP READY · background map buffering active";

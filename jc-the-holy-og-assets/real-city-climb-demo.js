@@ -1801,7 +1801,8 @@ function updateAdaptiveResolution(dt){
   perfFrames=0;
 
   let target=dynamicPixelRatio;
-  if(fpsEstimate<24)target=Math.max(0.40,dynamicPixelRatio-0.18);\n  else if(fpsEstimate<32)target=Math.max(0.48,dynamicPixelRatio-0.14);
+  if(fpsEstimate<24)target=Math.max(0.40,dynamicPixelRatio-0.18);
+  else if(fpsEstimate<32)target=Math.max(0.48,dynamicPixelRatio-0.14);
   else if(fpsEstimate<42)target=Math.max(0.55,dynamicPixelRatio-0.10);
   else if(fpsEstimate>57)target=Math.min(Math.min(devicePixelRatio,MAX_RENDER_PIXEL_RATIO),dynamicPixelRatio+0.04);
 

@@ -72,6 +72,10 @@ jobs:
           assert 'transformMode="canonical-glb-grid"' in district_runtime
           assert "hasAuthoritativeGlb(tile.id)" in district_runtime
           assert "materialClassForBuilding" in district_runtime
+          assert "jcStreetFeature" in runtime
+          assert '"sidewalk"' in runtime
+          assert '"mapped-service-access"' in runtime
+          assert '"inferred-crosswalk"' in runtime
 
           districts=json.loads(Path("jc-the-holy-og-assets/generated/districts/manifest.json").read_text())
           selected=sum(int(v.get("selected_buildings",0)) for v in districts.get("districts",{}).values())
@@ -89,6 +93,9 @@ jobs:
             "district_fallback":"PASS",
             "district_coordinate_contract":"CANONICAL_GLB_GRID",
             "glb_priority_over_gis":True,
+            "street_sidewalk_layer":"PASS",
+            "mapped_service_access_layer":"PASS",
+            "intersection_crosswalk_layer":"PASS",
             "road_tiles":len(road_tiles),
             "road_segments":road_segments,
             "selected_real_buildings":selected,

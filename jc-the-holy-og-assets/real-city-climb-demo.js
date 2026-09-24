@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
+import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -2180,7 +2181,7 @@ const player={
   flightMode:"FLIGHT",
   grounded:false
 };
-const jcAtlas=new THREE.TextureLoader().load("./jc-the-holy-og-assets/jc-character-atlas-v2.webp");
+const jcAtlas=new THREE.TextureLoader().load(JC_CHARACTER_ATLAS_DATA_URL);
 jcAtlas.colorSpace=THREE.SRGBColorSpace;
 jcAtlas.wrapS=jcAtlas.wrapT=THREE.RepeatWrapping;
 jcAtlas.repeat.set(0.25,1);

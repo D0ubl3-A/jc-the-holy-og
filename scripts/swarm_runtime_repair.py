@@ -134,3 +134,5 @@ truth = {
 }
 TRUTH.write_text(json.dumps(truth, indent=2) + "\n", encoding="utf-8")
 print(json.dumps(truth, indent=2))
+
+# Swarm rerun trigger: 2026-09-24 production advancement pass

@@ -78,4 +78,3 @@ jobs:
             world/online-evidence-run-pointer-v4.json
           compression-level: 6
           retention-days: 30
-          retention-days: 30

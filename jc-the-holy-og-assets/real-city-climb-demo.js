@@ -253,6 +253,17 @@ const LANDMARK_WALLPAPER_RULES=[
   {name:"PSALMS",aliases:["PALMS"],col:14,row:13,profile:4},
   {name:"ALLEGIANT STADIUM",col:14,row:15,profile:5}
 ];
+function isLandmarkWallpaperTile(rec){
+  return LANDMARK_WALLPAPER_RULES.some(function(rule){
+    return rule.col===rec.col&&rule.row===rec.row;
+  });
+}
+function shouldUseStripWallpaper(rec){
+  // Heavy casino/infernal facade art is restricted to the real Strip core and
+  // explicitly registered landmark tiles. Residential/ordinary city tiles keep
+  // their own materials instead of inheriting casino wallpaper.
+  return isStripWallpaperTile(rec)||isLandmarkWallpaperTile(rec);
+}
 function landmarkWallpaperRule(rec,o){
   const n=((o&&o.name)||"").toUpperCase();
   return LANDMARK_WALLPAPER_RULES.find(function(rule){
@@ -304,6 +315,7 @@ function wallpaperProfileIndex(rec,center,slot,name){
 }
 function buildStripWallpaper(root,rec){
   if(!wallpaperAssetsReady||!stripWallpaperAtlas)return null;
+  if(!shouldUseStripWallpaper(rec))return null;
 
   root.updateMatrixWorld(true);
   const candidates=[];

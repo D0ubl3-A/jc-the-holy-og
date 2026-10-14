@@ -211,6 +211,16 @@ jobs:
             echo "No Library archive present; safe fallback retained."
           fi
 
+      - name: Bake one full-city skinned sky overview from all 595 source tiles
+        run: |
+          set -euo pipefail
+          if [ -f _site/jc-the-holy-og-assets/library-city/manifest.json ]; then
+            python -c 'import PIL' || python -m pip install --quiet "Pillow>=10,<13"
+            python tools/build_library_sky_overview.py --root _site/jc-the-holy-og-assets/library-city
+          else
+            echo "No uploaded Library tiles; keep existing low-memory fallback mode."
+          fi
+
       - name: Attach the prebuilt unified 134-tile city to the website
         env:
           GH_TOKEN: ${{ github.token }}
@@ -352,6 +362,8 @@ jobs:
           node --check _site/jc-the-holy-og-assets/jc-city-mirror-finish.js
           node --check _site/jc-the-holy-og-assets/jc-gta-vegas-map.js
           node --check _site/jc-the-holy-og-assets/jc-library-city-runtime.js
+          node --check _site/jc-the-holy-og-assets/jc-building-skins.js
+          node --check _site/jc-the-holy-og-assets/jc-sky-overview.js
           node --check _site/jc-the-holy-og-assets/real-vegas-district-runtime.js
           python - <<'PY'
           import json
@@ -386,6 +398,15 @@ jobs:
           assert 'jumpToRealLibraryCity' in city
           assert 'tileFromTenPack' in Path("_site/jc-the-holy-og-assets/jc-library-city-runtime.js").read_text()
           assert 'id="jcLibraryJump"' in html
+          assert 'id="jcSkyView"' in html
+          assert 'toggleSkyMapView' in city and 'JC_FORCE_SKY_MAP' in city
+          runtime=Path("_site/jc-the-holy-og-assets/jc-library-city-runtime.js").read_text()
+          assert 'createJcBuildingSkins' in runtime
+          assert 'createJcSkyOverview' in runtime
+          skins=Path("_site/jc-the-holy-og-assets/jc-building-skins.js").read_text()
+          assert skins.count('facade-atlas-0')==6
+          assert 'residential-wallpaper-atlas.jpg' in skins
+          assert 'strip-wallpaper-atlas.jpg' in skins
           library=Path("_site/jc-the-holy-og-assets/library-city/manifest.json")
           if library.is_file():
               lm=json.loads(library.read_text())
@@ -396,6 +417,25 @@ jobs:
               assert lm["batches"][-1]["tileCount"]==5
               for b in lm["batches"]:
                   assert (library.parent/b["file"]).is_file(), b["file"]
+              sky=lm.get("sky",{})
+              assert sky.get("sourceTileCount")==595
+              assert sky.get("sourceBuildingCount")==216807
+              assert 0<sky.get("sampleBuildingCount",0)<=14875
+              import hashlib
+              terrain=library.parent/sky["terrain"]
+              assert terrain.is_file() and terrain.stat().st_size>10000
+              assert hashlib.sha256(terrain.read_bytes()).hexdigest()==sky["terrainSha256"]
+              overview=library.parent/sky["file"]
+              assert overview.is_file()
+              a=json.loads(overview.read_text())
+              assert a["schema"]=="jc-library-sky-lod-v1"
+              assert a["sourceTileCount"]==595 and a["sourceBuildingCount"]==216807
+              assert a["sampleBuildingCount"]==sky["sampleBuildingCount"]
+              assert len(a["q"])==a["sampleBuildingCount"]*6
+              assert a["atlasPixels"]==[1088,2240]
+              for name in ["facade-atlas-%02d.jpg"%i for i in range(1,7)]:
+                  assert (Path("_site/jc-the-holy-og-assets/swarm/buildings")/name).is_file()
+              print("PASS: full 595-tile geo mosaic and",a["sampleBuildingCount"],"geo-aligned skinned sky buildings")
               print("PASS: 595 user-owned Library tiles ACTIVE in game across 60 ten-tile packs")
           else:
               print("STAGED: Library city ZIP not uploaded yet; safe GTA map remains default")

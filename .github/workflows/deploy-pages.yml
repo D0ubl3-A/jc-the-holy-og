@@ -119,9 +119,11 @@ jobs:
               assert p.is_file(), "Missing tile: "+str(p)
               t=json.loads(p.read_text())
               assert t["n"]==tile["n"] and len(t["q"])==t["n"]*5
+              texture=root/"imagery"/f"C{tile['c']:02d}_R{tile['r']:02d}.webp"
+              assert texture.is_file() and texture.stat().st_size>0, "Missing real imagery "+str(texture)
               total+=t["n"]
           assert total==216807
-          print("PASS: installed all 595 library tiles and",total,"source buildings")
+          print("PASS: installed all 595 library tiles,",total,"source buildings and 595 aerial textures")
           PY
             rm -f _site/JC_Library_City_Tiles_595_ROOT.zip
           else

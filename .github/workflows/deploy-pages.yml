@@ -363,6 +363,8 @@ jobs:
           node --check _site/jc-the-holy-og-assets/jc-gta-vegas-map.js
           node --check _site/jc-the-holy-og-assets/jc-library-city-runtime.js
           node --check _site/jc-the-holy-og-assets/jc-building-skins.js
+          node --check _site/jc-the-holy-og-assets/jc-neighborhood-houses.js
+          node --check _site/jc-the-holy-og-assets/jc-paved-roads.js
           node --check _site/jc-the-holy-og-assets/jc-sky-overview.js
           node --check _site/jc-the-holy-og-assets/jc-detailed-terrain.js
           node --check _site/jc-the-holy-og-assets/real-vegas-district-runtime.js
@@ -414,7 +416,28 @@ jobs:
           assert 'const terrainShow=ready' in sky_runtime
           assert 'y>=140' not in sky_runtime
           assert 'GTA_VEGAS_MODE&&libraryCity?.active?0.000013' in city
-          assert 'jc-neighborhood-skins-v1' in html
+          assert 'jc-neighborhood-houses-paved-v1' in html
+          assert 'createJcPavedRoads' in city and 'pavedRoads?.update()' in city
+          assert 'pavedRoads=await createJcPavedRoads' in city
+          houses=Path("_site/jc-the-holy-og-assets/jc-neighborhood-houses.js").read_text()
+          assert 'attachNeighborhoodHouses' in houses
+          assert 'houseBodyHeight' in houses
+          assert 'gable' in houses and 'hip' in houses and 'parapet' in houses
+          assert 'NEIGHBORHOOD_GARAGE_DETAILS' in houses
+          assert 'attachNeighborhoodHouses(' in runtime
+          assert 'houseBodyHeight(home,skins)' in runtime
+          assert 'attachNeighborhoodHouses(skyBuildings,homes,skins' in sky_runtime
+          paved=Path("_site/jc-the-holy-og-assets/jc-paved-roads.js").read_text()
+          assert 'jc-map/roads/' in paved and 'JC_REAL_OSM_PAVED_STREETS' in paved
+          assert 'buckets[kind]' in paved and 'buckets.sidewalk' in paved
+          assert 'PAVED_' in paved and 'road.o' in paved
+          sample_path=Path("_site/jc-map/roads/tiles/C22_R18.json")
+          assert sample_path.is_file()
+          road_sample=json.loads(sample_path.read_text())
+          assert road_sample["col"]==22 and road_sample["row"]==18
+          assert len(road_sample["roads"])>20
+          assert any(r.get("h")=="residential" for r in road_sample["roads"])
+          print("PASS: actual OSM road paving and geographic house archetypes integrated in JC play")
           assert 'neighborhood-skins.json' in runtime
           assert 'skins.index(tile.c,tile.r,j,data.q[i+2],wx,wz,data.q[i+3])' in runtime
           config_path=Path("_site/jc-map/neighborhood-skins.json")

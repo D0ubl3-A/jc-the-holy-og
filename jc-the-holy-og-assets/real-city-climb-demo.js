@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
+import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -130,7 +131,10 @@ const FULL_MAP_MODE=false;
 // The user-facing default preloads ONE prebuilt 134-tile GLB before the first frame.
 // ?mode=stream is the explicit low-memory recovery path for phones without enough RAM.
 const requestedCityMode=new URLSearchParams(location.search).get("mode");
-const ONE_FILE_CITY=requestedCityMode==="full"||requestedCityMode==="one"||(!lowSpec&&requestedCityMode!=="stream");
+const GTA_VEGAS_MODE=requestedCityMode==="gta"||requestedCityMode==="map"||!["full","one","stream"].includes(requestedCityMode);
+const ONE_FILE_CITY=!GTA_VEGAS_MODE&&(requestedCityMode==="full"||requestedCityMode==="one");
+window.JC_GTA_VEGAS_MODE=GTA_VEGAS_MODE;
+let gtaMapControl=null;
 // Mobile/coarse-pointer devices now start in the lighter city renderer. The
 // previous 262 MB single-GLB default triggered repeated iOS Safari page crashes.
 window.JC_MOBILE_SAFE_DEFAULT=lowSpec&&!ONE_FILE_CITY;
@@ -1043,6 +1047,7 @@ async function preloadAllRoadTiles(){
   }
 }
 async function streamRoadTiles(force){
+  if(GTA_VEGAS_MODE)return; // Street geography is shown on the real map instead.
   if(FULL_MAP_MODE){
     if(force&&loadedRoadTiles.size===0)await preloadInitialRoadTiles();
     return;
@@ -2185,6 +2190,7 @@ async function bufferRemainingMap(){
 }
 
 async function streamTiles(force){
+  if(GTA_VEGAS_MODE)return; // Geographic GTA Vegas gameplay never requests bulky legacy GLB files.
   if(ONE_FILE_CITY)return; // All 134 original GLBs are already resident in one scene.
   if(FULL_MAP_MODE){
     if(force&&loadedTiles.size===0)await preloadInitialTiles();
@@ -2774,6 +2780,16 @@ function currentCellName(){
   return tileKey(c.col,c.row);
 }
 function rebuildDestinations(){
+  if(GTA_VEGAS_MODE){
+    destinations=GTA_VEGAS_LANDMARKS.map(function(place){
+      const p=gtaVegasToWorld(place.lat,place.lng);
+      return {name:place.name,x:p.x,y:24,z:p.z,lat:place.lat,lng:place.lng};
+    }).sort(function(a,b){
+      return Math.hypot(player.pos.x-a.x,player.pos.z-a.z)-Math.hypot(player.pos.x-b.x,player.pos.z-b.z);
+    });
+    destinationIndex=0;
+    return;
+  }
   destinations=manifest.map(function(t){
     const p=tileWorldPosition(t.col,t.row);
     return {name:tileKey(t.col,t.row),x:p.x+TILE_WORLD_SIZE*0.5,y:24,z:p.z-TILE_WORLD_SIZE*0.5};
@@ -2806,7 +2822,7 @@ function toggleFlight(){
     player.pos.y=Math.max(GROUND_Y,player.pos.y);
     player.velocity.set(0,0,0);
   }
-  flightStateEl.textContent=player.flying?"FLIGHT ON · REAL GLB MAP":"GROUND MODE";
+  flightStateEl.textContent=player.flying?(GTA_VEGAS_MODE?"FLIGHT ON · GTA VEGAS MAP":"FLIGHT ON · REAL GLB MAP"):"GROUND MODE";
   flightStateEl.style.color=player.flying?"#ffd45a":"#7de6ff";
 }
 function applyLook(dx,dy){
@@ -3103,10 +3119,10 @@ function updateCamera(dt){
 }
 function updateHud(){
   const cell=currentCellName();
-  locationEl.textContent=cell+" · JC REAL GLB MAP";
+  locationEl.textContent=GTA_VEGAS_MODE?"LAS VEGAS · GTA GPS MAP":cell+" · JC REAL GLB MAP";
   const districtStatus=window.JC_REAL_VEGAS_DISTRICT_STATUS;
   const visibleFootprints=districtStatus?.visibleTiles||0;
-  progressEl.textContent=ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
+  progressEl.textContent=GTA_VEGAS_MODE?"LIVE REAL STREET MAP · LIGHT 3D · JC POWERS ACTIVE":ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
     (loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible");
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
@@ -3121,7 +3137,8 @@ function updateHud(){
     (" · CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
   const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs"+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  if(gtaMapControl)gtaMapControl.update();
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
@@ -3185,9 +3202,30 @@ async function boot(){
   player.yaw=Math.PI;
   if(locationEl)locationEl.textContent="NEW TILE ZONE · "+SPAWN_TILE;
   if(creditEl)creditEl.textContent="JC Map • STRIP START: "+SPAWN_TILE+" • source-based buildings";
-  await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
-  rebuildDestinations();
-  if(ONE_FILE_CITY){
+  if(GTA_VEGAS_MODE){
+    // Transfer GTA Vegas' geographic world and its mobile-lightweight 3D city.
+    // The real street basemap syncs with the player's position and JC powers.
+    buildGtaVegasCity(unifiedCityGroup,lowSpec);
+    rebuildDestinations();
+    gtaMapControl=initializeGtaVegasMap({
+      player,
+      onTarget:function(place){
+        const p=gtaVegasToWorld(place.lat,place.lng);
+        destinations.unshift({name:place.name,x:p.x,y:24,z:p.z,lat:place.lat,lng:place.lng});
+        destinationIndex=0;
+        destinationEl.textContent="TARGET: "+place.name+" · HYPER READY";
+      },
+      onTravel:function(){beginHyperspeed();}
+    });
+    if(progressEl)progressEl.textContent="GTA VEGAS MAP READY · LIGHT 3D CITY";
+    gtaMapControl.update(true);
+  }else{
+    await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
+    rebuildDestinations();
+  }
+  if(GTA_VEGAS_MODE){
+    // No 262MB city, no source-district geometry pipeline, no blocking map loads.
+  }else if(ONE_FILE_CITY){
     // No GLB streaming or duplicated city LOD. The city finishes decoding
     // before gameplay starts, and is never removed as the player moves.
     await preloadOneCityFile();
@@ -3217,6 +3255,8 @@ async function boot(){
     stripSpawn:STRIP_SPAWN.clone(),
     fullMapMode:FULL_MAP_MODE,
     oneFileCity:ONE_FILE_CITY,
+    gtaVegasMode:GTA_VEGAS_MODE,
+    gtaMapControl:gtaMapControl,
     get fullyPreloaded(){return singleCityLoaded},
     get completeCityGeometry(){return singleCityGeometry},
     dataBuffering:DATA_BUFFERING,
@@ -3276,11 +3316,11 @@ async function boot(){
   };
   window.JC_UNIFIED_CITY={root:unifiedCityGroup,sourceGlbCount:manifest.length,loadedGlbs:loadedTiles,
     roadGroup:roadTileGroup,lowDetailGroup:worldLodGroup,
-    note:ONE_FILE_CITY?"ONE COMPLETE PREDECODED GLB · ALL BUILDINGS RESIDENT BEFORE PLAY":"LOW MEMORY STREAMING RECOVERY MODE"};
+    note:GTA_VEGAS_MODE?"GTA VEGAS GPS MAP · REAL 2D STREETS AND STYLIZED 3D BUILDINGS":ONE_FILE_CITY?"ONE COMPLETE PREDECODED GLB":"LEGACY STREAM MODE"};
   if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
   // One shared city capture, not a mirror camera per building.
-  if(!lowSpec)setTimeout(()=>mirrorFinish.capture(player,true),ONE_FILE_CITY?450:750);
+  if(!lowSpec&&!GTA_VEGAS_MODE)setTimeout(()=>mirrorFinish.capture(player,true),ONE_FILE_CITY?450:750);
   if(DATA_BUFFERING)bufferRemainingMap();
 }
 let streamClock=0;
@@ -3325,7 +3365,7 @@ function frame(){
   renderer.render(scene,camera);
   if(!frame._probeClock)frame._probeClock=0;
   frame._probeClock+=dt;
-  if(!lowSpec&&frame._probeClock>21&&fpsEstimate>35){frame._probeClock=0;mirrorFinish.capture(player);}
+  if(!lowSpec&&!GTA_VEGAS_MODE&&frame._probeClock>21&&fpsEstimate>35){frame._probeClock=0;mirrorFinish.capture(player);}
 }
 addEventListener("resize",function(){
   camera.aspect=innerWidth/innerHeight;

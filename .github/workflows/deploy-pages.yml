@@ -199,6 +199,18 @@ jobs:
             echo "Library ZIP not yet in repo: preserving current map until real tiles are supplied."
           fi
 
+      - name: Pack Library city into batches of exactly 10 playable tiles
+        run: |
+          set -euo pipefail
+          if [ -f _site/jc-the-holy-og-assets/library-city/manifest.json ]; then
+            python tools/pack_library_city_batches.py --root _site/jc-the-holy-og-assets/library-city
+          elif compgen -G "JC_LIBRARY_CITY_PART_*.bin" > /dev/null; then
+            echo "::error::Uploaded Library chunks exist, but the city was not installed"
+            exit 1
+          else
+            echo "No Library archive present; safe fallback retained."
+          fi
+
       - name: Attach the prebuilt unified 134-tile city to the website
         env:
           GH_TOKEN: ${{ github.token }}
@@ -375,7 +387,13 @@ jobs:
           if library.is_file():
               lm=json.loads(library.read_text())
               assert lm["tileCount"]==595 and lm["buildingCount"]==216807
-              print("PASS: 595 user-owned Library city model cells published")
+              assert lm["batchCount"]==60 and lm["batchSize"]==10
+              assert len(lm["batches"])==60
+              assert all(b["tileCount"]==10 for b in lm["batches"][:-1])
+              assert lm["batches"][-1]["tileCount"]==5
+              for b in lm["batches"]:
+                  assert (library.parent/b["file"]).is_file(), b["file"]
+              print("PASS: 595 user-owned Library tiles ACTIVE in game across 60 ten-tile packs")
           else:
               print("STAGED: Library city ZIP not uploaded yet; safe GTA map remains default")
           print("PASS: GTA Vegas geographic map, GPS waypoints, lightweight city and JC game hooks")

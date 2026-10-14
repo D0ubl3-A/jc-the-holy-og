@@ -1118,7 +1118,7 @@ function disposeTile(root){
     mats.forEach(function(m){
       if(!m)return;
       ["map","normalMap","roughnessMap","metalnessMap","emissiveMap","aoMap","alphaMap"].forEach(function(k){
-        if(m[k]&&m[k].dispose)m[k].dispose();
+        if(m[k]&&m[k].dispose&&m[k]!==mirrorFinish.sharedFacadeTexture&&m[k]!==mirrorFinish.sharedGlassProperties)m[k].dispose();
       });
       if(m.dispose)m.dispose();
     });

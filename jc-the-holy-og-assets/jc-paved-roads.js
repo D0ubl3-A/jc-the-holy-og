@@ -59,6 +59,23 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
   };
   const poleGeom=new THREE.CylinderGeometry(.033,.046,1,5);
   const lampGeom=new THREE.BoxGeometry(.16,.055,.14);
+  // An additive-looking streetlight glow decal, not costly real point lights.
+  const glowCanvas=document.createElement("canvas");
+  glowCanvas.width=glowCanvas.height=64;
+  const gx=glowCanvas.getContext("2d");
+  const radial=gx.createRadialGradient(32,32,3,32,32,31);
+  radial.addColorStop(0,"rgba(255,211,132,.38)");
+  radial.addColorStop(.42,"rgba(255,190,116,.15)");
+  radial.addColorStop(1,"rgba(255,170,100,0)");
+  gx.fillStyle=radial;gx.fillRect(0,0,64,64);
+  const glowTex=new THREE.CanvasTexture(glowCanvas);
+  glowTex.colorSpace=THREE.SRGBColorSpace;
+  const poolGeom=new THREE.PlaneGeometry(1,1);
+  poolGeom.rotateX(-Math.PI/2);
+  const poolMat=new THREE.MeshBasicMaterial({
+    map:glowTex,transparent:true,depthWrite:false,side:THREE.DoubleSide,
+    toneMapped:false
+  });
   const lampPoleMat=new THREE.MeshStandardMaterial({color:0x6b747c,metalness:.28,roughness:.7});
   const lampHeadMat=new THREE.MeshStandardMaterial({
     color:0xffe5ac,emissive:0xeab86b,emissiveIntensity:1.35,
@@ -212,8 +229,12 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
     if(lamps.length){
       const poles=new THREE.InstancedMesh(poleGeom,lampPoleMat,lamps.length);
       const glow=new THREE.InstancedMesh(lampGeom,lampHeadMat,lamps.length);
+      const halo=new THREE.InstancedMesh(poolGeom,poolMat,lamps.length);
       poles.name="JC_PAVED_LAMP_POLES";
       glow.name="JC_WARM_ROADSIDE_LIGHT_FIXTURES";
+      halo.name="JC_SOFT_STREETLIGHT_FALLOFF";
+      halo.frustumCulled=false;
+      halo.renderOrder=11;
       poles.frustumCulled=false;glow.frustumCulled=false;
       poles.castShadow=false;glow.castShadow=false;
       const dummy=new THREE.Object3D();
@@ -226,10 +247,14 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
         dummy.position.set(o.x,o.h+.03,o.z);
         dummy.scale.set(1,1,1);
         dummy.updateMatrix();glow.setMatrixAt(i,dummy.matrix);
+        dummy.position.set(o.x,.092,o.z);
+        dummy.scale.set(1.6,1,1.6);
+        dummy.updateMatrix();halo.setMatrixAt(i,dummy.matrix);
       }
       poles.instanceMatrix.needsUpdate=true;
       glow.instanceMatrix.needsUpdate=true;
-      tileRoot.add(poles,glow);
+      halo.instanceMatrix.needsUpdate=true;
+      tileRoot.add(poles,glow,halo);
     }
     return {root:tileRoot,segments:paved,lamps:lamps.length,crossings:paintedCrossings.size};
   }

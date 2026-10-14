@@ -92,6 +92,31 @@ jobs:
           print("Indexed", len(tiles), "JC GLB tiles")
           PY
 
+      - name: Attach the prebuilt unified 134-tile city to the website
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p _unified_city _site/jc-the-holy-og-assets/models
+          RUN_ID="$(gh run list --workflow "Export JC One Unified GLB City" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          test -n "$RUN_ID"
+          echo "Using verified 134-tile combined GLB from run $RUN_ID"
+          gh run download "$RUN_ID" -n JC-ONE-UNIFIED-GLB-CITY -D _unified_city
+          python - <<'PY'
+          import json, pathlib, shutil, struct
+          src = pathlib.Path('_unified_city/JC-UNIFIED-CITY.glb')
+          manifest = json.loads(pathlib.Path('_unified_city/JC-UNIFIED-CITY-manifest.json').read_text())
+          assert manifest['mergedTileCount'] == 134, "Must include all 134 checked-in GLBs"
+          with src.open('rb') as fh:
+              magic, version, size = struct.unpack('<III', fh.read(12))
+          assert magic == 0x46546c67 and version == 2 and size == src.stat().st_size
+          dest=pathlib.Path('_site/jc-the-holy-og-assets/models/JC-UNIFIED-CITY.glb')
+          shutil.copyfile(src, dest)
+          pathlib.Path('_site/jc-the-holy-og-assets/models/JC-UNIFIED-CITY-manifest.json').write_text(json.dumps(manifest,indent=2))
+          print('ONE PRELOADED CITY:', dest.stat().st_size, 'bytes')
+          PY
+          rm -rf _unified_city
+
       - name: Build deployed road layers
         env:
           GH_TOKEN: ${{ github.token }}

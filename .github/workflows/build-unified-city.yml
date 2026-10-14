@@ -1,0 +1,64 @@
+name: Export JC One Unified GLB City
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/jc-unify/**"
+      - ".github/workflows/build-unified-city.yml"
+      - "C*_R*.glb"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jc-unified-city-export
+  cancel-in-progress: true
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out every original GLB
+        uses: actions/checkout@v4
+      - name: Node 22 for glTF Transform
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install glTF merge tools
+        run: npm install --prefix tools/jc-unify --omit=dev --no-audit --no-fund
+      - name: Merge every tile into ONE city model
+        env:
+          NODE_OPTIONS: "--max-old-space-size=5500"
+        run: node tools/jc-unify/build.mjs . dist/JC-UNIFIED-CITY.glb
+      - name: Validate combined city export
+        run: |
+          python - <<'PY'
+          import json, pathlib, struct
+          d = pathlib.Path('dist')
+          manifest = json.loads((d/'JC-UNIFIED-CITY-manifest.json').read_text())
+          glb = d/'JC-UNIFIED-CITY.glb'
+          assert glb.stat().st_size > 0
+          with glb.open('rb') as fh:
+              header = fh.read(20)
+              magic, version, size = struct.unpack_from('<III', header, 0)
+              assert magic == 0x46546C67 and version == 2 and size == glb.stat().st_size
+              json_size, json_type = struct.unpack_from('<II', header, 12)
+              assert json_type == 0x4E4F534A
+              data = json.loads(fh.read(json_size))
+          assert len(data['scenes']) == 1, 'Expected one GLB scene'
+          assert len(data['scenes'][0]['nodes']) == manifest['mergedTileCount'], 'Every tile must be one scene child'
+          assert manifest['mergedTileCount'] >= 100, 'An incomplete tile set must fail'
+          print('PASS: one GLB scene,', manifest['mergedTileCount'], 'source tiles,', glb.stat().st_size, 'bytes')
+          PY
+      - name: Downloadable unified city (.glb and report)
+        uses: actions/upload-artifact@v4
+        with:
+          name: JC-ONE-UNIFIED-GLB-CITY
+          path: |
+            dist/JC-UNIFIED-CITY.glb
+            dist/JC-UNIFIED-CITY-manifest.json
+          retention-days: 30
+          if-no-files-found: error

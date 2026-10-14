@@ -12,7 +12,6 @@ import * as THREE from "three";
  */
 const base="./jc-the-holy-og-assets/library-city/";
 const key=(col,row)=>"C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
-const metersPerGameUnit=10;
 export async function installLibraryCity(worldRoot,player,lowSpec){
   let manifest;
   try{
@@ -20,7 +19,10 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     if(!res.ok)throw new Error("no published converted Library tile set (HTTP "+res.status+")");
     manifest=await res.json();
     if(manifest.schema!=="jc-library-city-v1"||manifest.tileCount!==595||
-      manifest.buildingCount!==216807)throw new Error("incomplete or mismatched Library city manifest");
+      manifest.buildingCount!==216807||manifest.batchSize!==10||
+      manifest.batchCount!==60||!Array.isArray(manifest.batches)||
+      manifest.batches.length!==60||manifest.tiles.some(t=>!t.batch))
+      throw new Error("10-tile Library city batch manifest is absent or incomplete");
   }catch(error){
     window.JC_LIBRARY_CITY_STATUS={active:false,installed:false,reason:String(error.message||error)};
     return {active:false,update(){}};
@@ -40,6 +42,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   const color=new THREE.Color();
   const entries=new Map(manifest.tiles.map(t=>[key(t.c,t.r),t]));
   const visible=new Map(),inflight=new Set(),failedTiles=new Set();
+  const loadedBatches=new Map(),downloadingBatches=new Map();
+  let batchesDownloaded=0;
   const playerAt=()=>({
     col:8+Math.floor(player.pos.x/100),
     row:8+Math.floor(-player.pos.z/100)
@@ -52,17 +56,61 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       sourceBuildings:216807,
       visibleTiles:visible.size,visibleBuildings:loadedBuildings,
       loading:inflight.size,failed,source:"Las_Vegas_Editable_City_Part_2.zip",
+      batchSize:10,batchCount:60,
+      batchesDownloaded, batchesCached:loadedBatches.size,
+      activeTileIds:[...visible.keys()],
       fidelity:"Source positions and AABB dimensions; simplified PBR building meshes"
     };
   };
+  // A single HTTP request carries ten real source tile records. Rendering
+  // remains localized: decode only the 3x3 tiles near JC on iPhone.
+  async function tileFromTenPack(tile){
+    const path=tile.batch,id=key(tile.c,tile.r);
+    let pack=loadedBatches.get(path);
+    if(!pack){
+      let task=downloadingBatches.get(path);
+      if(!task){
+        task=(async()=>{
+          const response=await fetch(base+path,{cache:"force-cache"});
+          if(!response.ok)throw new Error("city ten-pack "+path+" HTTP "+response.status);
+          const payload=await response.json();
+          if(payload.schema!=="jc-library-10-tiles-v1"||
+            !Array.isArray(payload.tiles)||!payload.tiles.length||
+            payload.tiles.length>10)throw new Error("invalid ten-tile batch "+path);
+          const decoded=new Map();
+          for(const t of payload.tiles){
+            if(t.v!==1||!Number.isInteger(t.col)||!Number.isInteger(t.row)||
+              !Number.isInteger(t.n)||t.n<0||!Array.isArray(t.q)||
+              t.q.length!==t.n*5)throw new Error("damaged batch "+path);
+            decoded.set(key(t.col,t.row),t);
+          }
+          // Bound decoded cache independently of GPU meshes; a phone keeps
+          // four ten-tile packs, not the 216K-building city in memory.
+          loadedBatches.delete(path);loadedBatches.set(path,decoded);
+          while(loadedBatches.size>(lowSpec?4:8)){
+            loadedBatches.delete(loadedBatches.keys().next().value);
+          }
+          batchesDownloaded++;
+          updateStatus();
+          return decoded;
+        })().finally(()=>downloadingBatches.delete(path));
+        downloadingBatches.set(path,task);
+      }
+      pack=await task;
+    }else{
+      loadedBatches.delete(path);loadedBatches.set(path,pack);
+    }
+    const data=pack.get(id);
+    if(!data||data.n!==tile.n)throw new Error("source city "+id+" missing in "+path);
+    return data;
+  }
+
   async function load(tile){
     const id=key(tile.c,tile.r);
     if(visible.has(id)||inflight.has(id)||failedTiles.has(id))return;
     inflight.add(id);updateStatus();
     try{
-      const response=await fetch(base+tile.file,{cache:"force-cache"});
-      if(!response.ok)throw new Error(id+" HTTP "+response.status);
-      const data=await response.json();
+      const data=await tileFromTenPack(tile);
       if(data.v!==1||data.col!==undefined&&data.col!==tile.c||
         data.row!==undefined&&data.row!==tile.r||data.n!==tile.n||
         !Array.isArray(data.q)||data.q.length!==data.n*5){
@@ -137,7 +185,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     const wanted=[];
     for(let dc=-radius;dc<=radius;dc++)for(let dr=-radius;dr<=radius;dr++){
       const record=entries.get(key(cell.col+dc,cell.row+dr));
-      if(record?.n)wanted.push(record);
+      if(record)wanted.push(record); // Include zero-building terrain-only cells.
     }
     for(const id of [...visible.keys()]){
       const parts=/C(\d+)_R(\d+)/.exec(id);
@@ -160,7 +208,10 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   const api={active:true,group,manifest,update,
     get loadedBuildings(){return loadedBuildings;},
     get visibleTiles(){return visible.size;},
-    get failed(){return failed;}
+    get batchesDownloaded(){return batchesDownloaded;},
+    get batchCount(){return 60;},
+    get failed(){return failed;},
+    get activeTileIds(){return [...visible.keys()];}
   };
   update(true);
   window.JC_LIBRARY_CITY=api;

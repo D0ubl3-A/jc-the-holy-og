@@ -433,6 +433,11 @@ jobs:
           assert 'strip-wallpaper-atlas.jpg' in skins
           assert 'roofMap(' in skins and 'roofColors' in skins
           assert 'facadeRefs' in skins and 'const VARIANTS=3' in skins
+          assert 'geometry.addGroup(0,24,0)' in skins
+          assert 'geometry.addGroup(24,6,1)' in skins
+          assert 'geometry.addGroup(30,6,2)' in skins
+          assert 'const geometry=skins.geometry' in runtime
+          assert 'const geometry=skins.geometry' in sky_runtime
           library=Path("_site/jc-the-holy-og-assets/library-city/manifest.json")
           if library.is_file():
               lm=json.loads(library.read_text())

@@ -3,7 +3,8 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-neighborhood-skins-v1";
-import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-neighborhood-skins-v1";
+import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-neighborhood-houses-v1";
+import { createJcPavedRoads } from "./jc-paved-roads.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -137,6 +138,7 @@ const ONE_FILE_CITY=!GTA_VEGAS_MODE&&(requestedCityMode==="full"||requestedCityM
 window.JC_GTA_VEGAS_MODE=GTA_VEGAS_MODE;
 let gtaMapControl=null;
 let libraryCity=null;
+let pavedRoads=null;
 let stripFallbackCity=null;
 let skyMapView=false;
 window.JC_FORCE_SKY_MAP=false;
@@ -3164,6 +3166,7 @@ function updateHud(){
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   if(gtaMapControl)gtaMapControl.update();
+  pavedRoads?.update();
   if(stripFallbackCity&&libraryCity?.active)
     stripFallbackCity.visible=skyMapView||player.pos.x<975||player.pos.y>=260;
   if(libraryCity?.active){
@@ -3181,7 +3184,7 @@ function updateHud(){
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
-  if(hudRoadsEl)hudRoadsEl.textContent=roadSegs.toLocaleString()+" ROAD SEG";
+  if(hudRoadsEl)hudRoadsEl.textContent=(GTA_VEGAS_MODE&&pavedRoads?.ready?pavedRoads.loadedSegments:roadSegs).toLocaleString()+" PAVED ROAD SEG";
   if(radarArrowEl)radarArrowEl.style.transform="translate(-50%,-50%) rotate("+THREE.MathUtils.radToDeg(-player.yaw)+"deg)";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
@@ -3250,6 +3253,7 @@ async function toggleSkyMapView(){
   skyMapView=!skyMapView;
   window.JC_FORCE_SKY_MAP=skyMapView;
   libraryCity.update(true);
+  pavedRoads?.update(true);
   if(stripFallbackCity)stripFallbackCity.visible=
     skyMapView||player.pos.x<975||player.pos.y>=260;
   const button=document.getElementById("jcSkyView");
@@ -3291,6 +3295,7 @@ async function jumpToRealLibraryCity(){
     player.root.position.copy(player.pos);
     if(stripFallbackCity)stripFallbackCity.visible=false;
     libraryCity.update(true);
+    pavedRoads?.update(true);
     if(gtaMapControl)gtaMapControl.update(true);
     if(progressEl)progressEl.textContent="ENTERING REAL CITY · LOADING NEARBY 10-TILE DATA PACKS";
     if(button){button.title="JC now inside the real 595-tile Library city";button.textContent="IN REAL CITY";}
@@ -3317,6 +3322,9 @@ async function boot(){
     // Always preserve a small Strip scene: the Library's 595 cells cover
     // only C18-C34 east of the Strip, not JC's actual start area.
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
+    // GTA mode previously short-circuited the legacy road streamer entirely,
+    // leaving satellite imagery without real asphalt streets.
+    pavedRoads=await createJcPavedRoads(unifiedCityGroup,player,lowSpec);
     stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec,libraryCity?.skins||null);
     const skyButton=document.getElementById("jcSkyView");
     if(skyButton){
@@ -3393,6 +3401,7 @@ async function boot(){
     gtaVegasMode:GTA_VEGAS_MODE,
     gtaMapControl:gtaMapControl,
     libraryCity:libraryCity,
+    pavedRoads:pavedRoads,
     toggleSkyMapView:toggleSkyMapView,
     get skyMapView(){return skyMapView;},
     get fullyPreloaded(){return singleCityLoaded},

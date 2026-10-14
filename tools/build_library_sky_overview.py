@@ -17,7 +17,22 @@ ROW_MIN, ROW_MAX = 0, 34
 TILE_PIXELS = 96
 SAMPLES_ACROSS = 5
 
-def main(root: Path):
+def main(root: Path, neighborhoods: Path):
+    config_bytes = neighborhoods.read_bytes()
+    config = json.loads(config_bytes)
+    assert config["schema"] == "jc-neighborhood-skin-zones-v1"
+    assert config["stylesPerNeighborhood"] == 3
+    zones = config["zones"]
+    assert len(zones) == 25
+    assert len({z["name"] for z in zones}) == len(zones)
+
+    def skin_id(c, r, index, wx, wz, h, w):
+        world_x, world_z = wx / 100, wz / 100
+        closest = min(range(len(zones)), key=lambda k:
+            (world_x - zones[k]["x"])**2 + (world_z - zones[k]["z"])**2)
+        profile = (index + h // 300 + w // 500 + c * 3 + r) % 3
+        return closest * 3 + profile
+
     manifest = json.loads((root / "manifest.json").read_text())
     assert manifest["schema"] == "jc-library-city-v1"
     assert manifest["tileCount"] == 595 and manifest["buildingCount"] == 216807
@@ -68,10 +83,7 @@ def main(root: Path):
             # Store quantized WORLD coords in 1/100 game unit, from source.
             wx = (c - 8) * 10000 + xl
             wz = -(r - 8) * 10000 + zl
-            raw = c * 17 + r * 31 + index * 13 + h // 130
-            style = (7 if c <= 20 and raw % 17 == 0
-                     else 6 if h < 260 and raw % 5 == 0
-                     else raw % 6)
+            style = skin_id(c, r, index, wx, wz, h, w)
             samples.extend((wx, wz, max(40, h), max(30, w), max(30, d), style))
     assert len(occupied) == 595, "Source 595-tile coverage is incomplete"
     assert source_count == 216807, source_count
@@ -92,7 +104,9 @@ def main(root: Path):
         "terrain": "sky/terrain.webp",
         "atlasPixels": [width, height],
         "sourceTilePixels": TILE_PIXELS,
-        "skins": 8,
+        "skins": len(zones) * 3,
+        "neighborhoods": len(zones),
+        "neighborhoodConfigSha256": hashlib.sha256(config_bytes).hexdigest(),
         "q": samples,
     }
     output = out / "overview.json"
@@ -104,6 +118,9 @@ def main(root: Path):
         "terrain": sky["terrain"], "sourceTileCount": 595,
         "sampleBuildingCount": sky["sampleBuildingCount"],
         "sourceBuildingCount": 216807,
+        "neighborhoods": len(zones),
+        "neighborhoodMaterials": len(zones) * 3,
+        "neighborhoodConfigSha256": hashlib.sha256(config_bytes).hexdigest(),
         "terrainSha256": hashlib.sha256(aerial_path.read_bytes()).hexdigest()
     }
     (root / "manifest.json").write_text(json.dumps(manifest,separators=(",", ":"))+"\n")
@@ -115,5 +132,6 @@ def main(root: Path):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--root", default="_site/jc-the-holy-og-assets/library-city")
+    p.add_argument("--zones", default="jc-map/neighborhood-skins.json")
     args = p.parse_args()
-    main(Path(args.root))
+    main(Path(args.root), Path(args.zones))

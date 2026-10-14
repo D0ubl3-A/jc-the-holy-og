@@ -157,7 +157,7 @@ function placement(kind,map) {
     ?new THREE.Vector3(663.24,0,-1500.30)
     :new THREE.Vector3(755.02,0,-1256.65);
 }
-let collisions=[],t=0;
+let collisions=[];
 function install(map){
   if(status.installed || !map?.mapGroup?.parent)return;
   const scene=map.mapGroup.parent;
@@ -175,18 +175,8 @@ function install(map){
   }
   status.installed=true;status.collisionReady=true;
   status.collisionBoxesNear=(pos)=>collisions.filter(b=>pos&&b.distanceToPoint(pos)<80);
-  let frame=0;
-  function tick(){
-    if(!status.installed)return;
-    frame++;
-    if(frame%10===0){
-      const p=map.player?.pos || map.player?.position;
-      for(const obj of scene.children)if(obj.isLOD&&obj.userData.jcLandmark&&p)
-        obj.update({position:p}); // LOD expects a camera-like {position}; visibility only.
-    }
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  // THREE.LOD updates automatically from renderer camera with autoUpdate=true.
+
 }
 if(enabled){
   const timer=setInterval(()=>{

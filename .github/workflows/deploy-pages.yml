@@ -364,6 +364,7 @@ jobs:
           node --check _site/jc-the-holy-og-assets/jc-library-city-runtime.js
           node --check _site/jc-the-holy-og-assets/jc-building-skins.js
           node --check _site/jc-the-holy-og-assets/jc-sky-overview.js
+          node --check _site/jc-the-holy-og-assets/jc-detailed-terrain.js
           node --check _site/jc-the-holy-og-assets/real-vegas-district-runtime.js
           python - <<'PY'
           import json
@@ -403,6 +404,17 @@ jobs:
           runtime=Path("_site/jc-the-holy-og-assets/jc-library-city-runtime.js").read_text()
           assert 'createJcBuildingSkins' in runtime
           assert 'createJcSkyOverview' in runtime
+          assert 'createJcDetailedTerrain' in runtime
+          assert 'terrainDetail.update(force)' in runtime
+          terrain_js=Path("_site/jc-the-holy-og-assets/jc-detailed-terrain.js").read_text()
+          assert 'createJcDetailedTerrain' in terrain_js
+          assert 'radius=lowSpec?4:6' in terrain_js
+          assert 'BASE+id+".webp' in terrain_js
+          sky_runtime=Path("_site/jc-the-holy-og-assets/jc-sky-overview.js").read_text()
+          assert 'const terrainShow=ready' in sky_runtime
+          assert 'y>=140' not in sky_runtime
+          assert 'GTA_VEGAS_MODE&&libraryCity?.active?0.000013' in city
+          assert 'continuous-595-terrain-v2' in html
           skins=Path("_site/jc-the-holy-og-assets/jc-building-skins.js").read_text()
           assert skins.count('facade-atlas-0')==6
           assert 'residential-wallpaper-atlas.jpg' in skins
@@ -432,7 +444,7 @@ jobs:
               assert a["sourceTileCount"]==595 and a["sourceBuildingCount"]==216807
               assert a["sampleBuildingCount"]==sky["sampleBuildingCount"]
               assert len(a["q"])==a["sampleBuildingCount"]*6
-              assert a["atlasPixels"]==[1088,2240]
+              assert a["atlasPixels"]==[1632,3360]
               for name in ["facade-atlas-%02d.jpg"%i for i in range(1,7)]:
                   assert (Path("_site/jc-the-holy-og-assets/swarm/buildings")/name).is_file()
               print("PASS: full 595-tile geo mosaic and",a["sampleBuildingCount"],"geo-aligned skinned sky buildings")

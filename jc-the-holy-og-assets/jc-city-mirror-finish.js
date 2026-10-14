@@ -74,15 +74,15 @@ export function createCityMirrorFinish(scene,renderer,lowSpec){
         if(!m.map&&hasUv)m.map=facadeMap;
         // Don't replace original building photo textures. Provide real
         // environment reflection + glossy window roughness/metalness textures.
-        m.metalness=0.9;
-        m.roughness=0.28;
-        m.envMapIntensity=lowSpec?1.45:1.9;
+        m.metalness=lowSpec?0.20:0.9; // Avoid black metal glass when cube reflections are disabled on phones.
+        m.roughness=lowSpec?0.48:0.28;
+        m.envMapIntensity=lowSpec?0.5:1.9;
         if(hasUv){
           m.roughnessMap=glassProperties;
           m.metalnessMap=glassProperties;
         }else{
-          m.roughness=0.11;
-          m.metalness=0.78;
+          m.roughness=lowSpec?0.46:0.11;
+          m.metalness=lowSpec?0.2:0.78;
         }
         m.needsUpdate=true;
         rewritten.set(original,m);
@@ -99,7 +99,7 @@ export function createCityMirrorFinish(scene,renderer,lowSpec){
     if(probing||!player||!scene||!renderer||!player.pos)return false;
     const now=performance.now();
     if(!force){
-      if(lowSpec&&captures>=1)return false;
+      if(lowSpec)return false; // Skip GPU cube capture entirely on iPhone.
       if(now-lastCapture<20000)return false;
       if(lastPosition&&lastPosition.distanceTo(player.pos)<450)return false;
     }

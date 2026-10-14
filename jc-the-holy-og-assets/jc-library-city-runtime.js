@@ -32,11 +32,25 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     console.warn("JC real city not ready; retry is available",error);
     return {active:false,update(){}};
   }
+  // One canonical geographic style contract powers both detailed street
+  // buildings and sky LOD. No neighborhood geometry is inferred from names.
+  let neighborhoodConfig;
+  try{
+    const request=await fetch("./jc-map/neighborhood-skins.json?rev=jc-neighborhoods-v1",{cache:"no-store"});
+    if(!request.ok)throw Error("neighborhood config HTTP "+request.status);
+    neighborhoodConfig=await request.json();
+    if(neighborhoodConfig?.schema!=="jc-neighborhood-skin-zones-v1")
+      throw Error("invalid neighborhood style geography");
+  }catch(error){
+    console.warn("JC neighborhood style contract unavailable",error);
+    window.JC_LIBRARY_CITY_STATUS={active:false,installed:false,reason:String(error?.message||error)};
+    return {active:false,update(){}};
+  }
   const group=new THREE.Group();
   group.name="JC_LIBRARY_REAL_595_TILE_CITY";
   worldRoot.add(group);
   const geometry=new THREE.BoxGeometry(1,1,1);
-  const skins=createJcBuildingSkins(lowSpec);
+  const skins=createJcBuildingSkins(lowSpec,neighborhoodConfig);
   const sky=createJcSkyOverview(worldRoot,skins,lowSpec);
   const terrainDetail=createJcDetailedTerrain(worldRoot,manifest.tiles,player,lowSpec);
   // Sky terrain and silhouettes are prebuilt and small; do not block boot.
@@ -64,7 +78,9 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       batchSize:10,batchCount:60,
       batchesDownloaded, batchesCached:loadedBatches.size,
       activeTileIds:[...visible.keys()],
-      skinsLoaded:skins.loaded,skinAtlasCount:skins.total,
+      skinsLoaded:skins.loaded,skinAtlasCount:skins.atlasUrls.length,
+      neighborhoodCount:skins.neighborhoods,
+      neighborhoodName:skins.zones[skins.neighborhood(player.pos.x,player.pos.z)]?.name,
       sky:sky.status(),
       terrainDetail:terrainDetail.status(),
       fidelity:"Source geometry proxy dimensions; original eight JC facade/wallpaper atlases on visible buildings"
@@ -125,17 +141,25 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         throw new Error("invalid source-derived "+id);
       }
       // Each q record uses X,Z,Height,Width,Depth in 0.01 JC world units.
-      const counts=Array(8).fill(0);
-      for(let j=0;j<data.n;j++)counts[skins.index(tile.c,tile.r,j,data.q[j*5+2])]++;
-      const meshes=skins.materials.map((material,skin)=>{
-        const instance=new THREE.InstancedMesh(geometry,material,Math.max(1,counts[skin]));
-        instance.count=counts[skin];
-        instance.name="JC_SKINNED_LIBRARY_"+skin+"_"+id;
+      const counts=new Map(),groups=new Map();
+      const styleFor=(j)=>{
+        const i=j*5;
+        const wx=(tile.c-8)*100+data.q[i]/100;
+        const wz=-(tile.r-8)*100+data.q[i+1]/100;
+        return skins.index(tile.c,tile.r,j,data.q[i+2],wx,wz,data.q[i+3]);
+      };
+      for(let j=0;j<data.n;j++){
+        const style=styleFor(j);
+        counts.set(style,(counts.get(style)||0)+1);
+      }
+      for(const [style,count] of counts){
+        const instance=new THREE.InstancedMesh(geometry,skins.materials[style],count);
+        instance.count=count;
+        instance.name="JC_NEIGHBORHOOD_SKIN_"+style+"_"+id;
         instance.frustumCulled=false;
         instance.castShadow=false;instance.receiveShadow=false;
-        return instance;
-      });
-      const indices=Array(8).fill(0);
+        groups.set(style,{mesh:instance,used:0});
+      }
       for(let j=0;j<data.n;j++){
         const i=j*5;
         const h=Math.max(0.2,data.q[i+2]/100);
@@ -143,19 +167,21 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         const d=Math.max(0.2,data.q[i+4]/100);
         const x=(tile.c-8)*100+data.q[i]/100;
         const z=-(tile.r-8)*100+data.q[i+1]/100;
-        const skin=skins.index(tile.c,tile.r,j,data.q[i+2]);
+        const skin=styleFor(j);
         dummy.position.set(x,h/2,z);
         dummy.scale.set(w,h,d);
         dummy.rotation.set(0,0,0);
         dummy.updateMatrix();
-        meshes[skin].setMatrixAt(indices[skin]++,dummy.matrix);
+        const slot=groups.get(skin);
+        slot.mesh.setMatrixAt(slot.used++,dummy.matrix);
       }
-      for(const mesh of meshes){
-        if(!mesh.count){mesh.dispose();continue;}
+      const meshes=[];
+      for(const {mesh} of groups.values()){
         mesh.instanceMatrix.needsUpdate=true;
         group.add(mesh);
+        meshes.push(mesh);
       }
-      const record={meshes:meshes.filter(mesh=>mesh.count),count:data.n,ground:null,groundTexture:null};
+      const record={meshes,count:data.n,ground:null,groundTexture:null};
       visible.set(id,record);
       // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
       // 256px WebP at packaging time. Load only active tiles.

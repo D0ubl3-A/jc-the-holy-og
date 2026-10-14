@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
+import "./hell-landmarks-runtime.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -1313,7 +1314,7 @@ function buildTileColliders(root,rec){
 function nearbyCollisionBoxes(){
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return [];
   const cell=worldCell(player.pos.x,player.pos.z);
-  const out=[];
+  const out=window.JC_HELL_LANDMARKS?.collisionBoxesNear?.(player.pos)?.slice() || [];
   for(let dc=-COLLISION_TILE_RADIUS;dc<=COLLISION_TILE_RADIUS;dc++){
     for(let dr=-COLLISION_TILE_RADIUS;dr<=COLLISION_TILE_RADIUS;dr++){
       const item=tileColliders.get(tileKey(cell.col+dc,cell.row+dr));

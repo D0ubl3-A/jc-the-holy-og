@@ -445,8 +445,8 @@ jobs:
           assert 'const terrainShow=ready' in sky_runtime
           assert 'y>=140' not in sky_runtime
           assert 'GTA_VEGAS_MODE&&libraryCity?.active?0.000013' in city
-          assert 'jc-streetscape-upgrade-v2' in html
-          assert 'jc-streetscape-upgrade-v2' in city
+          assert 'jc-streetscape-upgrade-v3' in html
+          assert 'jc-streetscape-upgrade-v3' in city
           assert 'createJcPavedRoads' in city and 'pavedRoads?.update()' in city
           assert 'pavedRoads=await createJcPavedRoads' in city
           houses=Path("_site/jc-the-holy-og-assets/jc-neighborhood-houses.js").read_text()
@@ -471,6 +471,7 @@ jobs:
           assert 'roadEnds' in paved and 'paintedCrossings' in paved
           assert 'lamps.length<lampLimit' in paved
           assert 'JC_WARM_ROADSIDE_LIGHT_FIXTURES' in paved
+          assert 'JC_SOFT_STREETLIGHT_FALLOFF' in paved
           assert 'buckets.curb' in paved and 'buckets.median' in paved
           assert 'node.dispose()' in paved
           road_data=json.loads(Path("_site/jc-map/roads/manifest.json").read_text())

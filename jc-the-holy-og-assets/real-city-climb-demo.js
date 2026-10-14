@@ -3170,9 +3170,12 @@ function updateHud(){
     libraryCity.update();
     if(progressEl){
       const sky=libraryCity.sky;
+      const neighborhood=libraryCity.skins.zones[
+        libraryCity.skins.neighborhood(player.pos.x,player.pos.z)]?.name||"LAS VEGAS";
       progressEl.textContent=(sky?.ready&&(skyMapView||player.pos.y>=260))?
-        "FULL SKY CITY · 595/595 AERIAL TILES · "+sky.rendered+" SKINNED BUILDINGS · "+libraryCity.skins.loaded+"/8 FACADES":
-        "SATELLITE TERRAIN · 595-TILE BACKDROP · "+libraryCity.terrainDetail.visible+" CRISP TILES · "+libraryCity.loadedBuildings.toLocaleString()+" LOCAL BUILDINGS";
+        "FULL SKY CITY · 595 AERIAL TILES · "+sky.rendered+" BUILDINGS · 25 NEIGHBORHOOD SKINS":
+        neighborhood.toUpperCase()+" · "+libraryCity.terrainDetail.visible+" CRISP TILES · "+
+        libraryCity.loadedBuildings.toLocaleString()+" SKINNED BUILDINGS";
     }
   }
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
@@ -3313,8 +3316,8 @@ async function boot(){
     // The real street basemap syncs with the player's position and JC powers.
     // Always preserve a small Strip scene: the Library's 595 cells cover
     // only C18-C34 east of the Strip, not JC's actual start area.
-    stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec);
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
+    stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec,libraryCity?.skins||null);
     const skyButton=document.getElementById("jcSkyView");
     if(skyButton){
       skyButton.disabled=!libraryCity?.active;

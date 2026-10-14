@@ -131,6 +131,8 @@ export function createCityMirrorFinish(scene,renderer,lowSpec){
     get excludedMeshes(){return skipped;},
     get reflectionCaptures(){return captures;},
     reflectionTexture:rt.texture,
+    sharedFacadeTexture:facadeMap,
+    sharedGlassProperties:glassProperties,
     mode:"CITY-SCENE MIRROR GLASS · UV PBR + CUBEMAP"
   };
   window.JC_MIRROR_FINISH=api;

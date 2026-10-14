@@ -68,12 +68,15 @@ function houseFor(rec,skins){
   if(!zone||!HOUSE_KINDS.has(zone.kind))return null;
   const h=rec.h,w=rec.w,d=rec.d;
   // Do not turn high-rises, warehouses or tiny objects into tract houses.
-  if(h<.57||h>5.5||w<.7||d<.7||w>13||d>13)return null;
+  const villa=/villa/.test(zone.kind);
+  const maxH=villa?2.8:1.85,maxW=villa?7.0:4.6,maxD=villa?7.0:5.4;
+  // A 4-9 m real Las Vegas ranch/tract home is ~.4-.9 game units tall.
+  if(h<.28||h>maxH||w<.48||d<.48||w>maxW||d>maxD)return null;
   const v=rec.style%skins.stylesPerNeighborhood;
   const form=roofForms[zone.kind][v];
   const rise=Math.min(h*.32,Math.min(w,d)*.31,form==="parapet"?.27:.69);
-  if(rise<.06)return null;
-  const garage=(zone.kind!=="historic"||v===1)&&h>=.9&&Math.min(w,d)>=1.3;
+  if(rise<.045)return null;
+  const garage=(zone.kind!=="historic"||v===1)&&h>=.43&&Math.min(w,d)>=.9;
   return {form,zone,zoneIndex:idx,rise,garage};
 }
 export function attachNeighborhoodHouses(parent,records,skins,{sky=false,lowSpec=false}={}){

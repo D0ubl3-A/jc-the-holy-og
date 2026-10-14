@@ -64,7 +64,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 </head>
 <body>
-<div id="bootGuard"><div class="boot-card"><div class="boot-title">JC: SIN CITY</div><div id="bootGuardCopy" class="boot-copy">Starting the real Las Vegas mission…</div><div id="bootGuardActions" class="boot-actions"><button id="bootRetry" type="button">RETRY MISSION</button><a href="./index.html?safe=1">PLAY SAFE MODE</a></div></div></div>
+<div id="bootGuard"><div class="boot-card"><div class="boot-title">JC: SIN CITY</div><div id="bootGuardCopy" class="boot-copy">Loading one complete prebuilt Las Vegas city. Buildings and reflective glass will be ready before play begins. This full-detail model requires significant device memory.</div><div id="bootGuardActions" class="boot-actions"><button id="bootRetry" type="button">RETRY MISSION</button><a href="./real-city-climb-demo.html?mode=stream">LOW-MEMORY STREAMING</a><a href="./index.html?safe=1">PLAY SAFE MODE</a></div></div></div>
 <div id="game"></div>
 <div id="hud" class="panel">
   <div class="brand"><div class="brand-title">JC // SIN CITY</div><div id="controllerLabel">JC</div></div>
@@ -137,7 +137,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   window.addEventListener('error',function(event){if(!finished)fail('MISSION START ERROR: '+(event.message||'runtime failed'));},true);
   window.addEventListener('unhandledrejection',function(event){if(!finished)fail('MISSION START ERROR: '+(event.reason&&event.reason.message?event.reason.message:'asset load failed'));});
   document.getElementById('bootRetry').addEventListener('click',function(){location.reload();});
-  setTimeout(function(){if(!finished)fail('The city is taking too long to load. Retry, or enter Safe Mode.');},30000);
+  setTimeout(function(){if(!finished)fail("Full city still loading. Your phone may not have enough memory for the 250 MB model. Retry, or choose Low-Memory Streaming.");},180000);
 })();
 </script>
 <script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js"></script>

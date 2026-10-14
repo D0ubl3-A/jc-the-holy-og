@@ -61,14 +61,17 @@ def main(root: Path):
             # Represent the most visually significant building in each square.
             score = max(1, h) * max(1, w + d)
             if name not in picks or score > picks[name][0]:
-                picks[name] = (score, (x_local, z_local, h, w, d))
-        for _, (_, (xl, zl, h, w, d)) in sorted(picks.items()):
+                picks[name] = (score, (i, x_local, z_local, h, w, d))
+        for _, (_, (index, xl, zl, h, w, d)) in sorted(picks.items()):
             if h <= 0 or w <= 0 or d <= 0:
                 continue
             # Store quantized WORLD coords in 1/100 game unit, from source.
             wx = (c - 8) * 10000 + xl
             wz = -(r - 8) * 10000 + zl
-            style = (c * 7 + r * 11 + xl // 700 + abs(zl) // 900) % 8
+            raw = c * 17 + r * 31 + index * 13 + h // 130
+            style = (6 if h < 260 and raw % 3 == 0
+                     else 7 if h > 2400 and raw % 5 == 0
+                     else raw % 6)
             samples.extend((wx, wz, max(40, h), max(30, w), max(30, d), style))
     assert len(occupied) == 595, "Source 595-tile coverage is incomplete"
     assert source_count == 216807, source_count

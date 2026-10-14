@@ -128,6 +128,37 @@ jobs:
               print(f'PASS: assembled {total} chunks, {written} bytes, SHA256 {dig.hexdigest()}')
           PY
 
+      - name: Reassemble six uploaded JC Library city chunks
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile
+          stem = "JC_Library_City_Tiles_595_ROOT.zip"
+          chunks = sorted(Path(".").glob(stem + ".part[0-9][0-9]"))
+          if not chunks:
+              print("No 595-tile chunk archive found; currently deployed geographic map remains safe.")
+              raise SystemExit(0)
+          wanted = [Path(f"{stem}.part{i:02d}") for i in range(1, 7)]
+          if chunks != wanted:
+              raise SystemExit(f"Incomplete or unexpected chunk set. Expected {len(wanted)} ordered parts; found {[p.name for p in chunks]}")
+          expected_lengths = [900000] * 5 + [767768]
+          output = Path(stem)
+          with output.open("wb") as dst:
+              for idx, part in enumerate(chunks):
+                  payload = part.read_bytes()
+                  assert len(payload) == expected_lengths[idx], f"Wrong size for {part.name}"
+                  dst.write(payload)
+          payload = output.read_bytes()
+          actual = hashlib.sha256(payload).hexdigest()
+          expected = "202a1196c9b6d79865d75a854a941741ddea9f5678019e0df965fb53d72bcaa3"
+          assert len(payload) == 5267768 and actual == expected, "City chunk SHA256 mismatch; refusing to deploy"
+          with zipfile.ZipFile(output) as z:
+              assert z.testzip() is None, "Corrupt city package"
+              assert "jc-the-holy-og-assets/library-city/manifest.json" in z.namelist(), "No city manifest"
+          print("PASS: rebuilt exact Library ZIP from six verified chunks:", actual)
+          PY
+
       - name: Install the Library 595-tile replacement when uploaded
         run: |
           set -euo pipefail

@@ -570,13 +570,18 @@ function disposeResidentialWallpaperGroup(group){
   mapGroup.remove(group);
 }
 
+// One persistent scene graph for the entire valley. All road, GLB, LOD and
+// source-footprint district geometry share one origin; asset paging is internal.
+const unifiedCityGroup=new THREE.Group();
+unifiedCityGroup.name="JC_UNIFIED_CITY";
+scene.add(unifiedCityGroup);
 const mapGroup=new THREE.Group();
 mapGroup.name="JC_GLB_TILE_MAP";
-scene.add(mapGroup);
+unifiedCityGroup.add(mapGroup);
 
 const worldLodGroup=new THREE.Group();
 worldLodGroup.name="JC_WORLD_LOW_DETAIL";
-scene.add(worldLodGroup);
+unifiedCityGroup.add(worldLodGroup);
 let worldLodRoot=null;
 let worldLodReady=false;
 let worldLodBounds=null;
@@ -586,10 +591,10 @@ const LOW_DETAIL_ONLY_ALTITUDE=14000;
 
 const roadTileGroup=new THREE.Group();
 roadTileGroup.name="JC_ROAD_TILE_LAYER";
-scene.add(roadTileGroup);
+unifiedCityGroup.add(roadTileGroup);
 const majorRoadGroup=new THREE.Group();
 majorRoadGroup.name="JC_MAJOR_ROAD_OVERVIEW";
-scene.add(majorRoadGroup);
+unifiedCityGroup.add(majorRoadGroup);
 
 let roadManifest=[];
 let roadManifestByKey=new Map();
@@ -1256,7 +1261,13 @@ function updateWorldLod(){
   }
 
   if(y<FULL_DETAIL_ALTITUDE&&!fastFallback){
-    worldLodGroup.visible=false;
+    // Never leave the player staring at a blank gap between city sections.
+    // Show low-detail continuity ONLY where neither loaded GLB structures nor
+    // real-footprint geometry has become visible yet.
+    const districtVisible=(window.JC_REAL_VEGAS_DISTRICT_STATUS?.visibleTiles||0)>0;
+    const hasNearbyGlb=loadedTiles.size>0;
+    worldLodGroup.visible=!(hasNearbyGlb||districtVisible);
+    if(worldLodGroup.visible)setLodOpacity(0.85);
     mapGroup.visible=true;
     return;
   }
@@ -3084,7 +3095,7 @@ function updateHud(){
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
   const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · TILES FLAT · ROADS TOP · STRIP "+wallpaperShellCount+" · HOMES "+residentialWallpaperCount;
+  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · ONE CITY · ROADS TOP · STRIP "+wallpaperShellCount+" · HOMES "+residentialWallpaperCount;
   const plan=streamPlan();
   const bufferText=DATA_BUFFERING?
     (" · CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
@@ -3120,6 +3131,7 @@ async function boot(){
   updateHud();
   window.JC_GLB_MAP={
     manifest:manifest,
+    unifiedCityGroup:unifiedCityGroup,
     loadedTiles:loadedTiles,
     mapGroup:mapGroup,
     worldLodGroup:worldLodGroup,
@@ -3183,6 +3195,9 @@ async function boot(){
     takeDivineDamage:takeDivineDamage,
     togglePowerController:togglePowerController
   };
+  window.JC_UNIFIED_CITY={root:unifiedCityGroup,sourceGlbCount:manifest.length,loadedGlbs:loadedTiles,
+    roadGroup:roadTileGroup,lowDetailGroup:worldLodGroup,
+    note:"ONE CONTINUOUS WORLD · streaming meshes only to fit device memory"};
   if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
   if(DATA_BUFFERING)bufferRemainingMap();

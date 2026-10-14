@@ -34,7 +34,7 @@ jobs:
       - name: Prepare static site and GLB tile manifest
         run: |
           mkdir -p _site
-          rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='release-electron' ./ _site/
+          rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='release-electron' --exclude='JC_LIBRARY_CITY_PART_*.bin' --exclude='JC_Library_City_Tiles_595_ROOT.zip' ./ _site/
           python - <<'PY'
           import glob, hashlib, json, os, re, shutil
           from datetime import datetime, timezone
@@ -90,6 +90,42 @@ jobs:
               json.dump(manifest, f, indent=2)
               f.write("\n")
           print("Indexed", len(tiles), "JC GLB tiles")
+          PY
+
+      - name: Reassemble verified Library city upload chunks
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          metadata=json.loads(Path('jc-map/library-city-chunk-manifest.json').read_text())
+          assert metadata['schema']=='jc-library-github-parts-v1'
+          total=int(metadata['partCount'])
+          chunk=int(metadata['partBytes'])
+          parts=[Path(metadata['partPattern']%i) for i in range(1,total+1)]
+          uploaded=[p for p in parts if p.exists()]
+          combined=Path(metadata['archive'])
+          if not uploaded:
+              if combined.exists():
+                  assert hashlib.sha256(combined.read_bytes()).hexdigest()==metadata['archiveSha256'], 'Mismatched library ZIP; refusing deploy'
+                  print('PASS: source Library city ZIP already uploaded and verified')
+              else:
+                  print('City parts not uploaded; retaining safe map, no replacement advertised')
+          else:
+              assert len(uploaded)==total, f'Incomplete upload: {len(uploaded)} of {total} city chunks'
+              dig=hashlib.sha256()
+              written=0
+              with combined.open('wb') as merged:
+                  for number, part in enumerate(parts,1):
+                      data=part.read_bytes()
+                      if number<total: assert len(data)==chunk, f'Invalid chunk size: {part}'
+                      assert data and len(data)<=chunk, f'Invalid size: {part}'
+                      dig.update(data)
+                      merged.write(data)
+                      written+=len(data)
+              assert written==metadata['archiveBytes'], 'Reconstructed ZIP size mismatch'
+              assert dig.hexdigest()==metadata['archiveSha256'], 'ZIP digest mismatch'
+              print(f'PASS: assembled {total} chunks, {written} bytes, SHA256 {dig.hexdigest()}')
           PY
 
       - name: Install the Library 595-tile replacement when uploaded

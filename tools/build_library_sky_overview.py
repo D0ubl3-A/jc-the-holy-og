@@ -14,7 +14,7 @@ from PIL import Image
 
 COL_MIN, COL_MAX = 18, 34
 ROW_MIN, ROW_MAX = 0, 34
-TILE_PIXELS = 64
+TILE_PIXELS = 96
 SAMPLES_ACROSS = 5
 
 def main(root: Path):

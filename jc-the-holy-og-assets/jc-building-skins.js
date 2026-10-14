@@ -109,6 +109,19 @@ export function createJcBuildingSkins(lowSpec,config){
     throw new Error("JC neighborhood skin geography missing or invalid");
   const zones=config.zones,loader=new THREE.TextureLoader();
   const mats=[],facadeMapById=[],facadeRefs=Array.from({length:8},()=>[]);
+  // THREE.BoxGeometry normally costs six draw calls per multi-material
+  // instance. Reorder the indices so four walls share ONE material group,
+  // plus roof and underside: three calls even across the entire sky view.
+  const geometry=new THREE.BoxGeometry(1,1,1);
+  const initial=Array.from(geometry.index.array),ordered=[];
+  for(const face of [0,1,4,5,2,3]){
+    ordered.push(...initial.slice(face*6,face*6+6));
+  }
+  geometry.setIndex(ordered);
+  geometry.clearGroups();
+  geometry.addGroup(0,24,0); // Four vertical facades.
+  geometry.addGroup(24,6,1); // Rooftop.
+  geometry.addGroup(30,6,2); // Underside.
   let loaded=0,failed=0;
   const fallback=document.createElement("canvas");
   fallback.width=fallback.height=128;
@@ -139,7 +152,7 @@ export function createJcBuildingSkins(lowSpec,config){
         metalness:/resort|commercial|industrial|urban/.test(zone.kind)?0.25:0.07
       });
       facadeRefs[idx].push(wall);
-      mats.push([wall,wall,roof,bottom,wall,wall]);
+      mats.push([wall,roof,bottom]);
     }
   }
   for(let i=0;i<atlases.length;i++){
@@ -166,7 +179,7 @@ export function createJcBuildingSkins(lowSpec,config){
     return z*VARIANTS+variant;
   }
   const api={
-    materials:mats,index,neighborhood,atlasUrls:atlases,
+    materials:mats,geometry,index,neighborhood,atlasUrls:atlases,
     zones,profileCount:VARIANTS,stylesPerNeighborhood:VARIANTS,
     get loaded(){return loaded;},get failed(){return failed;},
     get total(){return mats.length;},get neighborhoods(){return zones.length;}

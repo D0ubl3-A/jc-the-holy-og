@@ -3,8 +3,8 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-neighborhood-skins-v1";
-import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-neighborhood-houses-v1";
-import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-houses-roads-v1";
+import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-streetscape-upgrade-v2";
+import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-streetscape-upgrade-v2";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -3184,7 +3184,9 @@ function updateHud(){
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
-  if(hudRoadsEl)hudRoadsEl.textContent=(GTA_VEGAS_MODE&&pavedRoads?.ready?pavedRoads.loadedSegments:roadSegs).toLocaleString()+" PAVED ROAD SEG";
+  if(hudRoadsEl)hudRoadsEl.textContent=(GTA_VEGAS_MODE&&pavedRoads?.ready?
+    pavedRoads.loadedSegments.toLocaleString()+" PAVED SEG · "+
+    pavedRoads.status().loadedLamps+" LIGHTS":roadSegs.toLocaleString()+" ROAD SEG");
   if(radarArrowEl)radarArrowEl.style.transform="translate(-50%,-50%) rotate("+THREE.MathUtils.radToDeg(-player.yaw)+"deg)";
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";

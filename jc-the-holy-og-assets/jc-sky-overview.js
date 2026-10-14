@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 /**
  * Persistently renders the *entire* 595-tile Library geographic area from sky.
- * A single 1088x2240 WebP mosaics every one of the 595 aerial source images.
+ * A 1632x3360 WebP mosaics every one of the 595 aerial source images.
  * Eight instanced facade-skin groups render source-aligned LOD representatives
  * from all 216807 building records (not 216807 full meshes on mobile).
  */
@@ -25,10 +25,12 @@ export function createJcSkyOverview(parent,skins,lowSpec){
     skinnedBuildingsVisible:skyBuildings.visible&&root.visible?rendered:0,
     skinnedSamples:rendered,sourceBuildings:sourceCount,
     sourceTiles:595,atlasSkins:skins.total,skinsLoaded:skins.loaded,
-    terrainPx:"1088 × 2240",bounds:worldBounds
+    terrainPx:"1632 × 3360",bounds:worldBounds
   });
   function update(y,force=false){
-    const terrainShow=ready&&(force||y>=140);
+    // Continuous ground at every altitude. Earlier 140m cutoff caused the
+    // blank gray surface in front of JC when flying near the ground.
+    const terrainShow=ready;
     root.visible=terrainShow;
     skyBuildings.visible=ready&&(force||y>=260);
     if(terrain)terrain.visible=terrainShow;

@@ -129,7 +129,11 @@ const MAX_CONCURRENT=1;
 const FULL_MAP_MODE=false;
 // The user-facing default preloads ONE prebuilt 134-tile GLB before the first frame.
 // ?mode=stream is the explicit low-memory recovery path for phones without enough RAM.
-const ONE_FILE_CITY=new URLSearchParams(location.search).get("mode")!=="stream";
+const requestedCityMode=new URLSearchParams(location.search).get("mode");
+const ONE_FILE_CITY=requestedCityMode==="full"||requestedCityMode==="one"||(!lowSpec&&requestedCityMode!=="stream");
+// Mobile/coarse-pointer devices now start in the lighter city renderer. The
+// previous 262 MB single-GLB default triggered repeated iOS Safari page crashes.
+window.JC_MOBILE_SAFE_DEFAULT=lowSpec&&!ONE_FILE_CITY;
 window.JC_ONE_FILE_CITY=ONE_FILE_CITY;
 const DATA_BUFFERING=false;
 const FULL_MAP_BATCH=1;
@@ -3276,7 +3280,7 @@ async function boot(){
   if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
   // One shared city capture, not a mirror camera per building.
-  setTimeout(()=>mirrorFinish.capture(player,true),ONE_FILE_CITY?450:750);
+  if(!lowSpec)setTimeout(()=>mirrorFinish.capture(player,true),ONE_FILE_CITY?450:750);
   if(DATA_BUFFERING)bufferRemainingMap();
 }
 let streamClock=0;
@@ -3321,7 +3325,7 @@ function frame(){
   renderer.render(scene,camera);
   if(!frame._probeClock)frame._probeClock=0;
   frame._probeClock+=dt;
-  if(frame._probeClock>21&&fpsEstimate>35){frame._probeClock=0;mirrorFinish.capture(player);}
+  if(!lowSpec&&frame._probeClock>21&&fpsEstimate>35){frame._probeClock=0;mirrorFinish.capture(player);}
 }
 addEventListener("resize",function(){
   camera.aspect=innerWidth/innerHeight;

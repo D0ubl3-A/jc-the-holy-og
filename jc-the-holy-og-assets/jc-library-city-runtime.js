@@ -36,7 +36,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   const dummy=new THREE.Object3D();
   const color=new THREE.Color();
   const entries=new Map(manifest.tiles.map(t=>[key(t.c,t.r),t]));
-  const visible=new Map(),inflight=new Set();
+  const visible=new Map(),inflight=new Set(),failedTiles=new Set();
   const playerAt=()=>({
     col:8+Math.floor(player.pos.x/100),
     row:8+Math.floor(-player.pos.z/100)
@@ -54,7 +54,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   };
   async function load(tile){
     const id=key(tile.c,tile.r);
-    if(visible.has(id)||inflight.has(id))return;
+    if(visible.has(id)||inflight.has(id)||failedTiles.has(id))return;
     inflight.add(id);updateStatus();
     try{
       const response=await fetch(base+tile.file,{cache:"force-cache"});
@@ -94,8 +94,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       loadedBuildings+=data.n;
       updateStatus();
     }catch(err){
-      failed++;console.warn("JC Library city source tile unavailable",id,err);
-    }finally{inflight.delete(id);updateStatus();}
+      failed++;failedTiles.add(id);console.warn("JC Library city source tile unavailable",id,err);
+    }finally{inflight.delete(id);updateStatus();queueMicrotask(()=>update(true));}
   }
   function unload(id){
     const item=visible.get(id);
@@ -114,7 +114,6 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       const record=entries.get(key(cell.col+dc,cell.row+dr));
       if(record?.n)wanted.push(record);
     }
-    const wantedIds=new Set(wanted.map(t=>key(t.c,t.r)));
     for(const id of [...visible.keys()]){
       const parts=/C(\d+)_R(\d+)/.exec(id);
       const distance=Math.max(Math.abs(Number(parts[1])-cell.col),Math.abs(Number(parts[2])-cell.row));
@@ -127,7 +126,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     let delayed=0;
     for(const tile of wanted){
       const id=key(tile.c,tile.r);
-      if(visible.has(id)||inflight.has(id))continue;
+      if(visible.has(id)||inflight.has(id)||failedTiles.has(id))continue;
       if(delayed++>= (lowSpec?3:5))break;
       void load(tile);
     }

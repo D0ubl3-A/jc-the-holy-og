@@ -53,6 +53,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 #jcGeoPanel .geo-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 6px}
 #jcGeoGo{flex:1;min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 #jcLibraryJump{flex:0 0 auto;background:#375123;border-color:#8bc978;color:#e9ffbf;min-height:44px;padding:9px;touch-action:manipulation;cursor:pointer}
+#jcSkyView{flex:0 0 auto;background:#244567;border-color:#a7dbff;color:#eefaff;min-height:44px;padding:8px 5px;touch-action:manipulation;cursor:pointer}
+#jcSkyView.active{background:#e4d098;color:#18212b;border-color:#fff4c1}
 #jcGeoPanel.expanded{width:auto;height:auto;inset:8% 7% 18% 7%;z-index:25}
 #jcGeoPanel.expanded #jcGeoMap{height:calc(100% - 91px)}
 .jc-gps-icon span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
@@ -120,7 +122,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   <div class="geo-top"><strong>GTA VEGAS · LIVE MAP</strong><button id="jcGeoExpand" type="button" aria-expanded="false">EXPAND MAP</button></div>
   <div id="jcGeoMap" aria-label="Real street map of Las Vegas"></div>
   <div id="jcGeoLocation">JC GPS: acquiring location…</div>
-  <div class="geo-footer"><button id="jcGeoGo" type="button" disabled>SELECT MAP TARGET</button><button id="jcLibraryJump" type="button" title="Travel to 595-tile Library city">REAL CITY</button></div>
+  <div class="geo-footer"><button id="jcGeoGo" type="button" disabled>SELECT MAP TARGET</button><button id="jcLibraryJump" type="button" title="Travel to 595-tile Library city">REAL CITY</button><button id="jcSkyView" type="button" title="See the full 595-tile map from directly above" disabled>SKY VIEW</button></div>
 </section>
 
 <div id="abilityBar">
@@ -173,7 +175,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 })();
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js?rev=real-city-button-v3"></script>
+<script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js?rev=sky-fullmap-8skins-v1"></script>
 <script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"></script>
 </body>
 </html>

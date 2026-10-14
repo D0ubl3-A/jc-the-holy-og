@@ -231,6 +231,8 @@ jobs:
           set -euo pipefail
           node --check _site/jc-the-holy-og-assets/real-city-climb-demo.js
           node --check _site/jc-the-holy-og-assets/jc-city-mirror-finish.js
+          node --check _site/jc-the-holy-og-assets/jc-gta-vegas-map.js
+          node --check _site/jc-the-holy-og-assets/real-vegas-district-runtime.js
           python - <<'PY'
           import json
           from pathlib import Path
@@ -254,6 +256,13 @@ jobs:
           reflective=Path("_site/jc-the-holy-og-assets/jc-city-mirror-finish.js").read_text()
           assert 'roughnessMap=glassProperties' in reflective
           assert 'probe.update(renderer,scene)' in reflective
+          gta=Path("_site/jc-the-holy-og-assets/jc-gta-vegas-map.js").read_text()
+          assert "gtaVegasToWorld" in gta and "gtaWorldToVegas" in gta
+          assert "buildGtaVegasCity" in gta and "initializeGtaVegasMap" in gta
+          html=Path("_site/real-city-climb-demo.html").read_text()
+          assert 'id="jcGeoMap"' in html and "leaflet@1.9.4" in html
+          assert "GTA_VEGAS_MODE" in city and "if(GTA_VEGAS_MODE)" in city
+          print("PASS: GTA Vegas geographic map, GPS waypoints, lightweight city and JC game hooks")
           print("PASS: one-file city", glb.stat().st_size, "bytes; dynamic scene mirrors compiled")
           print("Deploy road surface validation passed")
           PY

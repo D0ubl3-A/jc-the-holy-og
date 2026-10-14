@@ -56,8 +56,8 @@ export function createJcBuildingSkins(lowSpec){
     const raw=(col*17+row*31+localIndex*13+Math.trunc(height/130))>>>0;
     // Reserve dedicated residential wallpaper for low buildings, but keep
     // source map styles visibly diverse rather than rendering plain boxes.
-    if(height<260&&raw%3===0)return 6;
-    if(height>2400&&raw%5===0)return 7;
+    if(col<=20&&raw%13===0)return 7; // Strip-side casino facade skin.
+    if(height<260&&raw%3===0)return 6; // Residential-specific wallpaper.
     return raw%6;
   }
   const api={

@@ -3,7 +3,7 @@ import * as THREE from "three";
 /**
  * Persistently renders the *entire* 595-tile Library geographic area from sky.
  * A 1632x3360 WebP mosaics every one of the 595 aerial source images.
- * Eight instanced facade-skin groups render source-aligned LOD representatives
+ * Neighborhood-specific facade and roof material groups render LOD representatives
  * from all 216807 building records (not 216807 full meshes on mobile).
  */
 const rootPath="./jc-the-holy-og-assets/library-city/";
@@ -24,7 +24,8 @@ export function createJcSkyOverview(parent,skins,lowSpec){
     skyActive:root.visible,terrainActive:!!terrain?.visible,
     skinnedBuildingsVisible:skyBuildings.visible&&root.visible?rendered:0,
     skinnedSamples:rendered,sourceBuildings:sourceCount,
-    sourceTiles:595,atlasSkins:skins.total,skinsLoaded:skins.loaded,
+    sourceTiles:595,atlasSkins:skins.atlasUrls.length,skinsLoaded:skins.loaded,
+    neighborhoods:skins.neighborhoods,neighborhoodMaterials:skins.total,
     terrainPx:"1632 × 3360",bounds:worldBounds
   });
   function update(y,force=false){
@@ -45,7 +46,8 @@ export function createJcSkyOverview(parent,skins,lowSpec){
       const data=await source.json();
       if(data.schema!=="jc-library-sky-lod-v1"||
         data.sourceTileCount!==595||data.sourceBuildingCount!==216807||
-        data.skins!==8||!Array.isArray(data.q)||
+        data.skins!==skins.total||data.neighborhoods!==skins.neighborhoods||
+        !Array.isArray(data.q)||
         data.q.length!==data.sampleBuildingCount*6||
         data.sampleBuildingCount>14875||
         !data.sampleBuildingCount)throw Error("JC aerial source overview failed integrity validation");
@@ -68,23 +70,25 @@ export function createJcSkyOverview(parent,skins,lowSpec){
       ground.visible=false;
       terrain=ground;
       root.add(ground);
-      const counts=Array(8).fill(0);
+      const counts=new Map();
       for(let i=5;i<data.q.length;i+=6){
         const skin=data.q[i];
-        if(!Number.isInteger(skin)||skin<0||skin>7)throw Error("Invalid facade skin in aerial overview");
-        counts[skin]++;
+        if(!Number.isInteger(skin)||skin<0||skin>=skins.total)
+          throw Error("Invalid neighborhood skin in aerial overview");
+        counts.set(skin,(counts.get(skin)||0)+1);
       }
       const geometry=new THREE.BoxGeometry(1,1,1);
-      const meshes=skins.materials.map((mat,index)=>{
-        const mesh=new THREE.InstancedMesh(geometry,mat,Math.max(1,counts[index]));
-        mesh.count=counts[index];
+      const meshes=new Map();
+      for(const [style,count] of counts){
+        const mesh=new THREE.InstancedMesh(geometry,skins.materials[style],count);
+        mesh.count=count;
         mesh.frustumCulled=false;
         mesh.castShadow=false;mesh.receiveShadow=false;
-        mesh.name="JC_SKINNED_SKY_BUILDINGS_"+index;
+        mesh.name="JC_NEIGHBORHOOD_SKY_BUILDINGS_"+style;
         skyBuildings.add(mesh);
-        return mesh;
-      });
-      const used=Array(8).fill(0),dummy=new THREE.Object3D();
+        meshes.set(style,{mesh,used:0});
+      }
+      const dummy=new THREE.Object3D();
       for(let i=0;i<data.q.length;i+=6){
         const x=data.q[i]/100,z=data.q[i+1]/100;
         const h=Math.max(0.40,data.q[i+2]/100);
@@ -94,9 +98,10 @@ export function createJcSkyOverview(parent,skins,lowSpec){
         dummy.position.set(x,h/2,z);
         dummy.scale.set(w,h,d);
         dummy.updateMatrix();
-        meshes[skin].setMatrixAt(used[skin]++,dummy.matrix);
+        const slot=meshes.get(skin);
+        slot.mesh.setMatrixAt(slot.used++,dummy.matrix);
       }
-      for(const mesh of meshes)mesh.instanceMatrix.needsUpdate=true;
+      for(const {mesh} of meshes.values())mesh.instanceMatrix.needsUpdate=true;
       rendered=data.sampleBuildingCount;
       sourceCount=data.sourceBuildingCount;
       ready=true;

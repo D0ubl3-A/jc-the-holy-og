@@ -383,6 +383,9 @@ jobs:
           assert 'id="jcGeoMap"' in html and "leaflet@1.9.4" in html
           assert "GTA_VEGAS_MODE" in city and "if(GTA_VEGAS_MODE)" in city
           assert 'installLibraryCity' in city
+          assert 'jumpToRealLibraryCity' in city
+          assert 'tileFromTenPack' in Path("_site/jc-the-holy-og-assets/jc-library-city-runtime.js").read_text()
+          assert 'id="jcLibraryJump"' in html
           library=Path("_site/jc-the-holy-og-assets/library-city/manifest.json")
           if library.is_file():
               lm=json.loads(library.read_text())

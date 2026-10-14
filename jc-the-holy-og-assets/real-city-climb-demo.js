@@ -3,7 +3,7 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js";
-import { installLibraryCity } from "./jc-library-city-runtime.js?rev=sky-fullmap-8skins-v1";
+import { installLibraryCity } from "./jc-library-city-runtime.js?rev=continuous-595-terrain-v2";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -3082,7 +3082,10 @@ function updateAtmosphere(){
   const t=THREE.MathUtils.smoothstep(y,ATMOSPHERE_FADE_START,SPACE_ALTITUDE);
   scene.background.copy(SKY_GROUND).lerp(SKY_SPACE,t);
   // The old low-altitude fog occluded almost the entire aerial city.
+  // Continuous Las Vegas terrain needs to remain visible toward the horizon.
+  // The prior 0.00055 fog obscured 95% of the view a few km out at 159 m.
   scene.fog.density=skyMapView?0.000001:
+    GTA_VEGAS_MODE&&libraryCity?.active?0.000013*(1-t):
     y>=260?0.000029*(1-t):0.00055*(1-t);
   starMat.opacity=THREE.MathUtils.smoothstep(y,6000,45000);
   spaceSun.visible=y>12000;
@@ -3169,7 +3172,7 @@ function updateHud(){
       const sky=libraryCity.sky;
       progressEl.textContent=(sky?.ready&&(skyMapView||player.pos.y>=260))?
         "FULL SKY CITY · 595/595 AERIAL TILES · "+sky.rendered+" SKINNED BUILDINGS · "+libraryCity.skins.loaded+"/8 FACADES":
-        "REAL JC CITY · "+libraryCity.visibleTiles+" SOURCE TILES · "+libraryCity.loadedBuildings.toLocaleString()+" SKINNED BUILDINGS · "+libraryCity.batchesDownloaded+"/60 PACKS OF TEN";
+        "SATELLITE TERRAIN · 595-TILE BACKDROP · "+libraryCity.terrainDetail.visible+" CRISP TILES · "+libraryCity.loadedBuildings.toLocaleString()+" LOCAL BUILDINGS";
     }
   }
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;

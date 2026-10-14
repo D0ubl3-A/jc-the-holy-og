@@ -2006,6 +2006,9 @@ async function loadOneTile(rec){
     mirrorFinish.applyGroup(root);
     const wallpaperGroup=buildStripWallpaper(root,rec);
     const residentialGroup=buildResidentialWallpaper(root,rec);
+    // Facade overlays receive the same reflective architectural surface finish.
+    if(wallpaperGroup)mirrorFinish.applyGroup(wallpaperGroup);
+    if(residentialGroup)mirrorFinish.applyGroup(residentialGroup);
     const colliderCount=buildTileColliders(root,rec);
     const item={
       root:root,

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>JC: Real GLB Las Vegas Map</title>
+<title>JC: Sin City — GTA Vegas Geographic Map</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{
   --gold:#d9ad4c;--gold2:#f2d179;--ink:#06070a;--panel:rgba(8,9,12,.86);
@@ -38,6 +39,30 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
  linear-gradient(90deg,transparent 46%,#94856b44 47% 53%,transparent 54%),
  #0a0c10e8;box-shadow:0 8px 28px #000}
 #radar:before{content:"N";position:absolute;left:50%;top:5px;transform:translateX(-50%);font:900 10px Arial;color:#eee}
+#jcGeoPanel{position:fixed;right:14px;top:130px;width:min(290px,30vw);z-index:10;
+  border:2px solid #b49755;border-radius:13px;overflow:hidden;background:#0c121a;
+  box-shadow:0 8px 24px #000b;color:#f8e8bb}
+#jcGeoPanel .geo-top{display:flex;align-items:center;justify-content:space-between;gap:5px;
+  padding:5px 7px;background:#10131cee}
+#jcGeoPanel .geo-top strong{font:bold 10px Arial;letter-spacing:.07em}
+#jcGeoPanel button{border:1px solid #9d8954;background:#243347;color:#ffe3a6;border-radius:5px;
+  font:800 9px Arial;padding:7px 6px;cursor:pointer}
+#jcGeoPanel button:disabled{opacity:.48;cursor:default}
+#jcGeoMap{width:100%;height:185px;background:#20252e;font:12px Arial;color:#dbe3ed}
+#jcGeoLocation{font:9px Arial;letter-spacing:.04em;padding:5px 7px;background:#0d1522}
+#jcGeoPanel .geo-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 6px}
+#jcGeoGo{flex:1;min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+#jcGeoPanel.expanded{width:auto;height:auto;inset:8% 7% 18% 7%;z-index:25}
+#jcGeoPanel.expanded #jcGeoMap{height:calc(100% - 91px)}
+.jc-gps-icon span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
+  background:#ffe49b;color:#1c1510;border:3px solid #4c3d1e;box-shadow:0 0 12px #ffcd55;font:bold 12px Arial}
+@media(max-width:800px),(pointer:coarse){
+  #jcGeoPanel{right:7px;top:138px;width:178px}
+  #jcGeoMap{height:142px}
+  #jcGeoPanel .geo-top strong{font-size:8px}
+  #jcGeoPanel .geo-top button{font-size:8px}
+  #jcGeoPanel.expanded{inset:6% 4% 24% 4%;width:auto;top:6%}
+}
 #radarArrow{position:absolute;left:50%;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:19px solid #80e4ff;filter:drop-shadow(0 0 4px #25bde8);transform-origin:50% 70%}
 .radar-ring{position:absolute;inset:11px;border:1px solid #ffffff14;border-radius:50%}.radar-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#e1b853;box-shadow:0 0 7px #e1b853}
 .radar-dot.a{left:32%;top:37%}.radar-dot.b{right:25%;top:58%}.radar-dot.c{left:55%;bottom:19%}
@@ -64,7 +89,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 </head>
 <body>
-<div id="bootGuard"><div class="boot-card"><div class="boot-title">JC: SIN CITY</div><div id="bootGuardCopy" class="boot-copy">Loading one complete prebuilt Las Vegas city. Buildings and reflective glass will be ready before play begins. This full-detail model requires significant device memory.</div><div id="bootGuardActions" class="boot-actions"><button id="bootRetry" type="button">RETRY MISSION</button><a href="./real-city-climb-demo.html?mode=stream">LOW-MEMORY STREAMING</a><a href="./index.html?safe=1">PLAY SAFE MODE</a></div></div></div>
+<div id="bootGuard"><div class="boot-card"><div class="boot-title">JC: SIN CITY</div><div id="bootGuardCopy" class="boot-copy">Loading JC on the GTA Vegas geographic map — real streets, lightweight 3D buildings, and your existing powers. No 262 MB preload.</div><div id="bootGuardActions" class="boot-actions"><button id="bootRetry" type="button">RETRY MISSION</button><a href="./real-city-climb-demo.html?mode=stream">LOW-MEMORY STREAMING</a><a href="./index.html?safe=1">PLAY SAFE MODE</a></div></div></div>
 <div id="game"></div>
 <div id="hud" class="panel">
   <div class="brand"><div class="brand-title">JC // SIN CITY</div><div id="controllerLabel">JC</div></div>
@@ -77,11 +102,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
     <div class="quick-stat"><b id="hudAltitude">0 m</b><span>ALTITUDE</span></div>
     <div class="quick-stat"><b id="hudFps">-- FPS</b><span>PERF</span></div>
   </div>
-  <div id="status">Loading uploaded GLB map tiles…</div>
+  <div id="status">Initializing geographic Vegas map…</div>
 </div>
 
 <div id="missionPanel" class="panel">
-  <div class="mission-kicker">LIVE MISSION // REAL GLB LAS VEGAS</div>
+  <div class="mission-kicker">LIVE MISSION // GTA VEGAS GEOGRAPHIC MAP</div>
   <div id="destination" class="target">TARGET: acquiring city landmarks…</div>
   <div id="mission" class="mission-copy"><span id="progress">indexing tiles…</span> · <span id="location">JC GLB MAP</span> · <span id="hudRoads">ROADS --</span></div>
 </div>
@@ -90,6 +115,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   <div class="radar-ring"></div><i class="radar-dot a"></i><i class="radar-dot b"></i><i class="radar-dot c"></i>
   <div id="radarArrow"></div>
 </div>
+<section id="jcGeoPanel" aria-label="Real Las Vegas geographic game map">
+  <div class="geo-top"><strong>GTA VEGAS · LIVE MAP</strong><button id="jcGeoExpand" type="button" aria-expanded="false">EXPAND MAP</button></div>
+  <div id="jcGeoMap" aria-label="Real street map of Las Vegas"></div>
+  <div id="jcGeoLocation">JC GPS: acquiring location…</div>
+  <div class="geo-footer"><button id="jcGeoGo" type="button" disabled>SELECT MAP TARGET</button></div>
+</section>
 
 <div id="abilityBar">
   <div class="ability-caption">E · ABILITY WHEEL / 1–8 DIRECT CAST</div>
@@ -109,7 +140,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 </div>
 <div id="crosshair"></div>
 <div id="hyperFx"></div>
-<div id="credit">JC MAP · REAL GLB TILE STREAM · CINEMATIC HUD v2</div>
+<div id="credit">JC · GTA VEGAS GPS MAP · ORIGINAL POWERS AND FLIGHT</div>
 <div class="touch"><div class="dpad"><button class="up" data-key="KeyW">▲</button><button class="left" data-key="KeyA">◀</button><button class="down" data-key="KeyS">▼</button><button class="right" data-key="KeyD">▶</button></div><div class="touch-actions"><button class="jump" data-key="Space">UP</button><button class="descend" data-key="KeyC">DOWN</button><button class="fly" data-flight-toggle>FLY</button><button class="climb" data-key="KeyE">CLIMB</button><button class="charge" data-solar-charge>CHARGE</button><button class="target-button" data-target-cycle>TARGET</button><button class="hyper" data-hyper-launch>HYPER</button></div></div>
 <div class="power-touch">
   <button data-power="1">SHOCK</button>
@@ -137,9 +168,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   window.addEventListener('error',function(event){if(!finished)fail('MISSION START ERROR: '+(event.message||'runtime failed'));},true);
   window.addEventListener('unhandledrejection',function(event){if(!finished)fail('MISSION START ERROR: '+(event.reason&&event.reason.message?event.reason.message:'asset load failed'));});
   document.getElementById('bootRetry').addEventListener('click',function(){location.reload();});
-  setTimeout(function(){if(!finished)fail("Full city still loading. Your phone may not have enough memory for the 250 MB model. Retry, or choose Low-Memory Streaming.");},180000);
+  setTimeout(function(){if(!finished)fail("JC did not start. Try Reload or legacy streaming mode.");},45000);
 })();
 </script>
+<script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js"></script>
 <script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"></script>
 </body>

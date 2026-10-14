@@ -12,7 +12,7 @@ const ORIGIN_ROW=8;
 
 if (!window[KEY]) {
   const mobile = matchMedia("(pointer:coarse)").matches;
-  const proceduralFallbackEnabled=new URLSearchParams(location.search).get("districtFallback")==="1";
+  const proceduralFallbackEnabled=new URLSearchParams(location.search).get("districtFallback")!=="0"; // Use real, source-based building footprints whenever local GLBs are absent.
   const state = window[KEY] = {
     installed:true, ready:false, active:false, activeDistrict:null,
     loadedDistricts:[], builtTiles:0, visibleTiles:0, sourceBuildingCount:0,
@@ -236,7 +236,7 @@ if (!window[KEY]) {
     }
     ranked.sort((a,b)=>a.d2-b.d2);
 
-    const maxTiles=mobile?3:6;
+    const maxTiles=mobile?2:4; // Small, rolling render budget for iPhones and desktop.
     for(let i=0;i<ranked.length;i++){
       const tile=ranked[i].tile;
       const on=i<maxTiles&&!hasAuthoritativeGlb(tile.id);

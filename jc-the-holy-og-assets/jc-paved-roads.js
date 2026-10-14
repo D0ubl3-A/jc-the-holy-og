@@ -236,7 +236,15 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
   function unload(id){
     const item=cells.get(id);if(!item)return;
     root.remove(item.root);
-    item.root.traverse(node=>{if(node.geometry)node.geometry.dispose()});
+    item.root.traverse(node=>{
+      if(node.isInstancedMesh){
+        // Shared streetlight pole/head geometry belongs to the renderer, not
+        // this tile. Only release the per-tile instance buffers on unload.
+        node.dispose();
+      }else if(node.geometry){
+        node.geometry.dispose();
+      }
+    });
     loadedSegments-=item.segments;loadedLamps-=item.lamps;
     loadedCrossings-=item.crossings;loadedTiles--;
     cells.delete(id);

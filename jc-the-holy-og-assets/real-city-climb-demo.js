@@ -2200,8 +2200,10 @@ async function streamTiles(force){
   }
 }
 
-const STRIP_SPAWN=new THREE.Vector3(1250,4,-850);
-const SPAWN_TILE="C20_R16";
+// The previous C20_R16 launch cell has no published GLB coverage. Start inside
+// the source-confirmed Strip district so its footprint models are immediately nearby.
+const STRIP_SPAWN=new THREE.Vector3(750,4,-720);
+const SPAWN_TILE="C15_R15";
 const player={
   root:new THREE.Group(),
   pos:STRIP_SPAWN.clone(),
@@ -3072,7 +3074,9 @@ function updateCamera(dt){
 function updateHud(){
   const cell=currentCellName();
   locationEl.textContent=cell+" · JC REAL GLB MAP";
-  progressEl.textContent=loadedTiles.size+" loaded / "+manifest.length+" uploaded GLBs";
+  const districtStatus=window.JC_REAL_VEGAS_DISTRICT_STATUS;
+  const visibleFootprints=districtStatus?.visibleTiles||0;
+  progressEl.textContent=loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible";
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
   const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
@@ -3100,17 +3104,17 @@ async function boot(){
   player.velocity.set(0,0,0);
   player.yaw=Math.PI;
   if(locationEl)locationEl.textContent="NEW TILE ZONE · "+SPAWN_TILE;
-  if(creditEl)creditEl.textContent="JC Map • START: "+SPAWN_TILE+" • new 163-tile zone";
+  if(creditEl)creditEl.textContent="JC Map • STRIP START: "+SPAWN_TILE+" • source-based buildings";
   await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
   await initializeFactoryWallpapers();
   rebuildDestinations();
   await loadWorldLod();
   await loadRoadRuntime();
   bufferState.total=manifest.length;
-  if(progressEl)progressEl.textContent="BUFFERING NEW 163-TILE START AREA…";
+  if(progressEl)progressEl.textContent="LOADING STRIP · REAL BUILDING FOOTPRINTS…";
   await Promise.all([streamTiles(true),streamRoadTiles(true)]);
   updateBufferedVisibility(true);
-  if(progressEl)progressEl.textContent="STRIP READY · background map buffering active";
+  if(progressEl)progressEl.textContent=loadedTiles.size?"STRIP GLBs READY · real footprints loading":"STRIP REAL BUILDING FOOTPRINTS LOADING";
   toggleFlight();
   toggleFlight();
   updateHud();

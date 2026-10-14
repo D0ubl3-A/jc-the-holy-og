@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { createJcBuildingSkins } from "./jc-building-skins.js";
 import { createJcSkyOverview } from "./jc-sky-overview.js";
+import { createJcDetailedTerrain } from "./jc-detailed-terrain.js";
 
 /**
  * Optimized renderer for Las_Vegas_Editable_City_Part_2.zip.
@@ -37,6 +38,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   const geometry=new THREE.BoxGeometry(1,1,1);
   const skins=createJcBuildingSkins(lowSpec);
   const sky=createJcSkyOverview(worldRoot,skins,lowSpec);
+  const terrainDetail=createJcDetailedTerrain(worldRoot,manifest.tiles,player,lowSpec);
   // Sky terrain and silhouettes are prebuilt and small; do not block boot.
   void sky.load();
   const dummy=new THREE.Object3D();
@@ -64,6 +66,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       activeTileIds:[...visible.keys()],
       skinsLoaded:skins.loaded,skinAtlasCount:skins.total,
       sky:sky.status(),
+      terrainDetail:terrainDetail.status(),
       fidelity:"Source geometry proxy dimensions; original eight JC facade/wallpaper atlases on visible buildings"
     };
   };
@@ -191,6 +194,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   function update(force=false){
     const altitude=player.pos.y;
     const skyMode=sky.update(altitude,window.JC_FORCE_SKY_MAP===true);
+    terrainDetail.update(force);
     group.visible=!skyMode;
     if(skyMode){
       // Camera-wide LOD substitutes for the old individual nearby instanced meshes.
@@ -226,7 +230,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     }
     updateStatus();
   }
-  const api={active:true,group,manifest,update,sky,skins,
+  const api={active:true,group,manifest,update,sky,skins,terrainDetail,
     get loadedBuildings(){return loadedBuildings;},
     get visibleTiles(){return visible.size;},
     get batchesDownloaded(){return batchesDownloaded;},

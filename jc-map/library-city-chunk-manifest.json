@@ -1,0 +1,11 @@
+{
+  "schema": "jc-library-github-parts-v1",
+  "archive": "JC_Library_City_Tiles_595_ROOT.zip",
+  "partPattern": "JC_LIBRARY_CITY_PART_%03d.bin",
+  "partCount": 11,
+  "partBytes": 524288,
+  "archiveBytes": 5267768,
+  "archiveSha256": "202a1196c9b6d79865d75a854a941741ddea9f5678019e0df965fb53d72bcaa3",
+  "expectedTileCount": 595,
+  "expectedBuildingCount": 216807
+}

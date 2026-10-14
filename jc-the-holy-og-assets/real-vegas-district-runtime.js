@@ -118,7 +118,9 @@ if (!window[KEY]) {
     const b=meta.bbox_utm;const center=toGame((b[0]+b[2])/2,(b[1]+b[3])/2);
     const d={meta,pack,tiles,center,root:new THREE.Group(),loaded:true};
     d.root.name=`REAL VEGAS DISTRICT ${meta.id}`;d.root.visible=false;d.root.userData={sourceGrounded:true,district:meta.id,buildingCount:pack.buildings?.length||0};
-    state.scene.add(d.root);state.districts.set(meta.id,d);state.loadedDistricts=[...state.districts.keys()];state.sourceBuildingCount=[...state.districts.values()].reduce((s,x)=>s+(x.pack.buildings?.length||0),0);
+    // Every source-backed building belongs to the SAME persistent city root,
+    // not its own independent scene or coordinate system.
+    state.worldRoot.add(d.root);state.districts.set(meta.id,d);state.loadedDistricts=[...state.districts.keys()];state.sourceBuildingCount=[...state.districts.values()].reduce((s,x)=>s+(x.pack.buildings?.length||0),0);
     return d;
   }
 
@@ -200,19 +202,33 @@ if (!window[KEY]) {
 
   function update(camera) {
     if(!state.ready||!camera)return;
+    if(!state.worldRoot){
+      state.worldRoot=state.scene.getObjectByName("JC_UNIFIED_CITY")||state.scene;
+      window.JC_ONE_WORLD={root:state.worldRoot,sourceBuildingCount:0,visibleTiles:0};
+    }
 
+    // Use distance to ACTUAL district footprint bounds, rather than center.
+    // The Strip and Henderson are much wider than a 1.5km center radius:
+    // center-distance culling made entire blocks disappear as JC moved.
     let nearest=null;
     for(const m of state.index.districts){
       const b=m.bbox_utm;
+      const nw=state.toGame(b[0],b[3]),se=state.toGame(b[2],b[1]);
+      const dx=Math.max(nw.x-camera.position.x,0,camera.position.x-se.x);
+      const dz=Math.max(nw.z-camera.position.z,0,camera.position.z-se.z);
+      const boundaryDistance2=dx*dx+dz*dz;
       const c=state.toGame((b[0]+b[2])/2,(b[1]+b[3])/2);
-      const d2=(camera.position.x-c.x)**2+(camera.position.z-c.z)**2;
-      if(!nearest||d2<nearest.d2)nearest={m,c,d2};
+      const centerDistance2=(camera.position.x-c.x)**2+(camera.position.z-c.z)**2;
+      if(!nearest||boundaryDistance2<nearest.d2||
+         (boundaryDistance2===nearest.d2&&centerDistance2<nearest.centerDistance2)){
+        nearest={m,c,d2:boundaryDistance2,centerDistance2};
+      }
     }
 
-    const loadRadius=mobile?1700:2400;
+    const loadRadius=mobile?250:400;
     if(nearest&&nearest.d2<loadRadius*loadRadius)loadDistrict(nearest.m);
 
-    const activeRadius=mobile?1150:1650;
+    const activeRadius=mobile?150:280;
     const active=nearest&&nearest.d2<activeRadius*activeRadius?state.districts.get(nearest.m.id):null;
     for(const x of state.districts.values())x.root.visible=x===active;
     state.active=!!active;
@@ -225,7 +241,8 @@ if (!window[KEY]) {
       return;
     }
 
-    const tileRadius=mobile?560:900;
+    // Max view radius follows JC instead of snapping to district centers.
+    const tileRadius=mobile?370:630;
     const tileRadius2=tileRadius*tileRadius;
     const ranked=[];
     for(const tile of active.tiles.values()){
@@ -236,7 +253,7 @@ if (!window[KEY]) {
     }
     ranked.sort((a,b)=>a.d2-b.d2);
 
-    const maxTiles=mobile?2:4; // Small, rolling render budget for iPhones and desktop.
+    const maxTiles=mobile?5:10; // Joined city blocks, bounded draw calls for mobile.
     for(let i=0;i<ranked.length;i++){
       const tile=ranked[i].tile;
       const on=i<maxTiles&&!hasAuthoritativeGlb(tile.id);
@@ -245,7 +262,10 @@ if (!window[KEY]) {
       if(on&&tile.group)state.visibleTiles++;
     }
 
-    setProceduralSuppressed(true);
+    // Do not erase fallback buildings during the async build queue's first frames.
+    setProceduralSuppressed(state.visibleTiles>0);
+    if(window.JC_ONE_WORLD){window.JC_ONE_WORLD.sourceBuildingCount=state.sourceBuildingCount;
+      window.JC_ONE_WORLD.visibleTiles=state.visibleTiles;}
     const stream=document.getElementById("streamStatus");
     if(stream)stream.innerHTML=`REAL ${active.meta.label.toUpperCase()}: ${state.visibleTiles} TILES<br>${active.meta.selected_buildings.toLocaleString()} VERIFIED FOOTPRINTS`;
     window.JC_REAL_VEGAS_DISTRICT_STATUS={active:true,district:active.meta.id,visibleTiles:state.visibleTiles,builtTiles:state.builtTiles,loadedDistricts:state.loadedDistricts};

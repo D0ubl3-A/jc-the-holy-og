@@ -137,6 +137,7 @@ const ONE_FILE_CITY=!GTA_VEGAS_MODE&&(requestedCityMode==="full"||requestedCityM
 window.JC_GTA_VEGAS_MODE=GTA_VEGAS_MODE;
 let gtaMapControl=null;
 let libraryCity=null;
+let stripFallbackCity=null;
 // Mobile/coarse-pointer devices now start in the lighter city renderer. The
 // previous 262 MB single-GLB default triggered repeated iOS Safari page crashes.
 window.JC_MOBILE_SAFE_DEFAULT=lowSpec&&!ONE_FILE_CITY;
@@ -3124,7 +3125,9 @@ function updateHud(){
   locationEl.textContent=GTA_VEGAS_MODE?"LAS VEGAS · GTA GPS MAP":cell+" · JC REAL GLB MAP";
   const districtStatus=window.JC_REAL_VEGAS_DISTRICT_STATUS;
   const visibleFootprints=districtStatus?.visibleTiles||0;
-  progressEl.textContent=GTA_VEGAS_MODE?"LIVE REAL STREET MAP · LIGHT 3D · JC POWERS ACTIVE":ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
+  progressEl.textContent=GTA_VEGAS_MODE?
+    (libraryCity?.active?"LIBRARY CITY · "+libraryCity.visibleTiles+" SOURCE TILES ACTIVE":
+    "GTA VEGAS SAFE MAP · LIBRARY CITY ARCHIVE NOT YET PUBLISHED"):ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
     (loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible");
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
@@ -3141,6 +3144,8 @@ function updateHud(){
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   if(gtaMapControl)gtaMapControl.update();
+  if(stripFallbackCity&&libraryCity?.active)
+    stripFallbackCity.visible=player.pos.x<975;
   if(libraryCity?.active){libraryCity.update();if(progressEl)progressEl.textContent="GTA MAP · REAL LIBRARY CITY "+libraryCity.loadedBuildings.toLocaleString()+" BUILDINGS VISIBLE · "+libraryCity.visibleTiles+" TILE CELLS";}
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
@@ -3208,8 +3213,11 @@ async function boot(){
   if(GTA_VEGAS_MODE){
     // Transfer GTA Vegas' geographic world and its mobile-lightweight 3D city.
     // The real street basemap syncs with the player's position and JC powers.
-    buildGtaVegasCity(unifiedCityGroup,lowSpec);
+    // Always preserve a small Strip scene: the Library's 595 cells cover
+    // only C18-C34 east of the Strip, not JC's actual start area.
+    stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec);
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
+    if(libraryCity?.active)stripFallbackCity.visible=player.pos.x<975;
     rebuildDestinations();
     gtaMapControl=initializeGtaVegasMap({
       player,

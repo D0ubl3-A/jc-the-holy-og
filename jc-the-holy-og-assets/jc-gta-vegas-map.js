@@ -46,7 +46,7 @@ export function buildGtaVegasCity(worldRoot,lowSpec,skins=null){
   const count=lowSpec?100:220;
   const group=new THREE.Group();
   group.name="GTA_VEGAS_LIGHTWEIGHT_CITY";
-  const geometry=new THREE.BoxGeometry(1,1,1);
+  const geometry=skins?.geometry||new THREE.BoxGeometry(1,1,1);
   const center=gtaVegasToWorld(GTA_VEGAS_CENTER.lat,GTA_VEGAS_CENTER.lng);
   function seeded(i){const n=Math.sin(i*913.71+17.3)*43758.5453;return n-Math.floor(n);}
   const records=[],counts=new Map();

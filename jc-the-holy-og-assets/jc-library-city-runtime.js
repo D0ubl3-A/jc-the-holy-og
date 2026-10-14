@@ -49,8 +49,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   const group=new THREE.Group();
   group.name="JC_LIBRARY_REAL_595_TILE_CITY";
   worldRoot.add(group);
-  const geometry=new THREE.BoxGeometry(1,1,1);
   const skins=createJcBuildingSkins(lowSpec,neighborhoodConfig);
+  const geometry=skins.geometry;
   const sky=createJcSkyOverview(worldRoot,skins,lowSpec);
   const terrainDetail=createJcDetailedTerrain(worldRoot,manifest.tiles,player,lowSpec);
   // Sky terrain and silhouettes are prebuilt and small; do not block boot.

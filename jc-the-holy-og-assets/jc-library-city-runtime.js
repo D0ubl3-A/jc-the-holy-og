@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { createJcBuildingSkins } from "./jc-building-skins.js";
-import { createJcSkyOverview } from "./jc-sky-overview.js";
+import { createJcBuildingSkins } from "./jc-building-skins.js?rev=jc-neighborhood-skins-v1";
+import { createJcSkyOverview } from "./jc-sky-overview.js?rev=jc-neighborhood-skins-v1";
 import { createJcDetailedTerrain } from "./jc-detailed-terrain.js";
 
 /**

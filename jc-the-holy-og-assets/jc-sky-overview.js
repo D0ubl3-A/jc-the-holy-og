@@ -77,7 +77,7 @@ export function createJcSkyOverview(parent,skins,lowSpec){
           throw Error("Invalid neighborhood skin in aerial overview");
         counts.set(skin,(counts.get(skin)||0)+1);
       }
-      const geometry=new THREE.BoxGeometry(1,1,1);
+      const geometry=skins.geometry;
       const meshes=new Map();
       for(const [style,count] of counts){
         const mesh=new THREE.InstancedMesh(geometry,skins.materials[style],count);

@@ -8,7 +8,7 @@ import * as THREE from "three";
  * distant road imagery at high altitude.
  */
 const BASE="./jc-map/roads/";
-const REV="jc-paved-geo-20261014-v1";
+const REV="jc-paved-streetscape-20261014-v2";
 const tileKey=(c,r)=>"C"+String(c).padStart(2,"0")+"_R"+String(r).padStart(2,"0");
 
 export async function createJcPavedRoads(worldRoot,player,lowSpec){
@@ -51,12 +51,21 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
     arterial:new THREE.MeshStandardMaterial({map:asphaltTex,color:0xbcbcbc,roughness:0.96,metalness:0,side:THREE.DoubleSide}),
     residential:new THREE.MeshStandardMaterial({map:asphaltTex,color:0xa3a3a3,roughness:0.99,metalness:0,side:THREE.DoubleSide}),
     service:new THREE.MeshStandardMaterial({map:asphaltTex,color:0x888888,roughness:1,metalness:0,side:THREE.DoubleSide}),
-    sidewalk:new THREE.MeshStandardMaterial({color:0xada99e,roughness:0.96,metalness:0,side:THREE.DoubleSide}),
+    sidewalk:new THREE.MeshStandardMaterial({color:0xb5ad9f,roughness:0.94,metalness:0,side:THREE.DoubleSide}),
+    curb:new THREE.MeshStandardMaterial({color:0x88847e,roughness:0.96,metalness:0,side:THREE.DoubleSide}),
+    median:new THREE.MeshStandardMaterial({color:0x8b806c,roughness:1,metalness:0,side:THREE.DoubleSide}),
     white:new THREE.MeshBasicMaterial({color:0xe7e7db,side:THREE.DoubleSide}),
     yellow:new THREE.MeshBasicMaterial({color:0xf5cc47,side:THREE.DoubleSide})
   };
+  const poleGeom=new THREE.CylinderGeometry(.033,.046,1,5);
+  const lampGeom=new THREE.BoxGeometry(.16,.055,.14);
+  const lampPoleMat=new THREE.MeshStandardMaterial({color:0x6b747c,metalness:.28,roughness:.7});
+  const lampHeadMat=new THREE.MeshStandardMaterial({
+    color:0xffe5ac,emissive:0xeab86b,emissiveIntensity:1.35,
+    roughness:.48,metalness:.15
+  });
   const cells=new Map(),pending=new Set(),failed=new Set();
-  let loadedSegments=0,lastCell="",loadedTiles=0,errors=0;
+  let loadedSegments=0,loadedLamps=0,loadedCrossings=0,lastCell="",loadedTiles=0,errors=0;
   const classify=h=>/motorway|trunk/.test(h)?"motorway":
     /primary|secondary|tertiary/.test(h)?"arterial":
     /residential|living_street|unclassified/.test(h)?"residential":"service";
@@ -74,11 +83,34 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
     arr.push(...left,...right,...tailLeft,...right,...tailRight,...tailLeft);
   }
   function buildTile(data,rec){
-    const buckets={motorway:[],arterial:[],residential:[],service:[],sidewalk:[],white:[],yellow:[]};
+    const buckets={
+      motorway:[],arterial:[],residential:[],service:[],
+      sidewalk:[],curb:[],median:[],white:[],yellow:[]
+    };
+    const lamps=[];
+    const lampLimit=lowSpec?17:32;
+    const roadEnds=new Map();
+    // Two or more OSM ways may meet at a recorded shared junction.
+    // Decorations appear only at actual matching nodes, not at guessed
+    // intersections inferred from crossing aerial pixels.
+    const endpointKey=(x,z)=>Math.round(x*20)+":"+Math.round(z*20);
+    for(const road of data.roads||[]){
+      const p=road.p;
+      if(!Array.isArray(p)||p.length<2)continue;
+      if(!/primary|secondary|tertiary|residential|unclassified/i.test(road.h||""))continue;
+      for(const endpoint of [p[0],p[p.length-1]]){
+        if(!Array.isArray(endpoint))continue;
+        const key=endpointKey(endpoint[0],endpoint[1]);
+        roadEnds.set(key,(roadEnds.get(key)||0)+1);
+      }
+    }
+    const paintedCrossings=new Set();
     let paved=0;
     for(const road of data.roads||[]){
       const pts=road.p,kind=classify(road.h||"");
-      if(!Array.isArray(pts)||pts.length<2||road.t==="yes")continue;
+      // Cycle paths and footpaths are not vehicle streets.
+      if(!Array.isArray(pts)||pts.length<2||road.t==="yes"||
+        /cycleway|footway|pedestrian|path|steps|bridleway/.test(road.h||""))continue;
       const width=Math.max(.26,Math.min(3.8,Number(road.w)||.5));
       // Tile local planar geometry uses the same +/- world coordinate
       // orientation as the published source road registry.
@@ -93,11 +125,17 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
         const height=road.b==="yes"?.25:.086;
         pushQuad(buckets[kind],ax,az,bx,bz,width*.5,height);
         const major=kind==="motorway"||kind==="arterial";
-        if(kind!=="service"){
+        if(kind!=="service"&&kind!=="motorway"){
           const sw=kind==="residential"?.16:.22;
           const sideY=height+.014;
-          pushQuad(buckets.sidewalk,ax,az,bx,bz,sw,sideY,width*.5+.19);
-          pushQuad(buckets.sidewalk,ax,az,bx,bz,sw,sideY,-width*.5-.19);
+          pushQuad(buckets.sidewalk,ax,az,bx,bz,sw,sideY,width*.5+.22);
+          pushQuad(buckets.sidewalk,ax,az,bx,bz,sw,sideY,-width*.5-.22);
+          // Concrete curb and dark gutter separate road and footpath.
+          pushQuad(buckets.curb,ax,az,bx,bz,.031,height+.025,width*.5+.035);
+          pushQuad(buckets.curb,ax,az,bx,bz,.031,height+.025,-width*.5-.035);
+        }
+        if(kind==="arterial"&&width>=1.7&&road.o!=="yes"){
+          pushQuad(buckets.median,ax,az,bx,bz,.087,height+.006);
         }
         if(major&&width>=.9){
           const stripe=buckets[road.o==="yes"?"white":"yellow"];
@@ -111,9 +149,43 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
           pushQuad(buckets.white,ax,az,bx,bz,.014,height+.014,width*.5-.09);
           pushQuad(buckets.white,ax,az,bx,bz,.014,height+.014,-width*.5+.09);
         }else if(kind==="residential"&&width>=.6){
-          // Restrained street-edge lines; subdivision streets usually lack
-          // highway striping and should not look like multi-lane freeways.
+          // Residential streets have restrained edge delineation.
           pushQuad(buckets.white,ax,az,bx,bz,.012,height+.014,width*.5-.08);
+        }
+        // Pedestrian crossings are *procedural* visual design near road
+        // nodes confirmed by multiple mapped road endpoints. Not official
+        // marked crossings or traffic-control claims for these real streets.
+        if(kind==="arterial"&&len>=.56){
+          const end=j===1?[ax,az]:j===pts.length-1?[bx,bz]:null;
+          if(end&&paintedCrossings.size<(lowSpec?5:12)){
+            const key=endpointKey(end[0],end[1]);
+            if((roadEnds.get(key)||0)>=3&&!paintedCrossings.has(key)){
+              paintedCrossings.add(key);
+              const dir=j===1?.38:.62;
+              const centerX=ax+(bx-ax)*dir,centerZ=az+(bz-az)*dir;
+              const normalX=-(bz-az)/len,normalZ=(bx-ax)/len;
+              const beamX=normalX*width*.85,beamZ=normalZ*width*.85;
+              for(let k=-3;k<=3;k++){
+                const sx=centerX+(bx-ax)/len*k*.09;
+                const sz=centerZ+(bz-az)/len*k*.09;
+                pushQuad(buckets.white,sx-beamX*.5,sz-beamZ*.5,
+                  sx+beamX*.5,sz+beamZ*.5,.018,height+.028);
+              }
+            }
+          }
+        }
+        if((kind==="arterial"||kind==="residential")&&len>=7&&lamps.length<lampLimit){
+          const nx=-(bz-az)/len,nz=(bx-ax)/len;
+          const interval=kind==="arterial"?9:13;
+          const amount=Math.min(3,Math.floor(len/interval));
+          for(let k=0;k<amount&&lamps.length<lampLimit;k++){
+            const t=(k+.5)/amount,side=(k%2===0?1:-1);
+            lamps.push({
+              x:ax+(bx-ax)*t+nx*side*(width*.5+.55),
+              z:az+(bz-az)*t+nz*side*(width*.5+.55),
+              h:kind==="arterial"?.67:.43
+            });
+          }
         }
       }
     }
@@ -137,20 +209,44 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
       mesh.renderOrder=kind==="white"||kind==="yellow"?12:kind==="sidewalk"?11:10;
       tileRoot.add(mesh);
     }
-    return {root:tileRoot,segments:paved};
+    if(lamps.length){
+      const poles=new THREE.InstancedMesh(poleGeom,lampPoleMat,lamps.length);
+      const glow=new THREE.InstancedMesh(lampGeom,lampHeadMat,lamps.length);
+      poles.name="JC_PAVED_LAMP_POLES";
+      glow.name="JC_WARM_ROADSIDE_LIGHT_FIXTURES";
+      poles.frustumCulled=false;glow.frustumCulled=false;
+      poles.castShadow=false;glow.castShadow=false;
+      const dummy=new THREE.Object3D();
+      for(let i=0;i<lamps.length;i++){
+        const o=lamps[i];
+        dummy.rotation.set(0,0,0);
+        dummy.position.set(o.x,o.h*.5,o.z);
+        dummy.scale.set(1,o.h,1);
+        dummy.updateMatrix();poles.setMatrixAt(i,dummy.matrix);
+        dummy.position.set(o.x,o.h+.03,o.z);
+        dummy.scale.set(1,1,1);
+        dummy.updateMatrix();glow.setMatrixAt(i,dummy.matrix);
+      }
+      poles.instanceMatrix.needsUpdate=true;
+      glow.instanceMatrix.needsUpdate=true;
+      tileRoot.add(poles,glow);
+    }
+    return {root:tileRoot,segments:paved,lamps:lamps.length,crossings:paintedCrossings.size};
   }
   function unload(id){
     const item=cells.get(id);if(!item)return;
     root.remove(item.root);
     item.root.traverse(node=>{if(node.geometry)node.geometry.dispose()});
-    loadedSegments-=item.segments;loadedTiles--;
+    loadedSegments-=item.segments;loadedLamps-=item.lamps;
+    loadedCrossings-=item.crossings;loadedTiles--;
     cells.delete(id);
   }
   let wanted=new Set(),requests=[],running=0;
   function summary(){
-    return {ready:true,loadedTiles,loadedSegments,loading:running,queued:requests.length,
+    return {ready:true,loadedTiles,loadedSegments,loadedLamps,loadedCrossings,
+      loading:running,queued:requests.length,
       errors,sourceRoadTiles:entries.size,nearbyRadius:radius,
-      surface:"OSM-based textured asphalt, lanes and sidewalks"};
+      surface:"Mapped road asphalt with curbs, crossings, medians, sidewalks and warm light fixtures"};
   }
   function pump(){
     while(running<limit&&requests.length){
@@ -166,6 +262,7 @@ export async function createJcPavedRoads(worldRoot,player,lowSpec){
         const tile=buildTile(data,rec);
         root.add(tile.root);
         cells.set(id,tile);loadedTiles++;loadedSegments+=tile.segments;
+        loadedLamps+=tile.lamps;loadedCrossings+=tile.crossings;
       }).catch(err=>{
         failed.add(id);errors++;
         console.warn("JC real mapped road tile unavailable",id,err);

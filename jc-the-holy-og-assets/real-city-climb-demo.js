@@ -3,6 +3,7 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js";
+import { installLibraryCity } from "./jc-library-city-runtime.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -135,6 +136,7 @@ const GTA_VEGAS_MODE=requestedCityMode==="gta"||requestedCityMode==="map"||!["fu
 const ONE_FILE_CITY=!GTA_VEGAS_MODE&&(requestedCityMode==="full"||requestedCityMode==="one");
 window.JC_GTA_VEGAS_MODE=GTA_VEGAS_MODE;
 let gtaMapControl=null;
+let libraryCity=null;
 // Mobile/coarse-pointer devices now start in the lighter city renderer. The
 // previous 262 MB single-GLB default triggered repeated iOS Safari page crashes.
 window.JC_MOBILE_SAFE_DEFAULT=lowSpec&&!ONE_FILE_CITY;
@@ -3139,6 +3141,7 @@ function updateHud(){
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   if(gtaMapControl)gtaMapControl.update();
+  if(libraryCity?.active){libraryCity.update();if(progressEl)progressEl.textContent="GTA MAP · REAL LIBRARY CITY "+libraryCity.loadedBuildings.toLocaleString()+" BUILDINGS VISIBLE · "+libraryCity.visibleTiles+" TILE CELLS";}
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
@@ -3206,6 +3209,7 @@ async function boot(){
     // Transfer GTA Vegas' geographic world and its mobile-lightweight 3D city.
     // The real street basemap syncs with the player's position and JC powers.
     buildGtaVegasCity(unifiedCityGroup,lowSpec);
+    libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
     rebuildDestinations();
     gtaMapControl=initializeGtaVegasMap({
       player,
@@ -3257,6 +3261,7 @@ async function boot(){
     oneFileCity:ONE_FILE_CITY,
     gtaVegasMode:GTA_VEGAS_MODE,
     gtaMapControl:gtaMapControl,
+    libraryCity:libraryCity,
     get fullyPreloaded(){return singleCityLoaded},
     get completeCityGeometry(){return singleCityGeometry},
     dataBuffering:DATA_BUFFERING,

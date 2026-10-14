@@ -193,6 +193,8 @@ jobs:
           print("PASS: installed all 595 library tiles,",total,"source buildings and 595 aerial textures")
           PY
             rm -f _site/JC_Library_City_Tiles_595_ROOT.zip
+            # Keep source upload chunks out of the public Pages artifact.
+            rm -f _site/JC_Library_City_Tiles_595_ROOT.zip.part[0-9][0-9]
           else
             echo "Library ZIP not yet in repo: preserving current map until real tiles are supplied."
           fi

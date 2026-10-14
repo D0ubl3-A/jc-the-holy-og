@@ -19,7 +19,7 @@ const pattern = /^C(\d+)_R(\d+)\.glb$/i;
 const TILE_SCALE = 0.1, TILE_SIZE = 100, ORIGIN_COL = 8, ORIGIN_ROW = 8;
 const names = (await fs.readdir(root)).filter(n => pattern.test(n)).sort();
 if (!names.length) throw new Error('No root C##_R##.glb files: refusing empty city');
-const source = new NodeIO();
+const source = new NodeIO().setStrictResources(false); // Missing optional source textures must not erase city geometry.
 const target = new Document();
 const united = target.createScene('JC — ONE CONTINUOUS LAS VEGAS WORLD');
 target.getRoot().setDefaultScene(united);
@@ -34,6 +34,11 @@ for (const name of names) {
   const file = path.join(root, name);
   const stat = await fs.stat(file);
   const doc = await source.read(file);
+  // Some exported GLBs reference images never committed to the repository.
+  // Discard those broken texture links; retain source geometry and material colors.
+  for (const texture of doc.getRoot().listTextures()) {
+    if (!texture.getImage()) texture.dispose();
+  }
   const scenes = doc.getRoot().listScenes();
   if (!scenes.length) throw new Error(name + ' has no scene');
   const scene = doc.getRoot().getDefaultScene() || scenes[0];

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { createJcBuildingSkins } from "./jc-building-skins.js?rev=jc-houses-roads-v1";
 import { createJcSkyOverview } from "./jc-sky-overview.js?rev=jc-houses-roads-v1";
 import { createJcDetailedTerrain } from "./jc-detailed-terrain.js";
-import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js";
+import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js?rev=jc-houses-roads-v1";
 
 /**
  * Optimized renderer for Las_Vegas_Editable_City_Part_2.zip.

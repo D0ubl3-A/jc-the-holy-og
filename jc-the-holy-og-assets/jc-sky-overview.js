@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js";
 
 /**
  * Persistently renders the *entire* 595-tile Library geographic area from sky.
@@ -88,20 +89,24 @@ export function createJcSkyOverview(parent,skins,lowSpec){
         skyBuildings.add(mesh);
         meshes.set(style,{mesh,used:0});
       }
-      const dummy=new THREE.Object3D();
+      const dummy=new THREE.Object3D(),homes=[];
       for(let i=0;i<data.q.length;i+=6){
         const x=data.q[i]/100,z=data.q[i+1]/100;
         const h=Math.max(0.40,data.q[i+2]/100);
         const w=Math.max(0.30,data.q[i+3]/100);
         const d=Math.max(0.30,data.q[i+4]/100);
         const skin=data.q[i+5];
-        dummy.position.set(x,h/2,z);
-        dummy.scale.set(w,h,d);
+        const rec={x,z,h,w,d,style:skin};
+        homes.push(rec);
+        const bodyH=houseBodyHeight(rec,skins);
+        dummy.position.set(x,bodyH/2,z);
+        dummy.scale.set(w,bodyH,d);
         dummy.updateMatrix();
         const slot=meshes.get(skin);
         slot.mesh.setMatrixAt(slot.used++,dummy.matrix);
       }
       for(const {mesh} of meshes.values())mesh.instanceMatrix.needsUpdate=true;
+      attachNeighborhoodHouses(skyBuildings,homes,skins,{sky:true,lowSpec});
       rendered=data.sampleBuildingCount;
       sourceCount=data.sourceBuildingCount;
       ready=true;

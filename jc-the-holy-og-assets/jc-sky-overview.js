@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js";
+import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js?rev=jc-houses-roads-v1";
 
 /**
  * Persistently renders the *entire* 595-tile Library geographic area from sky.

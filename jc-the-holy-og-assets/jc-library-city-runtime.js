@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { createJcBuildingSkins } from "./jc-building-skins.js?rev=jc-neighborhood-skins-v1";
 import { createJcSkyOverview } from "./jc-sky-overview.js?rev=jc-neighborhood-skins-v1";
 import { createJcDetailedTerrain } from "./jc-detailed-terrain.js";
+import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js";
 
 /**
  * Optimized renderer for Las_Vegas_Editable_City_Part_2.zip.
@@ -160,6 +161,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         instance.castShadow=false;instance.receiveShadow=false;
         groups.set(style,{mesh:instance,used:0});
       }
+      const houseRecords=[];
       for(let j=0;j<data.n;j++){
         const i=j*5;
         const h=Math.max(0.2,data.q[i+2]/100);
@@ -168,8 +170,11 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         const x=(tile.c-8)*100+data.q[i]/100;
         const z=-(tile.r-8)*100+data.q[i+1]/100;
         const skin=styleFor(j);
-        dummy.position.set(x,h/2,z);
-        dummy.scale.set(w,h,d);
+        const home={x,z,h,w,d,style:skin};
+        houseRecords.push(home);
+        const bodyH=houseBodyHeight(home,skins);
+        dummy.position.set(x,bodyH/2,z);
+        dummy.scale.set(w,bodyH,d);
         dummy.rotation.set(0,0,0);
         dummy.updateMatrix();
         const slot=groups.get(skin);
@@ -181,7 +186,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         group.add(mesh);
         meshes.push(mesh);
       }
-      const record={meshes,count:data.n,ground:null,groundTexture:null};
+      const houseDetails=attachNeighborhoodHouses(group,houseRecords,skins,{lowSpec});
+      const record={meshes,houseDetails,count:data.n,ground:null,groundTexture:null};
       visible.set(id,record);
       // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
       // 256px WebP at packaging time. Load only active tiles.
@@ -209,6 +215,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     const item=visible.get(id);
     if(!item)return;
     for(const mesh of item.meshes){group.remove(mesh);mesh.dispose();}
+    item.houseDetails?.dispose();
     if(item.ground){
       group.remove(item.ground);
       item.ground.material.dispose();

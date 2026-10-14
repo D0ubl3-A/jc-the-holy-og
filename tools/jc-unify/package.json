@@ -1,0 +1,12 @@
+{
+  "name": "jc-unified-city-builder",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "^4.2.0",
+    "@gltf-transform/functions": "^4.2.0"
+  }
+}

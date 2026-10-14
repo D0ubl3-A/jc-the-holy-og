@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
-import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js";
-import { installLibraryCity } from "./jc-library-city-runtime.js?rev=continuous-595-terrain-v2";
+import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-neighborhood-skins-v1";
+import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-neighborhood-skins-v1";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");

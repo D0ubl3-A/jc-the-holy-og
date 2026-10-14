@@ -34,6 +34,9 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     metalness:lowSpec?0.18:0.56
   });
   const dummy=new THREE.Object3D();
+  const imageryLoader=new THREE.TextureLoader();
+  const groundShape=new THREE.PlaneGeometry(100,100);
+  groundShape.rotateX(-Math.PI/2);
   const color=new THREE.Color();
   const entries=new Map(manifest.tiles.map(t=>[key(t.c,t.r),t]));
   const visible=new Map(),inflight=new Set(),failedTiles=new Set();
@@ -90,7 +93,24 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       mesh.instanceMatrix.needsUpdate=true;
       if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
       group.add(mesh);
-      visible.set(id,{mesh,count:data.n});
+      const record={mesh,count:data.n,ground:null,groundTexture:null};
+      visible.set(id,record);
+      // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
+      // 256px WebP at packaging time. Load only active tiles.
+      imageryLoader.load(base+"imagery/"+id+".webp",function(texture){
+        if(visible.get(id)!==record){texture.dispose();return;}
+        texture.colorSpace=THREE.SRGBColorSpace;
+        texture.anisotropy=1;
+        const tileMat=new THREE.MeshBasicMaterial({map:texture,color:0x989898,side:THREE.DoubleSide});
+        const ground=new THREE.Mesh(groundShape,tileMat);
+        ground.name="ARCHIVE_SOURCE_IMAGERY_"+id;
+        ground.position.set((tile.c-8)*100+50,-0.13,-(tile.r-8)*100-50);
+        ground.frustumCulled=true;
+        group.add(ground);
+        record.ground=ground;
+        record.groundTexture=texture;
+      },undefined,function(err){console.warn("JC terrain imagery unavailable",id,err);});
+
       loadedBuildings+=data.n;
       updateStatus();
     }catch(err){
@@ -102,6 +122,11 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     if(!item)return;
     group.remove(item.mesh);
     item.mesh.dispose();
+    if(item.ground){
+      group.remove(item.ground);
+      item.ground.material.dispose();
+    }
+    if(item.groundTexture)item.groundTexture.dispose();
     loadedBuildings-=item.count;
     visible.delete(id);
   }

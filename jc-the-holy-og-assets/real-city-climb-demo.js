@@ -3204,20 +3204,48 @@ function updatePrebakedCollisions(force=false){
     }else tileColliders.delete(name);
   }
 }
-function jumpToRealLibraryCity(){
-  if(!GTA_VEGAS_MODE||!libraryCity?.active)return false;
-  // C22_R18 is a verified populated source tile (1,263 buildings).
-  // Keep the player above the city for a clear first view of source models.
-  player.pos.set(1450,1.2,-1050);
-  player.velocity.set(0,0,0);
-  player.flying=true;
-  player.grounded=false;
-  player.root.position.copy(player.pos);
-  stripFallbackCity&&(stripFallbackCity.visible=false);
-  libraryCity.update(true);
-  if(gtaMapControl)gtaMapControl.update(true);
-  if(progressEl)progressEl.textContent="ENTERING REAL LIBRARY CITY · TEN-TILE BATCHES LOADING";
-  return true;
+let libraryJumpBusy=false;
+async function jumpToRealLibraryCity(){
+  if(!GTA_VEGAS_MODE){
+    location.href="./real-city-climb-demo.html?mode=gta&city=library";
+    return false;
+  }
+  if(libraryJumpBusy)return false;
+  libraryJumpBusy=true;
+  const button=document.getElementById("jcLibraryJump");
+  if(button){button.disabled=true;button.textContent="LOADING…";}
+  try{
+    // A cached pre-batch manifest previously disabled the button permanently.
+    // Keep the button usable and retry the authoritative source on demand.
+    if(!libraryCity?.active)libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
+    if(!libraryCity?.active){
+      const reason=window.JC_LIBRARY_CITY_STATUS?.reason||"source city unavailable";
+      if(progressEl)progressEl.textContent="REAL CITY LOAD FAILED: "+reason;
+      if(button){button.title=reason;button.textContent="RETRY CITY";}
+      return false;
+    }
+    // The user-owned Library archive contains C22_R18 (1,263 structures).
+    // Keep JC slightly above ground without launching the 262MB legacy GLB.
+    player.pos.set(1450,5,-1050);
+    player.velocity.set(0,0,0);
+    player.flying=true;
+    player.grounded=false;
+    player.root.position.copy(player.pos);
+    if(stripFallbackCity)stripFallbackCity.visible=false;
+    libraryCity.update(true);
+    if(gtaMapControl)gtaMapControl.update(true);
+    if(progressEl)progressEl.textContent="ENTERING REAL CITY · LOADING NEARBY 10-TILE DATA PACKS";
+    if(button){button.title="JC now inside the real 595-tile Library city";button.textContent="IN REAL CITY";}
+    return true;
+  }catch(error){
+    if(progressEl)progressEl.textContent="REAL CITY ERROR: "+String(error?.message||error);
+    if(button){button.title=String(error?.message||error);button.textContent="RETRY CITY";}
+    console.error("JC REAL CITY launch failed",error);
+    return false;
+  }finally{
+    libraryJumpBusy=false;
+    if(button)button.disabled=false;
+  }
 }
 async function boot(){
   player.pos.copy(STRIP_SPAWN);
@@ -3234,15 +3262,16 @@ async function boot(){
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
     const jumpButton=document.getElementById("jcLibraryJump");
     if(jumpButton){
-      jumpButton.disabled=!libraryCity?.active;
-      jumpButton.title=libraryCity?.active?"Visit 595 real source tiles, loaded ten at a time":
-        "Library city archive is not published";
-      jumpButton.addEventListener("click",jumpToRealLibraryCity);
+      // Do not disable navigation because of a transient cache or network fault.
+      jumpButton.disabled=false;
+      jumpButton.title=libraryCity?.active?"Enter the imported 595-tile Las Vegas city":
+        "Tap to reconnect to real city map and retry any failed asset request";
+      jumpButton.addEventListener("click",()=>{void jumpToRealLibraryCity();});
     }
     if(libraryCity?.active){
       stripFallbackCity.visible=player.pos.x<975;
       if(new URLSearchParams(location.search).get("city")==="library"){
-        jumpToRealLibraryCity();
+        void jumpToRealLibraryCity();
       }
     }
     rebuildDestinations();

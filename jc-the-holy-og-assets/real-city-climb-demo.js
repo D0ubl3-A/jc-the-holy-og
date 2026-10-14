@@ -3146,7 +3146,7 @@ function updateHud(){
   if(gtaMapControl)gtaMapControl.update();
   if(stripFallbackCity&&libraryCity?.active)
     stripFallbackCity.visible=player.pos.x<975;
-  if(libraryCity?.active){libraryCity.update();if(progressEl)progressEl.textContent="GTA MAP · REAL LIBRARY CITY "+libraryCity.loadedBuildings.toLocaleString()+" BUILDINGS VISIBLE · "+libraryCity.visibleTiles+" TILE CELLS";}
+  if(libraryCity?.active){libraryCity.update();if(progressEl)progressEl.textContent="REAL JC CITY · "+libraryCity.visibleTiles+" SOURCE TILES · "+libraryCity.loadedBuildings.toLocaleString()+" BUILDINGS · "+libraryCity.batchesDownloaded+"/60 PACKS OF TEN";}
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
@@ -3204,6 +3204,21 @@ function updatePrebakedCollisions(force=false){
     }else tileColliders.delete(name);
   }
 }
+function jumpToRealLibraryCity(){
+  if(!GTA_VEGAS_MODE||!libraryCity?.active)return false;
+  // C22_R18 is a verified populated source tile (1,263 buildings).
+  // Keep the player above the city for a clear first view of source models.
+  player.pos.set(1450,1.2,-1050);
+  player.velocity.set(0,0,0);
+  player.flying=true;
+  player.grounded=false;
+  player.root.position.copy(player.pos);
+  stripFallbackCity&&(stripFallbackCity.visible=false);
+  libraryCity.update(true);
+  if(gtaMapControl)gtaMapControl.update(true);
+  if(progressEl)progressEl.textContent="ENTERING REAL LIBRARY CITY · TEN-TILE BATCHES LOADING";
+  return true;
+}
 async function boot(){
   player.pos.copy(STRIP_SPAWN);
   player.velocity.set(0,0,0);
@@ -3217,7 +3232,19 @@ async function boot(){
     // only C18-C34 east of the Strip, not JC's actual start area.
     stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec);
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
-    if(libraryCity?.active)stripFallbackCity.visible=player.pos.x<975;
+    const jumpButton=document.getElementById("jcLibraryJump");
+    if(jumpButton){
+      jumpButton.disabled=!libraryCity?.active;
+      jumpButton.title=libraryCity?.active?"Visit 595 real source tiles, loaded ten at a time":
+        "Library city archive is not published";
+      jumpButton.addEventListener("click",jumpToRealLibraryCity);
+    }
+    if(libraryCity?.active){
+      stripFallbackCity.visible=player.pos.x<975;
+      if(new URLSearchParams(location.search).get("city")==="library"){
+        jumpToRealLibraryCity();
+      }
+    }
     rebuildDestinations();
     gtaMapControl=initializeGtaVegasMap({
       player,

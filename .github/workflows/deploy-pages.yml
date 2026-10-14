@@ -414,11 +414,25 @@ jobs:
           assert 'const terrainShow=ready' in sky_runtime
           assert 'y>=140' not in sky_runtime
           assert 'GTA_VEGAS_MODE&&libraryCity?.active?0.000013' in city
-          assert 'continuous-595-terrain-v2' in html
+          assert 'jc-neighborhood-skins-v1' in html
+          assert 'neighborhood-skins.json' in runtime
+          assert 'skins.index(tile.c,tile.r,j,data.q[i+2],wx,wz,data.q[i+3])' in runtime
+          config_path=Path("_site/jc-map/neighborhood-skins.json")
+          assert config_path.is_file()
+          config=json.loads(config_path.read_text())
+          assert config["schema"]=="jc-neighborhood-skin-zones-v1"
+          assert config["stylesPerNeighborhood"]==3
+          assert len(config["zones"])==25
+          assert len({z["name"] for z in config["zones"]})==25
+          assert all("x" in z and "z" in z and "kind" in z for z in config["zones"])
+          starter=Path("_site/jc-the-holy-og-assets/jc-gta-vegas-map.js").read_text()
+          assert 'JC_NEIGHBORHOOD_STARTER_' in starter
           skins=Path("_site/jc-the-holy-og-assets/jc-building-skins.js").read_text()
           assert skins.count('facade-atlas-0')==6
           assert 'residential-wallpaper-atlas.jpg' in skins
           assert 'strip-wallpaper-atlas.jpg' in skins
+          assert 'roofMap(' in skins and 'roofColors' in skins
+          assert 'facadeRefs' in skins and 'const VARIANTS=3' in skins
           library=Path("_site/jc-the-holy-og-assets/library-city/manifest.json")
           if library.is_file():
               lm=json.loads(library.read_text())
@@ -445,6 +459,15 @@ jobs:
               assert a["sampleBuildingCount"]==sky["sampleBuildingCount"]
               assert len(a["q"])==a["sampleBuildingCount"]*6
               assert a["atlasPixels"]==[1632,3360]
+              assert a["skins"]==75 and a["neighborhoods"]==25
+              assert sky["neighborhoods"]==25
+              assert sky["neighborhoodMaterials"]==75
+              assert sky["neighborhoodConfigSha256"]==hashlib.sha256(config_path.read_bytes()).hexdigest()
+              assert a["neighborhoodConfigSha256"]==sky["neighborhoodConfigSha256"]
+              assigned={a["q"][i]//3 for i in range(5,len(a["q"]),6)}
+              assert len(assigned)>=12, "Unexpectedly uniform geographic neighborhood skin coverage"
+              assert all(0<=v<75 for v in a["q"][5::6])
+              print("PASS: geographic neighborhood styles across",len(assigned),"distinct neighborhoods in the 595-tile sky scene")
               for name in ["facade-atlas-%02d.jpg"%i for i in range(1,7)]:
                   assert (Path("_site/jc-the-holy-og-assets/swarm/buildings")/name).is_file()
               print("PASS: full 595-tile geo mosaic and",a["sampleBuildingCount"],"geo-aligned skinned sky buildings")

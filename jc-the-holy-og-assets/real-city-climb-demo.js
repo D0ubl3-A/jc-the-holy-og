@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js";
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
+import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -126,6 +127,10 @@ const LOAD_RADIUS=1;
 const KEEP_RADIUS=2;
 const MAX_CONCURRENT=1;
 const FULL_MAP_MODE=false;
+// The user-facing default preloads ONE prebuilt 134-tile GLB before the first frame.
+// ?mode=stream is the explicit low-memory recovery path for phones without enough RAM.
+const ONE_FILE_CITY=new URLSearchParams(location.search).get("mode")!=="stream";
+window.JC_ONE_FILE_CITY=ONE_FILE_CITY;
 const DATA_BUFFERING=false;
 const FULL_MAP_BATCH=1;
 const RAW_PREFETCH_CONCURRENCY=1;
@@ -154,6 +159,10 @@ const MAX_COLLIDERS_PER_TILE=lowSpec?48:96;
 
 
 const gltfLoader=new GLTFLoader();
+const mirrorFinish=createCityMirrorFinish(scene,renderer,lowSpec);
+let singleCityLoaded=false;
+let singleCityGeometry=null;
+let colliderCellKey="";
 
 const STRIP_WALLPAPER_FALLBACK_URL="./jc-the-holy-og-assets/textures/strip-wallpaper-atlas.jpg";
 const RESIDENTIAL_WALLPAPER_FALLBACK_URL="./jc-the-holy-og-assets/textures/residential-wallpaper-atlas.jpg";
@@ -1887,6 +1896,7 @@ function expandedActiveInfo(extra){
   return {cells:info.cells,radius:info.radius+(extra||0)};
 }
 function pruneDecodedScene(){
+  if(ONE_FILE_CITY)return; // Full city is one immutable asset; never discard its nodes.
   const keep=expandedActiveInfo(DECODE_KEEP_EXTRA);
 
   for(const [key,item] of Array.from(loadedTiles.entries())){
@@ -1993,6 +2003,7 @@ async function loadOneTile(rec){
     }
 
     mapGroup.add(root);
+    mirrorFinish.applyGroup(root);
     const wallpaperGroup=buildStripWallpaper(root,rec);
     const residentialGroup=buildResidentialWallpaper(root,rec);
     const colliderCount=buildTileColliders(root,rec);
@@ -2167,6 +2178,7 @@ async function bufferRemainingMap(){
 }
 
 async function streamTiles(force){
+  if(ONE_FILE_CITY)return; // All 134 original GLBs are already resident in one scene.
   if(FULL_MAP_MODE){
     if(force&&loadedTiles.size===0)await preloadInitialTiles();
     return;
@@ -2213,8 +2225,8 @@ async function streamTiles(force){
 
 // The previous C20_R16 launch cell has no published GLB coverage. Start inside
 // the source-confirmed Strip district so its footprint models are immediately nearby.
-const STRIP_SPAWN=new THREE.Vector3(750,4,-720);
-const SPAWN_TILE="C15_R15";
+const STRIP_SPAWN=new THREE.Vector3(550,4,-650);
+const SPAWN_TILE="C13_R14";
 const player={
   root:new THREE.Group(),
   pos:STRIP_SPAWN.clone(),
@@ -3087,7 +3099,8 @@ function updateHud(){
   locationEl.textContent=cell+" · JC REAL GLB MAP";
   const districtStatus=window.JC_REAL_VEGAS_DISTRICT_STATUS;
   const visibleFootprints=districtStatus?.visibleTiles||0;
-  progressEl.textContent=loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible";
+  progressEl.textContent=ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
+    (loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible");
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
   const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
@@ -3110,6 +3123,55 @@ function updateHud(){
   const d=destinations[destinationIndex];
   if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
+async function preloadOneCityFile(){
+  const url="./jc-the-holy-og-assets/models/JC-UNIFIED-CITY.glb";
+  if(progressEl)progressEl.textContent="LOADING ALL 134 CITY TILES IN ONE FILE…";
+  const guardCopy=document.getElementById("bootGuardCopy");
+  const gltf=await gltfLoader.loadAsync(url,function(event){
+    if(!event||!event.lengthComputable||!event.total)return;
+    const percent=Math.min(100,Math.round(event.loaded/event.total*100));
+    if(guardCopy)guardCopy.textContent="PRELOADING ONE COMPLETE CITY · "+percent+"% · "+Math.round(event.loaded/1048576)+" MB downloaded";
+  });
+  const root=gltf.scene;
+  root.name="JC_PREBAKED_134_TILE_CITY";
+  root.updateMatrixWorld(true);
+  singleCityGeometry=root;
+  mapGroup.add(root);
+  const byName=new Map();
+  for(const child of root.children)byName.set(child.name,child);
+  const missing=[];
+  for(const rec of manifest){
+    const key=tileKey(rec.col,rec.row);
+    const node=byName.get(key);
+    if(!node){missing.push(key);continue;}
+    node.visible=true;
+    loadedTiles.set(key,{root:node,rec,colliderCount:0,wallpaperGroup:null,residentialGroup:null});
+  }
+  if(missing.length)throw new Error("Unified world is missing "+missing.length+" checked-in GLBs: "+missing.slice(0,3).join(","));
+  if(loadedTiles.size!==manifest.length)throw new Error("Incomplete city preload: "+loadedTiles.size+"/"+manifest.length);
+  root.traverse(o=>{if(!o.isMesh)return;o.castShadow=false;o.receiveShadow=false;o.frustumCulled=true;});
+  const reflectionCount=mirrorFinish.applyGroup(root);
+  singleCityLoaded=true;
+  bufferState.complete=true;
+  bufferState.total=loadedTiles.size;
+  bufferState.loaded=loadedTiles.size;
+  if(progressEl)progressEl.textContent="ONE COMPLETE CITY READY · "+loadedTiles.size+" GLBs · "+reflectionCount+" reflective architectural meshes";
+  if(guardCopy)guardCopy.textContent="CITY READY · "+loadedTiles.size+" TILES BAKED TO ONE MODEL · MIRROR GLASS";
+}
+function updatePrebakedCollisions(force=false){
+  if(!singleCityLoaded)return;
+  const cell=worldCell(player.pos.x,player.pos.z);
+  const key=tileKey(cell.col,cell.row);
+  if(!force&&key===colliderCellKey)return;
+  colliderCellKey=key;
+  const nearby=new Set();
+  for(let dc=-1;dc<=1;dc++)for(let dr=-1;dr<=1;dr++)nearby.add(tileKey(cell.col+dc,cell.row+dr));
+  for(const [name,item] of loadedTiles){
+    if(nearby.has(name)){
+      if(!tileColliders.has(name))item.colliderCount=buildTileColliders(item.root,item.rec);
+    }else tileColliders.delete(name);
+  }
+}
 async function boot(){
   player.pos.copy(STRIP_SPAWN);
   player.velocity.set(0,0,0);
@@ -3117,15 +3179,22 @@ async function boot(){
   if(locationEl)locationEl.textContent="NEW TILE ZONE · "+SPAWN_TILE;
   if(creditEl)creditEl.textContent="JC Map • STRIP START: "+SPAWN_TILE+" • source-based buildings";
   await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
-  await initializeFactoryWallpapers();
   rebuildDestinations();
-  await loadWorldLod();
-  await loadRoadRuntime();
-  bufferState.total=manifest.length;
-  if(progressEl)progressEl.textContent="LOADING STRIP · REAL BUILDING FOOTPRINTS…";
-  await Promise.all([streamTiles(true),streamRoadTiles(true)]);
-  updateBufferedVisibility(true);
-  if(progressEl)progressEl.textContent=loadedTiles.size?"STRIP GLBs READY · real footprints loading":"STRIP REAL BUILDING FOOTPRINTS LOADING";
+  if(ONE_FILE_CITY){
+    // No GLB streaming or duplicated city LOD. The city finishes decoding
+    // before gameplay starts, and is never removed as the player moves.
+    await preloadOneCityFile();
+    updatePrebakedCollisions(true);
+    await loadRoadRuntime();
+    await streamRoadTiles(true);
+  }else{
+    await initializeFactoryWallpapers();
+    await loadWorldLod();
+    await loadRoadRuntime();
+    bufferState.total=manifest.length;
+    await Promise.all([streamTiles(true),streamRoadTiles(true)]);
+    updateBufferedVisibility(true);
+  }
   toggleFlight();
   toggleFlight();
   updateHud();
@@ -3140,6 +3209,9 @@ async function boot(){
     player:player,
     stripSpawn:STRIP_SPAWN.clone(),
     fullMapMode:FULL_MAP_MODE,
+    oneFileCity:ONE_FILE_CITY,
+    get fullyPreloaded(){return singleCityLoaded},
+    get completeCityGeometry(){return singleCityGeometry},
     dataBuffering:DATA_BUFFERING,
     get massTileMode(){return massTileMode},
     massTileThreshold:MASS_TILE_THRESHOLD,
@@ -3197,9 +3269,11 @@ async function boot(){
   };
   window.JC_UNIFIED_CITY={root:unifiedCityGroup,sourceGlbCount:manifest.length,loadedGlbs:loadedTiles,
     roadGroup:roadTileGroup,lowDetailGroup:worldLodGroup,
-    note:"ONE CONTINUOUS WORLD · streaming meshes only to fit device memory"};
+    note:ONE_FILE_CITY?"ONE COMPLETE PREDECODED GLB · ALL BUILDINGS RESIDENT BEFORE PLAY":"LOW MEMORY STREAMING RECOVERY MODE"};
   if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
+  // One shared city capture, not a mirror camera per building.
+  setTimeout(()=>mirrorFinish.capture(player,true),ONE_FILE_CITY?450:750);
   if(DATA_BUFFERING)bufferRemainingMap();
 }
 let streamClock=0;
@@ -3216,6 +3290,7 @@ function frame(){
   updateRoadLod();
   updateAtmosphere();
   updateCamera(dt);
+  if(ONE_FILE_CITY)updatePrebakedCollisions();
   if(!FULL_MAP_MODE){
     streamClock+=dt;
     const streamInterval=player.speed>=VERY_HIGH_SPEED_STREAM_THRESHOLD?0.12:
@@ -3241,6 +3316,9 @@ function frame(){
     updateHud();
   }
   renderer.render(scene,camera);
+  if(!frame._probeClock)frame._probeClock=0;
+  frame._probeClock+=dt;
+  if(frame._probeClock>21&&fpsEstimate>35){frame._probeClock=0;mirrorFinish.capture(player);}
 }
 addEventListener("resize",function(){
   camera.aspect=innerWidth/innerHeight;

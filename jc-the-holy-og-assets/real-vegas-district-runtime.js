@@ -157,7 +157,11 @@ if (!window[KEY]) {
     const group=new THREE.Group();group.name=`REAL ${d.meta.id} ${tile.id}`;group.visible=false;group.userData={sourceGrounded:true,buildingRecords:rows.length,polygonParts:count,sourceHeight,runtimeVisualHeight:runtimeHeight};
     const materialSet=materials();
     for(let i=0;i<byMat.length;i++)if(byMat[i].length){let merged=null;try{merged=mergeGeometries(byMat[i],false)}catch{}if(merged){const mesh=new THREE.Mesh(merged,materialSet[i]);mesh.castShadow=false;mesh.receiveShadow=true;mesh.userData={realBuildingFootprints:true,landUse:["residential","commercial","industrial","casino"][i]||"commercial"};group.add(mesh);for(const g of byMat[i])g.dispose()}else{for(const g of byMat[i]){const mesh=new THREE.Mesh(g,materialSet[i]);mesh.receiveShadow=true;group.add(mesh)}}}
-    d.root.add(group);tile.group=group;state.builtTiles++;
+    d.root.add(group);
+    // Apply reflective glass windows to the exact-footprint city buildings too.
+    // One shared cubemap covers all six districts rather than hundreds of mirrors.
+    window.JC_MIRROR_FINISH?.applyGroup(group);
+    tile.group=group;state.builtTiles++;
   }
 
   function setProceduralSuppressed(on) {

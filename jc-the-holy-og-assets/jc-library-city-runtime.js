@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { createJcBuildingSkins } from "./jc-building-skins.js";
+import { createJcSkyOverview } from "./jc-sky-overview.js";
 
 /**
  * Optimized renderer for Las_Vegas_Editable_City_Part_2.zip.
@@ -33,15 +35,14 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   group.name="JC_LIBRARY_REAL_595_TILE_CITY";
   worldRoot.add(group);
   const geometry=new THREE.BoxGeometry(1,1,1);
-  const material=new THREE.MeshStandardMaterial({
-    color:0xc6c8d5,roughness:lowSpec?0.48:0.28,
-    metalness:lowSpec?0.18:0.56
-  });
+  const skins=createJcBuildingSkins(lowSpec);
+  const sky=createJcSkyOverview(worldRoot,skins,lowSpec);
+  // Sky terrain and silhouettes are prebuilt and small; do not block boot.
+  void sky.load();
   const dummy=new THREE.Object3D();
   const imageryLoader=new THREE.TextureLoader();
   const groundShape=new THREE.PlaneGeometry(100,100);
   groundShape.rotateX(-Math.PI/2);
-  const color=new THREE.Color();
   const entries=new Map(manifest.tiles.map(t=>[key(t.c,t.r),t]));
   const visible=new Map(),inflight=new Set(),failedTiles=new Set();
   const loadedBatches=new Map(),downloadingBatches=new Map();
@@ -61,7 +62,9 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       batchSize:10,batchCount:60,
       batchesDownloaded, batchesCached:loadedBatches.size,
       activeTileIds:[...visible.keys()],
-      fidelity:"Source positions and AABB dimensions; simplified PBR building meshes"
+      skinsLoaded:skins.loaded,skinAtlasCount:skins.total,
+      sky:sky.status(),
+      fidelity:"Source geometry proxy dimensions; original eight JC facade/wallpaper atlases on visible buildings"
     };
   };
   // A single HTTP request carries ten real source tile records. Rendering
@@ -119,11 +122,17 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         throw new Error("invalid source-derived "+id);
       }
       // Each q record uses X,Z,Height,Width,Depth in 0.01 JC world units.
-      const mesh=new THREE.InstancedMesh(geometry,material,data.n||1);
-      mesh.count=data.n;
-      mesh.name="LIBRARY_SOURCE_"+id;
-      mesh.frustumCulled=false;
-      mesh.castShadow=false;mesh.receiveShadow=false;
+      const counts=Array(8).fill(0);
+      for(let j=0;j<data.n;j++)counts[skins.index(tile.c,tile.r,j,data.q[j*5+2])]++;
+      const meshes=skins.materials.map((material,skin)=>{
+        const instance=new THREE.InstancedMesh(geometry,material,Math.max(1,counts[skin]));
+        instance.count=counts[skin];
+        instance.name="JC_SKINNED_LIBRARY_"+skin+"_"+id;
+        instance.frustumCulled=false;
+        instance.castShadow=false;instance.receiveShadow=false;
+        return instance;
+      });
+      const indices=Array(8).fill(0);
       for(let j=0;j<data.n;j++){
         const i=j*5;
         const h=Math.max(0.2,data.q[i+2]/100);
@@ -131,19 +140,19 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         const d=Math.max(0.2,data.q[i+4]/100);
         const x=(tile.c-8)*100+data.q[i]/100;
         const z=-(tile.r-8)*100+data.q[i+1]/100;
+        const skin=skins.index(tile.c,tile.r,j,data.q[i+2]);
         dummy.position.set(x,h/2,z);
         dummy.scale.set(w,h,d);
         dummy.rotation.set(0,0,0);
         dummy.updateMatrix();
-        mesh.setMatrixAt(j,dummy.matrix);
-        const tint=(j*37+tile.c*17+tile.r*11)%14;
-        color.setHSL(tint===0?0.10:0.61,0.08+tint*0.016,0.18+(tint%6)*0.045);
-        mesh.setColorAt(j,color);
+        meshes[skin].setMatrixAt(indices[skin]++,dummy.matrix);
       }
-      mesh.instanceMatrix.needsUpdate=true;
-      if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
-      group.add(mesh);
-      const record={mesh,count:data.n,ground:null,groundTexture:null};
+      for(const mesh of meshes){
+        if(!mesh.count){mesh.dispose();continue;}
+        mesh.instanceMatrix.needsUpdate=true;
+        group.add(mesh);
+      }
+      const record={meshes:meshes.filter(mesh=>mesh.count),count:data.n,ground:null,groundTexture:null};
       visible.set(id,record);
       // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
       // 256px WebP at packaging time. Load only active tiles.
@@ -170,8 +179,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
   function unload(id){
     const item=visible.get(id);
     if(!item)return;
-    group.remove(item.mesh);
-    item.mesh.dispose();
+    for(const mesh of item.meshes){group.remove(mesh);mesh.dispose();}
     if(item.ground){
       group.remove(item.ground);
       item.ground.material.dispose();
@@ -181,6 +189,17 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     visible.delete(id);
   }
   function update(force=false){
+    const altitude=player.pos.y;
+    const skyMode=sky.update(altitude,window.JC_FORCE_SKY_MAP===true);
+    group.visible=!skyMode;
+    if(skyMode){
+      // Camera-wide LOD substitutes for the old individual nearby instanced meshes.
+      // Release them once in sky view to avoid double drawing on iPhones.
+      if(visible.size)for(const id of [...visible.keys()])unload(id);
+      lastCell="";
+      updateStatus();
+      return;
+    }
     const cell=playerAt(), cellId=key(cell.col,cell.row);
     if(!force&&lastCell===cellId)return;
     lastCell=cellId;
@@ -207,7 +226,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     }
     updateStatus();
   }
-  const api={active:true,group,manifest,update,
+  const api={active:true,group,manifest,update,sky,skins,
     get loadedBuildings(){return loadedBuildings;},
     get visibleTiles(){return visible.size;},
     get batchesDownloaded(){return batchesDownloaded;},

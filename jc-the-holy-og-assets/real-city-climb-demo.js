@@ -138,6 +138,8 @@ window.JC_GTA_VEGAS_MODE=GTA_VEGAS_MODE;
 let gtaMapControl=null;
 let libraryCity=null;
 let stripFallbackCity=null;
+let skyMapView=false;
+window.JC_FORCE_SKY_MAP=false;
 // Mobile/coarse-pointer devices now start in the lighter city renderer. The
 // previous 262 MB single-GLB default triggered repeated iOS Safari page crashes.
 window.JC_MOBILE_SAFE_DEFAULT=lowSpec&&!ONE_FILE_CITY;
@@ -3079,7 +3081,9 @@ function updateAtmosphere(){
   const y=player.pos.y;
   const t=THREE.MathUtils.smoothstep(y,ATMOSPHERE_FADE_START,SPACE_ALTITUDE);
   scene.background.copy(SKY_GROUND).lerp(SKY_SPACE,t);
-  scene.fog.density=0.00055*(1-t);
+  // The old low-altitude fog occluded almost the entire aerial city.
+  scene.fog.density=skyMapView?0.000001:
+    y>=260?0.000029*(1-t):0.00055*(1-t);
   starMat.opacity=THREE.MathUtils.smoothstep(y,6000,45000);
   spaceSun.visible=y>12000;
   hemi.intensity=THREE.MathUtils.lerp(2.4,0.15,t);
@@ -3099,6 +3103,19 @@ function updateAtmosphere(){
 }
 
 function updateCamera(dt){
+  if(skyMapView&&libraryCity?.sky?.ready){
+    // Show the complete 17x35 source grid, even on an iPhone portrait viewport.
+    const area=libraryCity.sky.worldBounds;
+    const target=new THREE.Vector3(area.x,0,area.z);
+    camera.up.set(0,0,1); // North = top of screen.
+    camera.fov=THREE.MathUtils.lerp(camera.fov,62,1-Math.exp(-5*dt));
+    camera.position.lerp(new THREE.Vector3(area.x,5500,area.z+0.001),
+      1-Math.exp(-4.2*dt));
+    camera.updateProjectionMatrix();
+    camera.lookAt(target);
+    return;
+  }
+  camera.up.set(0,1,0);
   const target=player.pos.clone().add(new THREE.Vector3(0,1.55,0));
   const speedFx=THREE.MathUtils.clamp(player.mach/12,0,1);
   const d=hyper.active?24:camDist+speedFx*18;
@@ -3145,8 +3162,16 @@ function updateHud(){
   statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
   if(gtaMapControl)gtaMapControl.update();
   if(stripFallbackCity&&libraryCity?.active)
-    stripFallbackCity.visible=player.pos.x<975;
-  if(libraryCity?.active){libraryCity.update();if(progressEl)progressEl.textContent="REAL JC CITY · "+libraryCity.visibleTiles+" SOURCE TILES · "+libraryCity.loadedBuildings.toLocaleString()+" BUILDINGS · "+libraryCity.batchesDownloaded+"/60 PACKS OF TEN";}
+    stripFallbackCity.visible=skyMapView||player.pos.x<975||player.pos.y>=260;
+  if(libraryCity?.active){
+    libraryCity.update();
+    if(progressEl){
+      const sky=libraryCity.sky;
+      progressEl.textContent=(sky?.ready&&(skyMapView||player.pos.y>=260))?
+        "FULL SKY CITY · 595/595 AERIAL TILES · "+sky.rendered+" SKINNED BUILDINGS · "+libraryCity.skins.loaded+"/8 FACADES":
+        "REAL JC CITY · "+libraryCity.visibleTiles+" SOURCE TILES · "+libraryCity.loadedBuildings.toLocaleString()+" SKINNED BUILDINGS · "+libraryCity.batchesDownloaded+"/60 PACKS OF TEN";
+    }
+  }
   if(hudSpeedEl)hudSpeedEl.textContent=speed+mach;
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
@@ -3205,6 +3230,33 @@ function updatePrebakedCollisions(force=false){
   }
 }
 let libraryJumpBusy=false;
+async function toggleSkyMapView(){
+  if(!libraryCity?.active){
+    if(progressEl)progressEl.textContent="SKY VIEW: REAL LIBRARY CITY HAS NOT LOADED";
+    return false;
+  }
+  const sky=libraryCity.sky;
+  if(!sky.ready)await sky.load();
+  if(!sky.ready){
+    if(progressEl)progressEl.textContent="SKY MAP FAILED: "+(sky.status().failed||"texture missing");
+    return false;
+  }
+  skyMapView=!skyMapView;
+  window.JC_FORCE_SKY_MAP=skyMapView;
+  libraryCity.update(true);
+  if(stripFallbackCity)stripFallbackCity.visible=
+    skyMapView||player.pos.x<975||player.pos.y>=260;
+  const button=document.getElementById("jcSkyView");
+  if(button){
+    button.textContent=skyMapView?"EXIT SKY":"SKY VIEW";
+    button.classList.toggle("active",skyMapView);
+    button.setAttribute("aria-pressed",String(skyMapView));
+  }
+  if(progressEl)progressEl.textContent=skyMapView?
+    "SKY VIEW · ALL 595 AERIAL TILES · "+sky.rendered+" SKINNED BUILDING LODS":
+    "GROUND VIEW · SOURCE TILE DETAILS RESUMED";
+  return true;
+}
 async function jumpToRealLibraryCity(){
   if(!GTA_VEGAS_MODE){
     location.href="./real-city-climb-demo.html?mode=gta&city=library";
@@ -3260,6 +3312,12 @@ async function boot(){
     // only C18-C34 east of the Strip, not JC's actual start area.
     stripFallbackCity=buildGtaVegasCity(unifiedCityGroup,lowSpec);
     libraryCity=await installLibraryCity(unifiedCityGroup,player,lowSpec);
+    const skyButton=document.getElementById("jcSkyView");
+    if(skyButton){
+      skyButton.disabled=!libraryCity?.active;
+      skyButton.addEventListener("click",()=>{void toggleSkyMapView();});
+      skyButton.setAttribute("aria-pressed","false");
+    }
     const jumpButton=document.getElementById("jcLibraryJump");
     if(jumpButton){
       // Do not disable navigation because of a transient cache or network fault.
@@ -3272,6 +3330,9 @@ async function boot(){
       stripFallbackCity.visible=player.pos.x<975;
       if(new URLSearchParams(location.search).get("city")==="library"){
         void jumpToRealLibraryCity();
+      }
+      if(new URLSearchParams(location.search).get("view")==="sky"){
+        void toggleSkyMapView();
       }
     }
     rebuildDestinations();
@@ -3326,6 +3387,8 @@ async function boot(){
     gtaVegasMode:GTA_VEGAS_MODE,
     gtaMapControl:gtaMapControl,
     libraryCity:libraryCity,
+    toggleSkyMapView:toggleSkyMapView,
+    get skyMapView(){return skyMapView;},
     get fullyPreloaded(){return singleCityLoaded},
     get completeCityGeometry(){return singleCityGeometry},
     dataBuffering:DATA_BUFFERING,

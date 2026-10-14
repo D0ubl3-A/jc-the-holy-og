@@ -11,11 +11,12 @@ import * as THREE from "three";
  * Requires a separate upload of the converted tiles asset folder.
  */
 const base="./jc-the-holy-og-assets/library-city/";
+const assetRev="jc-city-batches-20261014-v3";
 const key=(col,row)=>"C"+String(col).padStart(2,"0")+"_R"+String(row).padStart(2,"0");
 export async function installLibraryCity(worldRoot,player,lowSpec){
   let manifest;
   try{
-    const res=await fetch(base+"manifest.json",{cache:"force-cache"});
+    const res=await fetch(base+"manifest.json?rev="+assetRev,{cache:"no-store"});
     if(!res.ok)throw new Error("no published converted Library tile set (HTTP "+res.status+")");
     manifest=await res.json();
     if(manifest.schema!=="jc-library-city-v1"||manifest.tileCount!==595||
@@ -24,7 +25,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       manifest.batches.length!==60||manifest.tiles.some(t=>!t.batch))
       throw new Error("10-tile Library city batch manifest is absent or incomplete");
   }catch(error){
-    window.JC_LIBRARY_CITY_STATUS={active:false,installed:false,reason:String(error.message||error)};
+    window.JC_LIBRARY_CITY_STATUS={active:false,installed:false,reason:String(error.message||error),assetRev};
+    console.warn("JC real city not ready; retry is available",error);
     return {active:false,update(){}};
   }
   const group=new THREE.Group();
@@ -71,7 +73,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       let task=downloadingBatches.get(path);
       if(!task){
         task=(async()=>{
-          const response=await fetch(base+path,{cache:"force-cache"});
+          const response=await fetch(base+path+"?rev="+assetRev,{cache:"no-store"});
           if(!response.ok)throw new Error("city ten-pack "+path+" HTTP "+response.status);
           const payload=await response.json();
           if(payload.schema!=="jc-library-10-tiles-v1"||
@@ -145,7 +147,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
       visible.set(id,record);
       // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
       // 256px WebP at packaging time. Load only active tiles.
-      imageryLoader.load(base+"imagery/"+id+".webp",function(texture){
+      imageryLoader.load(base+"imagery/"+id+".webp?rev="+assetRev,function(texture){
         if(visible.get(id)!==record){texture.dispose();return;}
         texture.colorSpace=THREE.SRGBColorSpace;
         texture.anisotropy=1;

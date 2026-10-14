@@ -136,7 +136,7 @@ export function createJcBuildingSkins(lowSpec,config){
       const wall=new THREE.MeshStandardMaterial({
         map:facadeMapById[idx],color:tint,
         roughness:lowSpec?0.83:0.68,
-        metalness=/resort|commercial|industrial|urban/.test(zone.kind)?0.25:0.07
+        metalness:/resort|commercial|industrial|urban/.test(zone.kind)?0.25:0.07
       });
       facadeRefs[idx].push(wall);
       mats.push([wall,wall,roof,bottom,wall,wall]);

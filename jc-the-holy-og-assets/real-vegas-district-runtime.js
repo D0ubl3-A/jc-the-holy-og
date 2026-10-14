@@ -12,7 +12,8 @@ const ORIGIN_ROW=8;
 
 if (!window[KEY]) {
   const mobile = matchMedia("(pointer:coarse)").matches;
-  const proceduralFallbackEnabled=new URLSearchParams(location.search).get("districtFallback")!=="0"; // Use real, source-based building footprints whenever local GLBs are absent.
+  const mapMode=new URLSearchParams(location.search).get("mode");
+  const proceduralFallbackEnabled=["full","one","stream"].includes(mapMode)&&new URLSearchParams(location.search).get("districtFallback")!=="0"; // GTA Vegas uses its own low-memory geography and never decodes 43,500 legacy footprint buildings.
   const state = window[KEY] = {
     installed:true, ready:false, active:false, activeDistrict:null,
     loadedDistricts:[], builtTiles:0, visibleTiles:0, sourceBuildingCount:0,

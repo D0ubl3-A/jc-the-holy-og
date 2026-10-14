@@ -392,6 +392,7 @@ jobs:
           node --check _site/jc-the-holy-og-assets/jc-library-city-runtime.js
           node --check _site/jc-the-holy-og-assets/jc-building-skins.js
           node --check _site/jc-the-holy-og-assets/jc-neighborhood-houses.js
+          node --check _site/jc-the-holy-og-assets/jc-neighborhood-streetscape.js
           node --check _site/jc-the-holy-og-assets/jc-paved-roads.js
           node --check _site/jc-the-holy-og-assets/jc-sky-overview.js
           node --check _site/jc-the-holy-og-assets/jc-detailed-terrain.js
@@ -444,7 +445,8 @@ jobs:
           assert 'const terrainShow=ready' in sky_runtime
           assert 'y>=140' not in sky_runtime
           assert 'GTA_VEGAS_MODE&&libraryCity?.active?0.000013' in city
-          assert 'jc-neighborhood-houses-paved-v1' in html
+          assert 'jc-streetscape-upgrade-v2' in html
+          assert 'jc-streetscape-upgrade-v2' in city
           assert 'createJcPavedRoads' in city and 'pavedRoads?.update()' in city
           assert 'pavedRoads=await createJcPavedRoads' in city
           houses=Path("_site/jc-the-holy-og-assets/jc-neighborhood-houses.js").read_text()
@@ -453,12 +455,28 @@ jobs:
           assert 'gable' in houses and 'hip' in houses and 'parapet' in houses
           assert 'NEIGHBORHOOD_GARAGE_DETAILS' in houses
           assert 'attachNeighborhoodHouses(' in runtime
+          assert 'attachJcNeighborhoodStreetscape(' in runtime
+          assert 'item.streetscape?.dispose()' in runtime
+          styles=Path("_site/jc-the-holy-og-assets/jc-neighborhood-streetscape.js").read_text()
+          assert 'attachJcNeighborhoodStreetscape' in styles
+          assert 'xeriscape' in styles and 'solar' in styles and 'cactus' in styles
+          assert 'driveway' in styles and 'porch' in styles and 'water' in styles
+          assert 'const limit=lowSpec?115:225' in styles
           assert 'houseBodyHeight(home,skins)' in runtime
           assert 'attachNeighborhoodHouses(skyBuildings,homes,skins' in sky_runtime
           paved=Path("_site/jc-the-holy-og-assets/jc-paved-roads.js").read_text()
           assert 'jc-map/roads/' in paved and 'JC_REAL_OSM_PAVED_STREETS' in paved
           assert 'buckets[kind]' in paved and 'buckets.sidewalk' in paved
           assert 'PAVED_' in paved and 'road.o' in paved
+          assert 'roadEnds' in paved and 'paintedCrossings' in paved
+          assert 'lamps.length<lampLimit' in paved
+          assert 'JC_WARM_ROADSIDE_LIGHT_FIXTURES' in paved
+          assert 'buckets.curb' in paved and 'buckets.median' in paved
+          assert 'node.dispose()' in paved
+          road_data=json.loads(Path("_site/jc-map/roads/manifest.json").read_text())
+          assert len(road_data["tiles"])>=1100
+          assert sum(tile["count"] for tile in road_data["tiles"])>250000
+          assert sum(1 for tile in road_data["tiles"] if 18<=tile["col"]<=34)>500
           sample_path=Path("_site/jc-map/roads/tiles/C22_R18.json")
           assert sample_path.is_file()
           road_sample=json.loads(sample_path.read_text())

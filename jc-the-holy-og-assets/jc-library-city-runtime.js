@@ -3,6 +3,7 @@ import { createJcBuildingSkins } from "./jc-building-skins.js?rev=jc-houses-road
 import { createJcSkyOverview } from "./jc-sky-overview.js?rev=jc-houses-roads-v1";
 import { createJcDetailedTerrain } from "./jc-detailed-terrain.js";
 import { attachNeighborhoodHouses, houseBodyHeight } from "./jc-neighborhood-houses.js?rev=jc-houses-roads-v1";
+import { attachJcNeighborhoodStreetscape } from "./jc-neighborhood-streetscape.js";
 
 /**
  * Optimized renderer for Las_Vegas_Editable_City_Part_2.zip.
@@ -187,7 +188,8 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
         meshes.push(mesh);
       }
       const houseDetails=attachNeighborhoodHouses(group,houseRecords,skins,{lowSpec});
-      const record={meshes,houseDetails,count:data.n,ground:null,groundTexture:null};
+      const streetscape=attachJcNeighborhoodStreetscape(group,houseRecords,skins,{lowSpec});
+      const record={meshes,houseDetails,streetscape,count:data.n,ground:null,groundTexture:null};
       visible.set(id,record);
       // The user's same 595-tile ZIP contains NAIP imagery, pre-reduced to
       // 256px WebP at packaging time. Load only active tiles.
@@ -216,6 +218,7 @@ export async function installLibraryCity(worldRoot,player,lowSpec){
     if(!item)return;
     for(const mesh of item.meshes){group.remove(mesh);mesh.dispose();}
     item.houseDetails?.dispose();
+    item.streetscape?.dispose();
     if(item.ground){
       group.remove(item.ground);
       item.ground.material.dispose();

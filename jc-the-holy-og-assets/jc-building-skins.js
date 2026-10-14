@@ -139,7 +139,7 @@ export function createJcBuildingSkins(lowSpec,config){
     const zone=zones[n],wallIds=kindAtlases(zone);
     const topTexture=roofMap(zone.kind,roofColors[zone.kind],n);
     const roof=new THREE.MeshStandardMaterial({
-      map:topTexture,roughness:lowSpec?0.92:0.82,metalness:zone.kind==="industrial"?0.30:0.04
+      map:topTexture,roughness:lowSpec?0.92:0.82,metalness:zone.kind==="industrial"?0.30:0.04,side:THREE.DoubleSide
     });
     for(let v=0;v<VARIANTS;v++){
       const tint=new THREE.Color(palettes[zone.palette]);

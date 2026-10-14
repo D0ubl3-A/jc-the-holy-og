@@ -250,6 +250,34 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+          # The repository already includes 1,193 source OSM tile records.
+          # Do not replace them with the older GLB-only 134-tile road pack:
+          # that erased roads from the 595-tile Library neighborhood city.
+          if python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("_site/jc-map/roads")
+          manifest=root/"manifest.json"
+          if not manifest.is_file():
+              raise SystemExit(1)
+          data=json.loads(manifest.read_text())
+          tiles=data.get("tiles",[])
+          keys={(t["col"],t["row"]) for t in tiles}
+          east=sum(1 for c,r in keys if 18<=c<=34 and 0<=r<=34)
+          if len(keys)<1100 or east<530 or (22,18) not in keys:
+              print("Full road registry unavailable, will attempt controlled artifact fallback.")
+              raise SystemExit(1)
+          for c,r in [(13,14),(20,10),(22,18),(32,6)]:
+              assert (root/"tiles"/f"C{c:02d}_R{r:02d}.json").is_file()
+          assert (root/"major-roads.json").stat().st_size>1000
+          print("PASS: preserving",len(keys),"OSM road tile cells,",east,
+                "Library-neighborhood cells, and",sum(t["count"] for t in tiles),"road segments")
+          PY
+          then
+            echo "Full city road source retained. No destructive GLB-only overlay."
+            exit 0
+          fi
           mkdir -p _road_artifact
           RUN_ID="$(gh run list --workflow "Build Sin City Road Registry" --status success --limit 1 --json databaseId --jq '.[0].databaseId' || true)"
           if [ -z "$RUN_ID" ]; then

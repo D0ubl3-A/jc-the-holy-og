@@ -1,3 +1,20 @@
+## Six-part GitHub upload (iPhone-friendly)
+
+The ready-to-upload 5.27 MB source package has been split into six verified parts:
+
+```
+JC_Library_City_Tiles_595_ROOT.zip.part01
+JC_Library_City_Tiles_595_ROOT.zip.part02
+JC_Library_City_Tiles_595_ROOT.zip.part03
+JC_Library_City_Tiles_595_ROOT.zip.part04
+JC_Library_City_Tiles_595_ROOT.zip.part05
+JC_Library_City_Tiles_595_ROOT.zip.part06
+```
+
+Upload all six **individual files** (not the wrapper ZIP) to the **root of main** using GitHub's Add file → Upload files. They can be uploaded in one or more commits; before all six arrive, the original safe map remains active. When the complete set is present, GitHub Actions rebuilds the original ZIP byte-for-byte, verifies SHA-256 `202a1196c9b6d79865d75a854a941741ddea9f5678019e0df965fb53d72bcaa3`, validates its ZIP integrity, expands all 595 city tile data files and 595 imagery files, and checks the 216,807 source building records. The upload does **not** commit 595 unpacked files to the repository: they are installed in the GitHub Pages build output.
+
+Do not rename, concatenate manually, or upload a seven-file wrapper archive instead of six `.partXX` files. The workflow also accepts a single unsplit `JC_Library_City_Tiles_595_ROOT.zip` if you prefer it.
+
 # JC — Activate Library city replacement
 
 ## Replacement city package

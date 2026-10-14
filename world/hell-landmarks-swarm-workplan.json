@@ -60,15 +60,17 @@
   "verified": {
     "prototype_glb_count": 8,
     "stadium_lod0_triangles": 11616,
-    "paris_lod0_triangles": 7352,
-    "prototype_parse_validation": "PASSED"
+    "paris_lod0_triangles": 7970,
+    "prototype_parse_validation": "PASSED",
+    "qa_render_review": "RUN_LOCALLY"
   },
   "pending": [
     "source-tile georegistration",
     "hosted binary GLB assets",
     "mobile performance measurement",
     "landmark silhouette human review",
-    "live deployment"
+    "live deployment",
+    "Paris final roof texture and signage art direction"
   ],
   "units": [
     {

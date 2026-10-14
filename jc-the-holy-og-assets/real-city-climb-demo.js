@@ -3,8 +3,8 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/
 import { JC_CHARACTER_ATLAS_DATA_URL } from "./jc-character-atlas-v2-data.js";
 import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-neighborhood-skins-v1";
-import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-streetscape-upgrade-v2";
-import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-streetscape-upgrade-v2";
+import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-streetscape-upgrade-v3";
+import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-streetscape-upgrade-v3";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");

@@ -40,40 +40,54 @@ export const GTA_VEGAS_LANDMARKS=[
 // GTA Vegas original draws 100 procedural structures. Precreate an instanced
 // equivalent, with stable seeded positions, for ONE draw call instead of loading
 // 262 MB of building geometry on mobile. Stylized, not real parcel footprints.
-export function buildGtaVegasCity(worldRoot,lowSpec){
+export function buildGtaVegasCity(worldRoot,lowSpec,skins=null){
+  // Keep the existing light Strip starter town outside the 595 Library cells,
+  // but skin its structures with the *same* named-neighborhood art direction.
   const count=lowSpec?100:220;
-  const group=new THREE.Group();group.name="GTA_VEGAS_LIGHTWEIGHT_CITY";
-  const geo=new THREE.BoxGeometry(1,1,1);
-  const material=new THREE.MeshStandardMaterial({color:0x44556a,metalness:0.18,roughness:0.5});
-  const buildings=new THREE.InstancedMesh(geo,material,count);
-  buildings.name="STYLIZED_SOURCE_GAME_BUILDINGS";
-  buildings.instanceMatrix.setUsage(THREE.StaticDrawUsage);
-  buildings.frustumCulled=false;
-  const dummy=new THREE.Object3D(),color=new THREE.Color();
+  const group=new THREE.Group();
+  group.name="GTA_VEGAS_LIGHTWEIGHT_CITY";
+  const geometry=new THREE.BoxGeometry(1,1,1);
   const center=gtaVegasToWorld(GTA_VEGAS_CENTER.lat,GTA_VEGAS_CENTER.lng);
-  const seen=[];
-  function seeded(i){const n=Math.sin(i*913.71+17.3)*43758.5453;return n-Math.floor(n)}
+  function seeded(i){const n=Math.sin(i*913.71+17.3)*43758.5453;return n-Math.floor(n);}
+  const records=[],counts=new Map();
   for(let i=0;i<count;i++){
     let px=(seeded(i*7+3)-0.5)*1400;
     let pz=(seeded(i*11+8)-0.5)*1750;
-    // Keep Las Vegas Boulevard and JC's starting road corridor open.
     if(Math.abs(px)<37)px+=px<0?-55:55;
     const h=9+seeded(i*5+1)*82;
-    const w=6+seeded(i*13+2)*21, d=6+seeded(i*17+7)*26;
-    dummy.position.set(center.x+px,h/2,center.z+pz);
-    dummy.scale.set(w,h,d);dummy.updateMatrix();
-    buildings.setMatrixAt(i,dummy.matrix);
-    const tone=i%8;
-    color.setHSL(tone===0?0.09:tone===1?0.56:0.61,0.18+tone*0.025,0.17+(i%7)*0.027);
-    buildings.setColorAt(i,color);
-    seen.push({x:dummy.position.x,z:dummy.position.z,height:h});
+    const w=6+seeded(i*13+2)*21,d=6+seeded(i*17+7)*26;
+    const x=center.x+px,z=center.z+pz;
+    const col=8+Math.floor(x/100),row=8+Math.floor(-z/100);
+    const style=skins?skins.index(col,row,i,Math.round(h*100),x,z,Math.round(w*100)):0;
+    records.push({x,z,h,w,d,style});
+    counts.set(style,(counts.get(style)||0)+1);
   }
-  buildings.instanceMatrix.needsUpdate=true;
-  if(buildings.instanceColor)buildings.instanceColor.needsUpdate=true;
-  group.add(buildings);
+  const meshes=new Map();
+  const fallbackMaterial=new THREE.MeshStandardMaterial({color:0x656d79,roughness:0.82,metalness:0.12});
+  for(const [style,n] of counts){
+    const mesh=new THREE.InstancedMesh(geometry,skins?skins.materials[style]:fallbackMaterial,n);
+    mesh.name="JC_NEIGHBORHOOD_STARTER_"+style;
+    mesh.frustumCulled=false;
+    mesh.castShadow=false;mesh.receiveShadow=false;
+    meshes.set(style,{mesh,used:0});
+    group.add(mesh);
+  }
+  const dummy=new THREE.Object3D();
+  for(const rec of records){
+    const slot=meshes.get(rec.style);
+    dummy.position.set(rec.x,rec.h/2,rec.z);
+    dummy.scale.set(rec.w,rec.h,rec.d);
+    dummy.updateMatrix();
+    slot.mesh.setMatrixAt(slot.used++,dummy.matrix);
+  }
+  for(const slot of meshes.values())slot.mesh.instanceMatrix.needsUpdate=true;
   worldRoot.add(group);
-  window.JC_GTA_MAP_WORLD={mode:"GPS-ALIGNED LIGHT CITY",buildings:count,worldRoot:group,
-    source:"aaronalltonai-ship-it/gta-vegas",geoSystem:"GPS to JC EPSG:32611 local approximation"};
+  window.JC_GTA_MAP_WORLD={
+    mode:"GPS-ALIGNED LIGHT CITY WITH NEIGHBORHOOD SKINS",
+    buildings:count,groups:meshes.size,worldRoot:group,
+    source:"aaronalltonai-ship-it/gta-vegas",
+    geoSystem:"GPS to JC EPSG:32611 local approximation"
+  };
   return group;
 }
 

@@ -69,8 +69,8 @@ def main(root: Path):
             wx = (c - 8) * 10000 + xl
             wz = -(r - 8) * 10000 + zl
             raw = c * 17 + r * 31 + index * 13 + h // 130
-            style = (7 if c <= 20 and raw % 13 == 0
-                     else 6 if h < 260 and raw % 3 == 0
+            style = (7 if c <= 20 and raw % 17 == 0
+                     else 6 if h < 260 and raw % 5 == 0
                      else raw % 6)
             samples.extend((wx, wz, max(40, h), max(30, w), max(30, d), style))
     assert len(occupied) == 595, "Source 595-tile coverage is incomplete"

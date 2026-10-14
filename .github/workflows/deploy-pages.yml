@@ -230,6 +230,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check _site/jc-the-holy-og-assets/real-city-climb-demo.js
+          node --check _site/jc-the-holy-og-assets/jc-city-mirror-finish.js
           python - <<'PY'
           import json
           from pathlib import Path
@@ -243,6 +244,17 @@ jobs:
           assert sum(int(t.get("count",0)) for t in tiles)>0
           src=Path("_site/jc-the-holy-og-assets/real-city-climb-demo.js").read_text()
           assert "function conformRoadTileToGlb(key)" in src
+          glb=Path("_site/jc-the-holy-og-assets/models/JC-UNIFIED-CITY.glb")
+          assert glb.is_file() and glb.stat().st_size > 50_000_000, "Full GLB absent; prohibit blank city deploy"
+          city=Path("_site/jc-the-holy-og-assets/real-city-climb-demo.js").read_text()
+          assert 'const ONE_FILE_CITY=' in city
+          assert 'await preloadOneCityFile();' in city
+          assert 'mirrorFinish.applyGroup(root)' in city
+          assert 'if(ONE_FILE_CITY)return' in city
+          reflective=Path("_site/jc-the-holy-og-assets/jc-city-mirror-finish.js").read_text()
+          assert 'roughnessMap=glassProperties' in reflective
+          assert 'probe.update(renderer,scene)' in reflective
+          print("PASS: one-file city", glb.stat().st_size, "bytes; dynamic scene mirrors compiled")
           print("Deploy road surface validation passed")
           PY
 

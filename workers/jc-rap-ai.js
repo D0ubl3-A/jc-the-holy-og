@@ -1,3 +1,5 @@
+import "../jc-the-holy-og-assets/rap-guard.js";
+
 /**
  * JC vs Devil: optional server-side AI reply proxy for a Cloudflare Worker.
  * Required secrets: OPENAI_API_KEY; vars: ALLOWED_ORIGINS (comma-separated exact origins)
@@ -16,14 +18,7 @@ function allowed(origin,env){
  const whitelist=String(env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);
  return origin&&whitelist.includes(origin);
 }
-function hasCurse(input){
- const block=new Set(('fuck fucks fucked fucker fucking motherfucker shit shitty bullshit bitch bitches asshole ass cunt cock dick pussy bastard damn goddamn hell crap piss slut whore nigger nigga fag faggot').split(' '));
- const subs={'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','@':'a','$':'s','!':'i','+':'t'};
- return String(input||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200d\u2060\ufeff]/g,'').split(/\s+/).some(part=>{
-  const cleaned=part.split('').map(c=>subs[c]||c).join('').replace(/[^a-z]/g,'');
-  return block.has(cleaned);
- });
-}
+function hasCurse(input){return globalThis.JCRapGuard.detectProfanity(input).detected;}
 function outputText(result){
  if(typeof result.output_text==='string')return result.output_text;
  return (result.output||[]).flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text||'').join('\n');

@@ -1,0 +1,42 @@
+name: Validate JC Hell Landmarks
+on:
+  pull_request:
+    paths:
+      - 'jc-the-holy-og-assets/hell-landmarks-runtime.js'
+      - 'jc-the-holy-og-assets/real-city-climb-demo.js'
+      - 'world/hell-landmarks-swarm-workplan.json'
+      - '.github/workflows/validate-hell-landmarks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check both scripts parse
+        run: |
+          node --check jc-the-holy-og-assets/hell-landmarks-runtime.js
+          node --check jc-the-holy-og-assets/real-city-climb-demo.js
+      - name: Verify 100 task handoffs and non-destructive integration
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('.')
+          plan=json.loads((root/'world/hell-landmarks-swarm-workplan.json').read_text())
+          expected={'HELL_STADIUM':35,'HELL_PARIS':35,'MATERIALS_VFX':15,'WORLD_INTEGRATION':10,'QA_OPTIMIZATION':5}
+          assert plan['allocations']==expected
+          assert len(plan['units'])==100
+          assert len({unit['id'] for unit in plan['units']})==100
+          assert all(unit['status']=='QUEUED' for unit in plan['units'])
+          runtime=(root/'jc-the-holy-og-assets/hell-landmarks-runtime.js').read_text()
+          game=(root/'jc-the-holy-og-assets/real-city-climb-demo.js').read_text()
+          assert 'hellLandmarks' in runtime and 'mode === "preview" || mode === "geo"' in runtime
+          assert 'PROVISIONAL' in runtime
+          assert 'import "./hell-landmarks-runtime.js";' in game
+          assert 'JC_HELL_LANDMARKS?.collisionBoxesNear' in game
+          assert 'obj.update({position:p})' not in runtime
+          print('PASS: 100 work units, guarded runtime, non-destructive source, syntax checked')
+          PY
+

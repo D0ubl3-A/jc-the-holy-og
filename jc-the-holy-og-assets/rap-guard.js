@@ -11,7 +11,9 @@
     'hell','crap','crappy','piss','pissed','pissing',
     'slut','sluts','whore','whores','wanker','wankers',
     'nigger','niggers','nigga','niggas',
-    'fag','faggot','faggots'
+    'fag','faggot','faggots',
+    // Common censored/spaced spellings (keep these narrow to avoid false positives).
+    'fck','fk','fuk','fuq','fkin','fking','sht','shyt','btch','bich','mf'
   ]);
   const substitutions={'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','@':'a','$':'s','!':'i','+':'t'};
   function normalizeWord(value){

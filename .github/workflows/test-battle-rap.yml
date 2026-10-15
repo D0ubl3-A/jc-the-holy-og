@@ -1,0 +1,25 @@
+name: Test JC Battle Rap
+on:
+  push:
+    paths:
+      - battle-rap.html
+      - jc-the-holy-og-assets/rap-guard.js
+      - jc-the-holy-og-assets/rap-config.js
+      - jc-the-holy-og-assets/battle-rap-engine.js
+      - workers/**
+      - tests/rap-guard-smoke.cjs
+      - .github/workflows/test-battle-rap.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check jc-the-holy-og-assets/battle-rap-engine.js
+      - run: node --check workers/jc-rap-ai.js
+      - run: node tests/rap-guard-smoke.cjs

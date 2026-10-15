@@ -1,0 +1,783 @@
+{
+  "schema": "jc-landmark-swarm-workplan-v1",
+  "created": "2026-10-14",
+  "mode": "100-role work-plan, NOT 100 independently spawned agents",
+  "scope": "Hell Stadium and Hell Paris only",
+  "source_mesh_rule": "Do not alter, decimate, translate or replace source Las Vegas world geometry",
+  "status": "Local GLB prototypes passed standalone QA; Stadium position derives from a matched source footprint; Paris hotel and Eiffel Tower have separate OSM anchors; in-game alignment pending",
+  "allocations": {
+    "HELL_STADIUM": 35,
+    "HELL_PARIS": 35,
+    "MATERIALS_VFX": 15,
+    "WORLD_INTEGRATION": 10,
+    "QA_OPTIMIZATION": 5
+  },
+  "handoffs": [
+    {
+      "from": "HELL_STADIUM",
+      "to": "MATERIALS_VFX",
+      "requires": [
+        "recognized Allegiant oval shell",
+        "roof and facade geometry"
+      ]
+    },
+    {
+      "from": "HELL_PARIS",
+      "to": "MATERIALS_VFX",
+      "requires": [
+        "hotel wings",
+        "open Eiffel lattice",
+        "balloon silhouette"
+      ]
+    },
+    {
+      "from": "MATERIALS_VFX",
+      "to": "WORLD_INTEGRATION",
+      "requires": [
+        "batched materials",
+        "neon luminance QA"
+      ]
+    },
+    {
+      "from": "WORLD_INTEGRATION",
+      "to": "QA_OPTIMIZATION",
+      "requires": [
+        "geospatial anchor evidence",
+        "LOD load success",
+        "collision hooked"
+      ]
+    },
+    {
+      "from": "QA_OPTIMIZATION",
+      "to": "RELEASE",
+      "requires": [
+        "browser proof",
+        "mobile FPS",
+        "no map geometry regressions"
+      ]
+    }
+  ],
+  "verified": {
+    "anchor_transform": "Source footprint centroid and OSM venue coordinates transformed through EPSG:32611 and the shared 1 km tile origin",
+    "stadium_source_footprint_match": "OSM point contained in source footprint SC-BLDG-MS-630b9732e73f9a2838d9d0dc2314ce0b; polygon centroid and axis-aligned collision bounds used for placement",
+    "paris_tower_offset": "Eiffel Tower anchor positioned relative to the Paris Las Vegas hotel anchor using separate OSM coordinates",
+    "prototype_glb_count": 8,
+    "stadium_lod0_triangles": 11616,
+    "paris_lod0_triangles": 7970,
+    "prototype_parse_validation": "PASSED",
+    "qa_render_review": "RUN_LOCALLY"
+  },
+  "pending": [
+    "visual source-tile footprint alignment",
+    "Stadium heading and silhouette alignment",
+    "in-game anchor render alignment",
+    "hosted binary GLB assets",
+    "mobile performance measurement",
+    "landmark silhouette human review",
+    "live deployment",
+    "Paris final roof texture and signage art direction"
+  ],
+  "units": [
+    {
+      "id": "JC-001",
+      "stage": "HELL_STADIUM",
+      "role": "source-geometry",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-002",
+      "stage": "HELL_STADIUM",
+      "role": "silhouette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-003",
+      "stage": "HELL_STADIUM",
+      "role": "foundation",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-004",
+      "stage": "HELL_STADIUM",
+      "role": "facade-panels",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-005",
+      "stage": "HELL_STADIUM",
+      "role": "roof-shape",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-006",
+      "stage": "HELL_STADIUM",
+      "role": "structure-ribs",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-007",
+      "stage": "HELL_STADIUM",
+      "role": "vertical-support",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-008",
+      "stage": "HELL_STADIUM",
+      "role": "neon-paths",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-009",
+      "stage": "HELL_STADIUM",
+      "role": "windows",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-010",
+      "stage": "HELL_STADIUM",
+      "role": "lighting-emissive",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-011",
+      "stage": "HELL_STADIUM",
+      "role": "entrance-design",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-012",
+      "stage": "HELL_STADIUM",
+      "role": "ornaments",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-013",
+      "stage": "HELL_STADIUM",
+      "role": "ornamental-spires",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-014",
+      "stage": "HELL_STADIUM",
+      "role": "texture-palettes",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-015",
+      "stage": "HELL_STADIUM",
+      "role": "uv-material-review",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-016",
+      "stage": "HELL_STADIUM",
+      "role": "night-glow",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-017",
+      "stage": "HELL_STADIUM",
+      "role": "performance-batching",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-018",
+      "stage": "HELL_STADIUM",
+      "role": "lod0-details",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-019",
+      "stage": "HELL_STADIUM",
+      "role": "lod1-balancing",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-020",
+      "stage": "HELL_STADIUM",
+      "role": "lod2-silhouette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-021",
+      "stage": "HELL_STADIUM",
+      "role": "collision-hulls",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-022",
+      "stage": "HELL_STADIUM",
+      "role": "rooftop-traversal",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-023",
+      "stage": "HELL_STADIUM",
+      "role": "terrain-mating",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-024",
+      "stage": "HELL_STADIUM",
+      "role": "navigation-anchors",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-025",
+      "stage": "HELL_STADIUM",
+      "role": "landmark-identity",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-026",
+      "stage": "HELL_STADIUM",
+      "role": "geometry-checks",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-027",
+      "stage": "HELL_STADIUM",
+      "role": "day-night-proof",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-028",
+      "stage": "HELL_STADIUM",
+      "role": "mobile-detail",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-029",
+      "stage": "HELL_STADIUM",
+      "role": "distinguishability",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-030",
+      "stage": "HELL_STADIUM",
+      "role": "camera-framing",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-031",
+      "stage": "HELL_STADIUM",
+      "role": "material-budget",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-032",
+      "stage": "HELL_STADIUM",
+      "role": "readability",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-033",
+      "stage": "HELL_STADIUM",
+      "role": "benchmark",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-034",
+      "stage": "HELL_STADIUM",
+      "role": "defect-fix",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-035",
+      "stage": "HELL_STADIUM",
+      "role": "acceptance",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-036",
+      "stage": "HELL_PARIS",
+      "role": "source-geometry",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-037",
+      "stage": "HELL_PARIS",
+      "role": "silhouette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-038",
+      "stage": "HELL_PARIS",
+      "role": "foundation",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-039",
+      "stage": "HELL_PARIS",
+      "role": "facade-panels",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-040",
+      "stage": "HELL_PARIS",
+      "role": "roof-shape",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-041",
+      "stage": "HELL_PARIS",
+      "role": "structure-ribs",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-042",
+      "stage": "HELL_PARIS",
+      "role": "vertical-support",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-043",
+      "stage": "HELL_PARIS",
+      "role": "neon-paths",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-044",
+      "stage": "HELL_PARIS",
+      "role": "windows",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-045",
+      "stage": "HELL_PARIS",
+      "role": "lighting-emissive",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-046",
+      "stage": "HELL_PARIS",
+      "role": "entrance-design",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-047",
+      "stage": "HELL_PARIS",
+      "role": "ornaments",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-048",
+      "stage": "HELL_PARIS",
+      "role": "ornamental-spires",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-049",
+      "stage": "HELL_PARIS",
+      "role": "texture-palettes",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-050",
+      "stage": "HELL_PARIS",
+      "role": "uv-material-review",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-051",
+      "stage": "HELL_PARIS",
+      "role": "night-glow",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-052",
+      "stage": "HELL_PARIS",
+      "role": "performance-batching",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-053",
+      "stage": "HELL_PARIS",
+      "role": "lod0-details",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-054",
+      "stage": "HELL_PARIS",
+      "role": "lod1-balancing",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-055",
+      "stage": "HELL_PARIS",
+      "role": "lod2-silhouette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-056",
+      "stage": "HELL_PARIS",
+      "role": "collision-hulls",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-057",
+      "stage": "HELL_PARIS",
+      "role": "rooftop-traversal",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-058",
+      "stage": "HELL_PARIS",
+      "role": "terrain-mating",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-059",
+      "stage": "HELL_PARIS",
+      "role": "navigation-anchors",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-060",
+      "stage": "HELL_PARIS",
+      "role": "landmark-identity",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-061",
+      "stage": "HELL_PARIS",
+      "role": "geometry-checks",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-062",
+      "stage": "HELL_PARIS",
+      "role": "day-night-proof",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-063",
+      "stage": "HELL_PARIS",
+      "role": "mobile-detail",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-064",
+      "stage": "HELL_PARIS",
+      "role": "distinguishability",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-065",
+      "stage": "HELL_PARIS",
+      "role": "camera-framing",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-066",
+      "stage": "HELL_PARIS",
+      "role": "material-budget",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-067",
+      "stage": "HELL_PARIS",
+      "role": "readability",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-068",
+      "stage": "HELL_PARIS",
+      "role": "benchmark",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-069",
+      "stage": "HELL_PARIS",
+      "role": "defect-fix",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-070",
+      "stage": "HELL_PARIS",
+      "role": "acceptance",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-071",
+      "stage": "MATERIALS_VFX",
+      "role": "palette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-072",
+      "stage": "MATERIALS_VFX",
+      "role": "emissive",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-073",
+      "stage": "MATERIALS_VFX",
+      "role": "glass",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-074",
+      "stage": "MATERIALS_VFX",
+      "role": "metallic",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-075",
+      "stage": "MATERIALS_VFX",
+      "role": "stone",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-076",
+      "stage": "MATERIALS_VFX",
+      "role": "cyan",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-077",
+      "stage": "MATERIALS_VFX",
+      "role": "violet",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-078",
+      "stage": "MATERIALS_VFX",
+      "role": "bronze",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-079",
+      "stage": "MATERIALS_VFX",
+      "role": "fire",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-080",
+      "stage": "MATERIALS_VFX",
+      "role": "neon",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-081",
+      "stage": "MATERIALS_VFX",
+      "role": "roof",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-082",
+      "stage": "MATERIALS_VFX",
+      "role": "windows",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-083",
+      "stage": "MATERIALS_VFX",
+      "role": "ambient",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-084",
+      "stage": "MATERIALS_VFX",
+      "role": "night-signage",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-085",
+      "stage": "MATERIALS_VFX",
+      "role": "accessibility",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-086",
+      "stage": "WORLD_INTEGRATION",
+      "role": "tile-transform",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-087",
+      "stage": "WORLD_INTEGRATION",
+      "role": "geo-registration",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-088",
+      "stage": "WORLD_INTEGRATION",
+      "role": "world-scale",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-089",
+      "stage": "WORLD_INTEGRATION",
+      "role": "terrain",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-090",
+      "stage": "WORLD_INTEGRATION",
+      "role": "source-preservation",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-091",
+      "stage": "WORLD_INTEGRATION",
+      "role": "collision-hook",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-092",
+      "stage": "WORLD_INTEGRATION",
+      "role": "load-order",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-093",
+      "stage": "WORLD_INTEGRATION",
+      "role": "streaming",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-094",
+      "stage": "WORLD_INTEGRATION",
+      "role": "lod-distance",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-095",
+      "stage": "WORLD_INTEGRATION",
+      "role": "rollback",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-096",
+      "stage": "QA_OPTIMIZATION",
+      "role": "glb-integrity",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-097",
+      "stage": "QA_OPTIMIZATION",
+      "role": "landmark-silhouette",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-098",
+      "stage": "QA_OPTIMIZATION",
+      "role": "collision-test",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-099",
+      "stage": "QA_OPTIMIZATION",
+      "role": "mobile-performance",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    },
+    {
+      "id": "JC-100",
+      "stage": "QA_OPTIMIZATION",
+      "role": "final-signoff",
+      "status": "QUEUED",
+      "evidence": "NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT"
+    }
+  ]
+}
+

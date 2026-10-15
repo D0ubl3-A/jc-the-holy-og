@@ -5,6 +5,7 @@ import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-neighborhood-skins-v1";
 import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-streetscape-upgrade-v3";
 import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-streetscape-upgrade-v3";
+import "./hell-landmarks-runtime.js";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");
@@ -61,11 +62,11 @@ let webglContextLost=false;
 renderer.domElement.addEventListener("webglcontextlost",function(event){
   event.preventDefault();
   webglContextLost=true;
-  if(statusEl)statusEl.textContent="GPU CONTEXT PAUSED · restoring graphics…";
+  if(statusEl)statusEl.textContent="GPU CONTEXT PAUSED Â· restoring graphicsâ€¦";
 });
 renderer.domElement.addEventListener("webglcontextrestored",function(){
   webglContextLost=false;
-  if(statusEl)statusEl.textContent="GRAPHICS RESTORED · resuming mission";
+  if(statusEl)statusEl.textContent="GRAPHICS RESTORED Â· resuming mission";
 });
 
 const hemi=new THREE.HemisphereLight(0xb9d7ff,0x2e241d,2.4);
@@ -1349,7 +1350,7 @@ function buildTileColliders(root,rec){
 function nearbyCollisionBoxes(){
   if(player.pos.y>=LOW_DETAIL_ONLY_ALTITUDE)return [];
   const cell=worldCell(player.pos.x,player.pos.z);
-  const out=[];
+  const out=window.JC_HELL_LANDMARKS?.collisionBoxesNear?.(player.pos)?.slice() || [];
   for(let dc=-COLLISION_TILE_RADIUS;dc<=COLLISION_TILE_RADIUS;dc++){
     for(let dr=-COLLISION_TILE_RADIUS;dr<=COLLISION_TILE_RADIUS;dr++){
       const item=tileColliders.get(tileKey(cell.col+dc,cell.row+dr));
@@ -1610,7 +1611,7 @@ function influenceNearbyNpcs(){
     npc.userData.influencedBy=controller;
     affected++;
   }
-  powerState.lastAbility=controller+" INFLUENCE · "+affected+" NPC";
+  powerState.lastAbility=controller+" INFLUENCE Â· "+affected+" NPC";
   const color=controller==="JC"?0xfff2a8:0x8b20ff;
   radialRingAt(powerOrigin(),color,28,1.4);
   orbBurst(color,36,14,1.5,powerOrigin());
@@ -2713,10 +2714,10 @@ function updatePowers(dt){
   const names=powerState.controller==="JC"
     ?["1 SHOCKWAVE","2 DIVINE SHIELD","3 JUDGMENT BEAM","4 SECOND COMING","5 DIVINE DASH","6 HEAVEN SLAM","7 TIME GRACE","8 MIRACLE HEAL"]
     :["1 HELLFIRE STORM","2 REALITY TEAR","3 FEAR WAVE","4 HELL ON EARTH"];
-  const health=powerState.controller==="JC"?" · HP "+Math.round(powerState.health):" · SATAN HP "+Math.round(powerState.satanHealth);
-  const combo=powerState.controller==="JC"&&powerState.combo>0?" · COMBO x"+powerState.combo.toFixed(1):"";
-  const rez=powerState.controller==="JC"?" · RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
-  powerHud.innerHTML="<div style='display:flex;justify-content:space-between;align-items:center;gap:10px'><b style='font-size:16px;color:"+(powerState.controller==="JC"?"#f0c65d":"#ff604b")+"'>"+powerState.controller+"</b><span>POWER "+Math.round(meter)+"%</span></div><div style='margin-top:7px;opacity:.82'>"+names.join(" · ")+"</div><div style='margin-top:7px;color:#d9c89f'>"+(powerState.lastAbility||"READY")+" "+combo+" "+rez+"</div>";
+  const health=powerState.controller==="JC"?" Â· HP "+Math.round(powerState.health):" Â· SATAN HP "+Math.round(powerState.satanHealth);
+  const combo=powerState.controller==="JC"&&powerState.combo>0?" Â· COMBO x"+powerState.combo.toFixed(1):"";
+  const rez=powerState.controller==="JC"?" Â· RESURRECTION "+(powerState.resurrectionReady?"READY":"USED"):"";
+  powerHud.innerHTML="<div style='display:flex;justify-content:space-between;align-items:center;gap:10px'><b style='font-size:16px;color:"+(powerState.controller==="JC"?"#f0c65d":"#ff604b")+"'>"+powerState.controller+"</b><span>POWER "+Math.round(meter)+"%</span></div><div style='margin-top:7px;opacity:.82'>"+names.join(" Â· ")+"</div><div style='margin-top:7px;color:#d9c89f'>"+(powerState.lastAbility||"READY")+" "+combo+" "+rez+"</div>";
   if(healthFillEl)healthFillEl.style.width=THREE.MathUtils.clamp(powerState.health/powerState.maxHealth*100,0,100)+"%";
   if(healthTextEl)healthTextEl.textContent=Math.round(powerState.health)+" / "+Math.round(powerState.maxHealth);
   if(divineFillEl)divineFillEl.style.width=Math.round(meter)+"%";
@@ -2809,7 +2810,7 @@ function selectDestination(step){
   if(!destinations.length)return null;
   destinationIndex=(destinationIndex+(step||1)+destinations.length)%destinations.length;
   const d=destinations[destinationIndex];
-  destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
+  destinationEl.textContent="TARGET: "+d.name+" Â· "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
   return d;
 }
 function beginHyperspeed(){
@@ -2829,7 +2830,7 @@ function toggleFlight(){
     player.pos.y=Math.max(GROUND_Y,player.pos.y);
     player.velocity.set(0,0,0);
   }
-  flightStateEl.textContent=player.flying?(GTA_VEGAS_MODE?"FLIGHT ON · GTA VEGAS MAP":"FLIGHT ON · REAL GLB MAP"):"GROUND MODE";
+  flightStateEl.textContent=player.flying?(GTA_VEGAS_MODE?"FLIGHT ON Â· GTA VEGAS MAP":"FLIGHT ON Â· REAL GLB MAP"):"GROUND MODE";
   flightStateEl.style.color=player.flying?"#ffd45a":"#7de6ff";
 }
 function applyLook(dx,dy){
@@ -3097,8 +3098,8 @@ function updateAtmosphere(){
   holeGround.visible=y<35000;
   if(player.flying){
     const alt=y>=1000?(y/1000).toFixed(y>=10000?0:1)+" KM":Math.round(y)+" M";
-    const mach=player.mach>=0.1?" · MACH "+player.mach.toFixed(player.mach>=10?0:1):"";
-    flightStateEl.textContent=player.flightMode+" · "+alt+mach;
+    const mach=player.mach>=0.1?" Â· MACH "+player.mach.toFixed(player.mach>=10?0:1):"";
+    flightStateEl.textContent=player.flightMode+" Â· "+alt+mach;
     flightStateEl.style.color=
       player.flightMode==="SPACE"?"#ffffff":
       player.flightMode==="HYPERSONIC"?"#ffdf77":
@@ -3144,27 +3145,27 @@ function updateCamera(dt){
 }
 function updateHud(){
   const cell=currentCellName();
-  locationEl.textContent=GTA_VEGAS_MODE?"LAS VEGAS · GTA GPS MAP":cell+" · JC REAL GLB MAP";
+  locationEl.textContent=GTA_VEGAS_MODE?"LAS VEGAS Â· GTA GPS MAP":cell+" Â· JC REAL GLB MAP";
   const districtStatus=window.JC_REAL_VEGAS_DISTRICT_STATUS;
   const visibleFootprints=districtStatus?.visibleTiles||0;
   progressEl.textContent=GTA_VEGAS_MODE?
-    (libraryCity?.active?"LIBRARY CITY · "+libraryCity.visibleTiles+" SOURCE TILES ACTIVE":
-    "GTA VEGAS SAFE MAP · LIBRARY CITY ARCHIVE NOT YET PUBLISHED"):ONE_FILE_CITY?("ONE PRELOADED CITY · "+loadedTiles.size+" GLB CELLS · MIRRORS "+mirrorFinish.reflectiveMeshes):
-    (loadedTiles.size+"/"+manifest.length+" GLBs · "+visibleFootprints+" real-footprint tiles visible");
+    (libraryCity?.active?"LIBRARY CITY Â· "+libraryCity.visibleTiles+" SOURCE TILES ACTIVE":
+    "GTA VEGAS SAFE MAP Â· LIBRARY CITY ARCHIVE NOT YET PUBLISHED"):ONE_FILE_CITY?("ONE PRELOADED CITY Â· "+loadedTiles.size+" GLB CELLS Â· MIRRORS "+mirrorFinish.reflectiveMeshes):
+    (loadedTiles.size+"/"+manifest.length+" GLBs Â· "+visibleFootprints+" real-footprint tiles visible");
   const alt=player.pos.y>=1000?(player.pos.y/1000).toFixed(player.pos.y>=10000?0:1)+" km":Math.round(player.pos.y)+" m";
   const speed=player.speed>=1000?(player.speed/1000).toFixed(1)+" km/s":Math.round(player.speed)+" m/s";
-  const mach=player.mach>=0.1?" · M"+player.mach.toFixed(player.mach>=10?0:1):"";
+  const mach=player.mach>=0.1?" Â· M"+player.mach.toFixed(player.mach>=10?0:1):"";
   const detail=player.pos.y< FULL_DETAIL_ALTITUDE?"FULL DETAIL":
     player.pos.y<LOW_DETAIL_ONLY_ALTITUDE?"MIXED LOD":"CITY LOD";
   const roadSegs=Array.from(loadedRoadTiles.values()).reduce(function(n,t){return n+(t.count||0)},0);
-  const roadText=roadRuntimeReady?(" · ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" · ROADS BUILDING";
-  const solidText=" · SOLID "+collisionCount()+(player.grounded?" · GROUNDED":"")+" · ONE CITY · ROADS TOP · STRIP "+wallpaperShellCount+" · HOMES "+residentialWallpaperCount;
+  const roadText=roadRuntimeReady?(" Â· ROADS "+roadSegs+(majorRoadReady?" + CITY LOD":"")):" Â· ROADS BUILDING";
+  const solidText=" Â· SOLID "+collisionCount()+(player.grounded?" Â· GROUNDED":"")+" Â· ONE CITY Â· ROADS TOP Â· STRIP "+wallpaperShellCount+" Â· HOMES "+residentialWallpaperCount;
   const plan=streamPlan();
   const bufferText=DATA_BUFFERING?
-    (" · CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
-  const aheadText=FULL_MAP_MODE?(" · BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" · HORIZON→JC "+plan.aheadTiles+" TILES":"");
+    (" Â· CACHE "+(rawBufferedTiles.size+loadedTiles.size)+"/"+Math.max(bufferState.total,manifest.length)+(bufferState.complete?" READY":"")):"";
+  const aheadText=FULL_MAP_MODE?(" Â· BUFFERED MAP"+bufferText):(plan.aheadTiles>0?" Â· HORIZONâ†’JC "+plan.aheadTiles+" TILES":"");
   const factoryCount=(aiAssetManifest&&aiAssetManifest.assets?aiAssetManifest.assets.length:0);
-  statusEl.textContent=player.flightMode+" · "+speed+mach+" · ALT "+alt+" · "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" · "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" · MASS TILE MODE":"")+aheadText+roadText+solidText+" · FACTORY "+factoryCount+" · "+Math.round(fpsEstimate)+" FPS · "+dynamicPixelRatio.toFixed(2)+"x";
+  statusEl.textContent=player.flightMode+" Â· "+speed+mach+" Â· ALT "+alt+" Â· "+(GTA_VEGAS_MODE?"GTA GPS REAL MAP":" "+detail+" Â· "+loadedTiles.size+"/"+manifest.length+" GLBs")+(massTileMode?" Â· MASS TILE MODE":"")+aheadText+roadText+solidText+" Â· FACTORY "+factoryCount+" Â· "+Math.round(fpsEstimate)+" FPS Â· "+dynamicPixelRatio.toFixed(2)+"x";
   if(gtaMapControl)gtaMapControl.update();
   pavedRoads?.update();
   if(stripFallbackCity&&libraryCity?.active)
@@ -3176,8 +3177,8 @@ function updateHud(){
       const neighborhood=libraryCity.skins.zones[
         libraryCity.skins.neighborhood(player.pos.x,player.pos.z)]?.name||"LAS VEGAS";
       progressEl.textContent=(sky?.ready&&(skyMapView||player.pos.y>=260))?
-        "FULL SKY CITY · 595 AERIAL TILES · "+sky.rendered+" BUILDINGS · 25 NEIGHBORHOOD SKINS":
-        neighborhood.toUpperCase()+" · "+libraryCity.terrainDetail.visible+" CRISP TILES · "+
+        "FULL SKY CITY Â· 595 AERIAL TILES Â· "+sky.rendered+" BUILDINGS Â· 25 NEIGHBORHOOD SKINS":
+        neighborhood.toUpperCase()+" Â· "+libraryCity.terrainDetail.visible+" CRISP TILES Â· "+
         libraryCity.loadedBuildings.toLocaleString()+" SKINNED BUILDINGS";
     }
   }
@@ -3185,20 +3186,20 @@ function updateHud(){
   if(hudAltitudeEl)hudAltitudeEl.textContent=alt;
   if(hudFpsEl)hudFpsEl.textContent=Math.round(fpsEstimate)+" FPS";
   if(hudRoadsEl)hudRoadsEl.textContent=(GTA_VEGAS_MODE&&pavedRoads?.ready?
-    pavedRoads.loadedSegments.toLocaleString()+" PAVED SEG · "+
+    pavedRoads.loadedSegments.toLocaleString()+" PAVED SEG Â· "+
     pavedRoads.status().loadedLamps+" LIGHTS":roadSegs.toLocaleString()+" ROAD SEG");
   if(radarArrowEl)radarArrowEl.style.transform="translate(-50%,-50%) rotate("+THREE.MathUtils.radToDeg(-player.yaw)+"deg)";
   const d=destinations[destinationIndex];
-  if(d)destinationEl.textContent="TARGET: "+d.name+" · "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
+  if(d)destinationEl.textContent="TARGET: "+d.name+" Â· "+Math.hypot(player.pos.x-d.x,player.pos.z-d.z).toFixed(0)+"m";
 }
 async function preloadOneCityFile(){
   const url="./jc-the-holy-og-assets/models/JC-UNIFIED-CITY.glb";
-  if(progressEl)progressEl.textContent="LOADING ALL 134 CITY TILES IN ONE FILE…";
+  if(progressEl)progressEl.textContent="LOADING ALL 134 CITY TILES IN ONE FILEâ€¦";
   const guardCopy=document.getElementById("bootGuardCopy");
   const gltf=await gltfLoader.loadAsync(url,function(event){
     if(!event||!event.lengthComputable||!event.total)return;
     const percent=Math.min(100,Math.round(event.loaded/event.total*100));
-    if(guardCopy)guardCopy.textContent="PRELOADING ONE COMPLETE CITY · "+percent+"% · "+Math.round(event.loaded/1048576)+" MB downloaded";
+    if(guardCopy)guardCopy.textContent="PRELOADING ONE COMPLETE CITY Â· "+percent+"% Â· "+Math.round(event.loaded/1048576)+" MB downloaded";
   });
   const root=gltf.scene;
   root.name="JC_PREBAKED_134_TILE_CITY";
@@ -3223,8 +3224,8 @@ async function preloadOneCityFile(){
   bufferState.complete=true;
   bufferState.total=loadedTiles.size;
   bufferState.loaded=loadedTiles.size;
-  if(progressEl)progressEl.textContent="ONE COMPLETE CITY READY · "+loadedTiles.size+" GLBs · "+reflectionCount+" reflective architectural meshes";
-  if(guardCopy)guardCopy.textContent="CITY READY · "+loadedTiles.size+" TILES BAKED TO ONE MODEL · MIRROR GLASS";
+  if(progressEl)progressEl.textContent="ONE COMPLETE CITY READY Â· "+loadedTiles.size+" GLBs Â· "+reflectionCount+" reflective architectural meshes";
+  if(guardCopy)guardCopy.textContent="CITY READY Â· "+loadedTiles.size+" TILES BAKED TO ONE MODEL Â· MIRROR GLASS";
 }
 function updatePrebakedCollisions(force=false){
   if(!singleCityLoaded)return;
@@ -3265,8 +3266,8 @@ async function toggleSkyMapView(){
     button.setAttribute("aria-pressed",String(skyMapView));
   }
   if(progressEl)progressEl.textContent=skyMapView?
-    "SKY VIEW · ALL 595 AERIAL TILES · "+sky.rendered+" SKINNED BUILDING LODS":
-    "GROUND VIEW · SOURCE TILE DETAILS RESUMED";
+    "SKY VIEW Â· ALL 595 AERIAL TILES Â· "+sky.rendered+" SKINNED BUILDING LODS":
+    "GROUND VIEW Â· SOURCE TILE DETAILS RESUMED";
   return true;
 }
 async function jumpToRealLibraryCity(){
@@ -3277,7 +3278,7 @@ async function jumpToRealLibraryCity(){
   if(libraryJumpBusy)return false;
   libraryJumpBusy=true;
   const button=document.getElementById("jcLibraryJump");
-  if(button){button.disabled=true;button.textContent="LOADING…";}
+  if(button){button.disabled=true;button.textContent="LOADINGâ€¦";}
   try{
     // A cached pre-batch manifest previously disabled the button permanently.
     // Keep the button usable and retry the authoritative source on demand.
@@ -3299,7 +3300,7 @@ async function jumpToRealLibraryCity(){
     libraryCity.update(true);
     pavedRoads?.update(true);
     if(gtaMapControl)gtaMapControl.update(true);
-    if(progressEl)progressEl.textContent="ENTERING REAL CITY · LOADING NEARBY 10-TILE DATA PACKS";
+    if(progressEl)progressEl.textContent="ENTERING REAL CITY Â· LOADING NEARBY 10-TILE DATA PACKS";
     if(button){button.title="JC now inside the real 595-tile Library city";button.textContent="IN REAL CITY";}
     return true;
   }catch(error){
@@ -3316,8 +3317,8 @@ async function boot(){
   player.pos.copy(STRIP_SPAWN);
   player.velocity.set(0,0,0);
   player.yaw=Math.PI;
-  if(locationEl)locationEl.textContent="NEW TILE ZONE · "+SPAWN_TILE;
-  if(creditEl)creditEl.textContent="JC Map • STRIP START: "+SPAWN_TILE+" • source-based buildings";
+  if(locationEl)locationEl.textContent="NEW TILE ZONE Â· "+SPAWN_TILE;
+  if(creditEl)creditEl.textContent="JC Map â€¢ STRIP START: "+SPAWN_TILE+" â€¢ source-based buildings";
   if(GTA_VEGAS_MODE){
     // Transfer GTA Vegas' geographic world and its mobile-lightweight 3D city.
     // The real street basemap syncs with the player's position and JC powers.
@@ -3358,11 +3359,11 @@ async function boot(){
         const p=gtaVegasToWorld(place.lat,place.lng);
         destinations.unshift({name:place.name,x:p.x,y:24,z:p.z,lat:place.lat,lng:place.lng});
         destinationIndex=0;
-        destinationEl.textContent="TARGET: "+place.name+" · HYPER READY";
+        destinationEl.textContent="TARGET: "+place.name+" Â· HYPER READY";
       },
       onTravel:function(){beginHyperspeed();}
     });
-    if(progressEl)progressEl.textContent="GTA VEGAS MAP READY · LIGHT 3D CITY";
+    if(progressEl)progressEl.textContent="GTA VEGAS MAP READY Â· LIGHT 3D CITY";
     gtaMapControl.update(true);
   }else{
     await Promise.all([loadManifest(),loadAIAssetFactoryManifest()]);
@@ -3465,7 +3466,7 @@ async function boot(){
   };
   window.JC_UNIFIED_CITY={root:unifiedCityGroup,sourceGlbCount:manifest.length,loadedGlbs:loadedTiles,
     roadGroup:roadTileGroup,lowDetailGroup:worldLodGroup,
-    note:GTA_VEGAS_MODE?"GTA VEGAS GPS MAP · REAL 2D STREETS AND STYLIZED 3D BUILDINGS":ONE_FILE_CITY?"ONE COMPLETE PREDECODED GLB":"LEGACY STREAM MODE"};
+    note:GTA_VEGAS_MODE?"GTA VEGAS GPS MAP Â· REAL 2D STREETS AND STYLIZED 3D BUILDINGS":ONE_FILE_CITY?"ONE COMPLETE PREDECODED GLB":"LEGACY STREAM MODE"};
   if(window.JC_BOOT_OK)window.JC_BOOT_OK();
   requestAnimationFrame(frame);
   // One shared city capture, not a mirror camera per building.
@@ -3526,3 +3527,4 @@ boot().catch(function(e){
   statusEl.textContent="GLB MAP LOAD ERROR: "+e.message;
   if(window.JC_BOOT_FAIL)window.JC_BOOT_FAIL(e);
 });
+

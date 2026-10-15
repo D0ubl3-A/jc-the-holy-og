@@ -1,0 +1,18 @@
+name = "jc-devil-rap-ai"
+main = "jc-rap-ai.js"
+compatibility_date = "2026-10-14"
+
+# Set these to the exact production origin(s) hosting JC.
+# If hosted on a custom domain, replace the GitHub Pages origin.
+[vars]
+ALLOWED_ORIGINS = "https://d0ubl3-a.github.io"
+OPENAI_MODEL = "gpt-4.1-mini"
+
+# Local rate limiter prevents accidental API runaway.
+# Choose a namespace_id unique to your Cloudflare account.
+[[ratelimits]]
+name = "RAP_LIMITER"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 10
+period = 60

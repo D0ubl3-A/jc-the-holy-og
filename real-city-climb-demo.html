@@ -57,6 +57,28 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 #jcSkyView.active{background:#e4d098;color:#18212b;border-color:#fff4c1}
 #jcGeoPanel.expanded{width:auto;height:auto;inset:8% 7% 18% 7%;z-index:25}
 #jcGeoPanel.expanded #jcGeoMap{height:calc(100% - 91px)}
+#jcHellQaLaunch{position:fixed;right:14px;top:14px;z-index:24;border:1px solid #e2c56d;
+  border-radius:7px;padding:9px 11px;background:#17140fee;color:#ffe6a0;font:900 10px Arial;
+  letter-spacing:.06em;box-shadow:0 5px 18px #0009;cursor:pointer}
+#jcHellQaPanel{box-sizing:border-box;position:fixed;right:14px;top:56px;width:min(360px,calc(100vw - 20px));max-height:66vh;
+  overflow:auto;z-index:23;border:1px solid #d0b65e;border-radius:10px;background:#080b10f2;
+  box-shadow:0 12px 35px #000b;color:#f7edce;padding:10px;backdrop-filter:blur(8px)}
+#jcHellQaPanel[hidden]{display:none}
+#jcHellQaPanel .qa-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#jcHellQaPanel .qa-head strong{font:900 12px Arial;letter-spacing:.08em;color:#f4d777}
+#jcHellQaPanel #jcHellQaSummary{margin:5px 0 9px;color:#c4c9d1;font:700 9px/1.4 Arial}
+#jcHellQaPanel .qa-actions,#jcHellQaPanel .qa-focus{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:7px 0}
+#jcHellQaPanel .qa-focus{grid-template-columns:1fr 1fr}
+#jcHellQaPanel button{min-height:34px;border:1px solid #88774b;border-radius:5px;background:#1b2532;
+  color:#ffe7a8;font:800 8px/1.2 Arial;padding:6px;cursor:pointer}
+#jcHellQaPanel button:hover{background:#35445a;border-color:#ead075}
+#jcHellQaPanel .jc-hell-qa-card{padding:8px;margin:6px 0;border:1px solid #ffffff24;border-radius:6px;background:#ffffff08}
+#jcHellQaPanel .jc-hell-qa-card strong{font:900 10px Arial;color:#fff0bd}
+#jcHellQaPanel .jc-hell-qa-card p{margin:5px 0;color:#d4d7dd;font:600 9px/1.45 Arial;overflow-wrap:anywhere}
+#jcHellQaPanel .jc-hell-qa-card small{font:800 8px Arial;color:#efb873;letter-spacing:.03em}
+#jcHellQaPanel .qa-foot{display:flex;gap:6px;margin-top:8px}
+#jcHellQaPanel .qa-foot button{flex:1}
+#jcHellQaPanel .qa-foot #jcHellQaCopy{background:#3b3b20;color:#fff3ad}
 .jc-gps-icon span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
   background:#ffe49b;color:#1c1510;border:3px solid #4c3d1e;box-shadow:0 0 12px #ffcd55;font:bold 12px Arial}
 @media(max-width:800px),(pointer:coarse){
@@ -65,6 +87,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   #jcGeoPanel .geo-top strong{font-size:8px}
   #jcGeoPanel .geo-top button{font-size:8px}
   #jcGeoPanel.expanded{inset:6% 4% 24% 4%;width:auto;top:6%}
+  #jcHellQaLaunch{right:7px;top:8px;font-size:8px;padding:8px}
+  #jcHellQaPanel{right:7px;top:48px;width:min(330px,calc(100vw - 14px));max-height:62vh}
 }
 #radarArrow{position:absolute;left:50%;top:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:19px solid #80e4ff;filter:drop-shadow(0 0 4px #25bde8);transform-origin:50% 70%}
 .radar-ring{position:absolute;inset:11px;border:1px solid #ffffff14;border-radius:50%}.radar-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#e1b853;box-shadow:0 0 7px #e1b853}
@@ -125,6 +149,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
   <div class="geo-footer"><button id="jcGeoGo" type="button" disabled>SELECT MAP TARGET</button><button id="jcLibraryJump" type="button" title="Travel to 595-tile Library city">REAL CITY</button><button id="jcSkyView" type="button" title="See the full 595-tile map from directly above" disabled>SKY VIEW</button></div>
 </section>
 
+<button id="jcHellQaLaunch" type="button" aria-expanded="false" aria-controls="jcHellQaPanel">OPEN LANDMARK QA</button>
+<aside id="jcHellQaPanel" aria-label="Hell Stadium and Paris landmark validation" hidden>
+  <div class="qa-head"><strong>JC HELL LANDMARK QA</strong><button id="jcHellQaClose" type="button">HIDE</button></div>
+  <p id="jcHellQaSummary" aria-live="polite">Landmark status loading…</p>
+  <div id="jcHellQaLandmarks"></div>
+  <div class="qa-actions">
+    <button type="button" data-hell-qa-mode="preview">LOCAL PREVIEW</button>
+    <button type="button" data-hell-qa-mode="geo">GEO ANCHORS</button>
+    <button type="button" data-hell-qa-mode="off">TURN OFF</button>
+  </div>
+  <div class="qa-focus">
+    <button type="button" data-hell-qa-focus="stadium">FOCUS STADIUM SOURCE TILE</button>
+    <button type="button" data-hell-qa-focus="paris">FOCUS PARIS SOURCE TILE</button>
+  </div>
+  <div class="qa-foot"><button id="jcHellQaCopy" type="button">COPY QA JSON</button></div>
+  <p class="mission-copy">Geo anchors remain provisional. Source-tile heading and visual placement still need review.</p>
+</aside>
+
 <div id="abilityBar">
   <div class="ability-caption">E · ABILITY WHEEL / 1–8 DIRECT CAST</div>
   <button data-power="1" title="Shockwave">1<br>⚡</button>
@@ -175,8 +217,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;col
 })();
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js?rev=jc-streetscape-upgrade-v3"></script>
-<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js"></script>
+<script type="module" src="./jc-the-holy-og-assets/real-city-climb-demo.js?rev=jc-strip-photo-v1-hell-qa-v1"></script>
+<script type="module" src="./jc-the-holy-og-assets/real-vegas-district-runtime.js?rev=jc-landmark-qa-v1"></script>
 <script defer src="./jc-the-holy-og-assets/battle-rap-launcher.js"></script>
 </body>
 </html>

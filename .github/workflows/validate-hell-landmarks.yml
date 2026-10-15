@@ -4,6 +4,7 @@ on:
     paths:
       - 'jc-the-holy-og-assets/hell-landmarks-runtime.js'
       - 'jc-the-holy-og-assets/real-city-climb-demo.js'
+      - 'real-city-climb-demo.html'
       - 'world/hell-landmarks-swarm-workplan.json'
       - '.github/workflows/validate-hell-landmarks.yml'
   workflow_dispatch:
@@ -18,25 +19,70 @@ jobs:
         run: |
           node --check jc-the-holy-og-assets/hell-landmarks-runtime.js
           node --check jc-the-holy-og-assets/real-city-climb-demo.js
-      - name: Verify 100 task handoffs and non-destructive integration
+      - name: Verify landmark QA integration and pending review boundaries
         run: |
           python - <<'PY'
-          import json
+          import json, re
+          from collections import Counter
+          from html.parser import HTMLParser
           from pathlib import Path
+          from urllib.parse import urlsplit
           root=Path('.')
-          plan=json.loads((root/'world/hell-landmarks-swarm-workplan.json').read_text())
+          plan=json.loads((root/'world/hell-landmarks-swarm-workplan.json').read_text(encoding='utf-8'))
           expected={'HELL_STADIUM':35,'HELL_PARIS':35,'MATERIALS_VFX':15,'WORLD_INTEGRATION':10,'QA_OPTIMIZATION':5}
           assert plan['allocations']==expected
           assert len(plan['units'])==100
           assert len({unit['id'] for unit in plan['units']})==100
+          assert dict(Counter(unit['stage'] for unit in plan['units']))==expected
           assert all(unit['status']=='QUEUED' for unit in plan['units'])
-          runtime=(root/'jc-the-holy-og-assets/hell-landmarks-runtime.js').read_text()
-          game=(root/'jc-the-holy-og-assets/real-city-climb-demo.js').read_text()
+          assert all(unit['evidence']=='NOT_EXECUTED_AS_INDEPENDENT_AI_AGENT' for unit in plan['units'])
+          assert plan['qa_interface']['status']=='BROWSER_SMOKE_PASSED_ALIGNMENT_REVIEW_PENDING'
+          assert set(plan['qa_interface']['modes'])=={'preview','geo','off'}
+          assert {'visual source-tile footprint alignment','Stadium heading and silhouette alignment',
+                  'in-game anchor render alignment','mobile performance measurement',
+                  'landmark silhouette human review'} <= set(plan['pending'])
+          runtime_path=root/'jc-the-holy-og-assets/hell-landmarks-runtime.js'
+          game_path=root/'jc-the-holy-og-assets/real-city-climb-demo.js'
+          runtime=runtime_path.read_text(encoding='utf-8')
+          game=game_path.read_text(encoding='utf-8')
           assert 'hellLandmarks' in runtime and 'mode === "preview" || mode === "geo"' in runtime
           assert 'PROVISIONAL' in runtime
-          assert 'import "./hell-landmarks-runtime.js";' in game
+          # Version query strings are browser cache keys, not filesystem paths.
+          imports=re.findall(r'^\s*import\s+[\"\']([^\"\']+)[\"\']\s*;',game,re.M)
+          landmark_imports=[value for value in imports if urlsplit(value).path=='./hell-landmarks-runtime.js']
+          assert len(landmark_imports)==1, 'Game must import the landmark runtime exactly once'
+          assert (game_path.parent/urlsplit(landmark_imports[0]).path).resolve()==runtime_path.resolve()
           assert 'JC_HELL_LANDMARKS?.collisionBoxesNear' in game
+          assert 'JC_HELL_LANDMARKS?.focusPosition' in game and 'landmarkFocus' in game
           assert 'obj.update({position:p})' not in runtime
-          print('PASS: 100 work units, guarded runtime, non-destructive source, syntax checked')
+          assert re.search(r'sourceTileAlignment\s*:\s*[\"\']NOT_VISUALLY_REVIEWED[\"\']',runtime)
+          assert re.search(r'headingAlignment\s*:\s*[\"\']NOT_VERIFIED[\"\']',runtime)
+          assert re.search(r'status\.getEvidence\s*=\s*evidenceSnapshot',runtime)
+          assert 'jc-hell-landmark-qa-v1' in runtime
+
+          class QaPage(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids=Counter()
+                  self.modes=set()
+                  self.focus=set()
+                  self.scripts=[]
+              def handle_starttag(self,tag,attrs):
+                  attrs=dict(attrs)
+                  if 'id' in attrs: self.ids[attrs['id']]+=1
+                  if 'data-hell-qa-mode' in attrs: self.modes.add(attrs['data-hell-qa-mode'])
+                  if 'data-hell-qa-focus' in attrs: self.focus.add(attrs['data-hell-qa-focus'])
+                  if tag=='script' and 'src' in attrs: self.scripts.append(attrs)
+          page=QaPage()
+          page.feed((root/'real-city-climb-demo.html').read_text(encoding='utf-8'))
+          for element in ['jcHellQaLaunch','jcHellQaPanel','jcHellQaClose','jcHellQaSummary',
+                          'jcHellQaLandmarks','jcHellQaCopy']:
+              assert page.ids[element]==1, 'Missing or duplicate QA control: '+element
+          assert page.modes=={'preview','geo','off'}
+          assert page.focus=={'stadium','paris'}
+          game_scripts=[script for script in page.scripts
+                        if urlsplit(script['src']).path=='./jc-the-holy-og-assets/real-city-climb-demo.js']
+          assert len(game_scripts)==1 and game_scripts[0].get('type')=='module'
+          print('PASS: 100 queued roles, guarded runtime import, QA controls, evidence export, pending visual review')
           PY
 

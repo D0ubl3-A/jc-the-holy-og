@@ -40,12 +40,13 @@ export const GTA_VEGAS_LANDMARKS=[
 // GTA Vegas original draws 100 procedural structures. Precreate an instanced
 // equivalent, with stable seeded positions, for ONE draw call instead of loading
 // 262 MB of building geometry on mobile. Stylized, not real parcel footprints.
-export function buildGtaVegasCity(worldRoot,lowSpec,skins=null){
+export function buildGtaVegasCity(worldRoot,lowSpec,skins=null,playerPos=null){
   // Keep the existing light Strip starter town outside the 595 Library cells,
   // but skin its structures with the *same* named-neighborhood art direction.
   const count=lowSpec?100:220;
   const group=new THREE.Group();
   group.name="GTA_VEGAS_LIGHTWEIGHT_CITY";
+  const firstBlockColliders=[];
   const geometry=skins?.geometry||new THREE.BoxGeometry(1,1,1);
   const center=gtaVegasToWorld(GTA_VEGAS_CENTER.lat,GTA_VEGAS_CENTER.lng);
   function seeded(i){const n=Math.sin(i*913.71+17.3)*43758.5453;return n-Math.floor(n);}
@@ -82,9 +83,93 @@ export function buildGtaVegasCity(worldRoot,lowSpec,skins=null){
   }
   for(const slot of meshes.values())slot.mesh.instanceMatrix.needsUpdate=true;
   worldRoot.add(group);
+
+  // A deliberate, close-range first Strip block gives the player readable
+  // real-world scale and a photoreal facade at street level. The wider city
+  // remains instanced and lightweight for mobile devices.
+  if(playerPos){
+    const block=new THREE.Group();
+    block.name="JC_STRIP_FIRST_BLOCK_PHOTOREAL";
+    const facadeTexture=new THREE.TextureLoader().load(
+      "./jc-the-holy-og-assets/textures/strip-photoreal-hotel-v1.jpg?rev=jc-strip-photo-v1",
+      texture=>{
+        texture.colorSpace=THREE.SRGBColorSpace;
+        texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+        texture.anisotropy=8;
+        texture.needsUpdate=true;
+      }
+    );
+    facadeTexture.colorSpace=THREE.SRGBColorSpace;
+    facadeTexture.wrapS=facadeTexture.wrapT=THREE.RepeatWrapping;
+    const facade=new THREE.MeshStandardMaterial({
+      map:facadeTexture,color:0xf4e9d7,roughness:0.42,metalness:0.16
+    });
+    const roof=new THREE.MeshStandardMaterial({color:0x54585b,roughness:0.9,metalness:0.12});
+    const underside=new THREE.MeshStandardMaterial({color:0x393a3b,roughness:1});
+    const buildingGeometry=new THREE.BoxGeometry(1,1,1);
+    const buildingMaterials=[facade,facade,roof,underside,facade,facade];
+    const buildings=[
+      {x:-31,z:83,w:30,d:27,h:30},
+      {x:0,z:88,w:38,d:30,h:39},
+      {x:32,z:82,w:27,d:25,h:27}
+    ];
+    const towers=new THREE.InstancedMesh(buildingGeometry,buildingMaterials,buildings.length);
+    towers.name="JC_STRIP_PHOTOREAL_HOTEL_TOWERS";
+    towers.castShadow=false;towers.receiveShadow=true;towers.frustumCulled=false;
+    const dummy=new THREE.Object3D();
+    for(let i=0;i<buildings.length;i++){
+      const b=buildings[i];
+      dummy.position.set(playerPos.x+b.x,b.h/2,playerPos.z+b.z);
+      dummy.scale.set(b.w,b.h,b.d);
+      dummy.updateMatrix();
+      towers.setMatrixAt(i,dummy.matrix);
+      firstBlockColliders.push(new THREE.Box3(
+        new THREE.Vector3(playerPos.x+b.x-b.w/2,0,playerPos.z+b.z-b.d/2),
+        new THREE.Vector3(playerPos.x+b.x+b.w/2,b.h,playerPos.z+b.z+b.d/2)
+      ));
+    }
+    towers.instanceMatrix.needsUpdate=true;
+    block.add(towers);
+
+    const podium=new THREE.Mesh(
+      new THREE.BoxGeometry(92,6,15),
+      [facade,facade,roof,underside,facade,facade]
+    );
+    podium.name="JC_STRIP_PHOTOREAL_CASINO_PODIUM";
+    podium.position.set(playerPos.x,3,playerPos.z+62);
+    podium.castShadow=false;podium.receiveShadow=true;
+    block.add(podium);
+    firstBlockColliders.push(new THREE.Box3().setFromObject(podium));
+    for(const box of firstBlockColliders)box.userData={indestructible:true,source:"JC_STRIP_FIRST_BLOCK"};
+
+    const roofUnits=new THREE.InstancedMesh(
+      new THREE.BoxGeometry(1,1,1),
+      new THREE.MeshStandardMaterial({color:0x707677,roughness:0.78,metalness:0.28}),
+      9
+    );
+    roofUnits.name="JC_STRIP_PHOTOREAL_ROOFTOP_EQUIPMENT";
+    roofUnits.castShadow=false;roofUnits.receiveShadow=true;
+    let unit=0;
+    for(const b of buildings){
+      for(let n=0;n<3;n++){
+        dummy.position.set(
+          playerPos.x+b.x+(n-1)*b.w*0.24,
+          b.h+0.55,
+          playerPos.z+b.z+(n%2?4:-4)
+        );
+        dummy.scale.set(2.8,1.1,2.2);
+        dummy.updateMatrix();
+        roofUnits.setMatrixAt(unit++,dummy.matrix);
+      }
+    }
+    roofUnits.instanceMatrix.needsUpdate=true;
+    block.add(roofUnits);
+    group.add(block);
+  }
   window.JC_GTA_MAP_WORLD={
-    mode:"GPS-ALIGNED LIGHT CITY WITH NEIGHBORHOOD SKINS",
-    buildings:count,groups:meshes.size,worldRoot:group,
+    mode:"GPS-ALIGNED CITY WITH PHOTOREAL FIRST STRIP BLOCK",
+    buildings:count+(playerPos?3:0),groups:meshes.size+(playerPos?3:0),worldRoot:group,
+    firstBlockColliders:firstBlockColliders,
     source:"aaronalltonai-ship-it/gta-vegas",
     geoSystem:"GPS to JC EPSG:32611 local approximation"
   };

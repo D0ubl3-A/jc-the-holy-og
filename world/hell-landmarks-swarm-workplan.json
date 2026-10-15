@@ -4,7 +4,7 @@
   "mode": "100-role work-plan, NOT 100 independently spawned agents",
   "scope": "Hell Stadium and Hell Paris only",
   "source_mesh_rule": "Do not alter, decimate, translate or replace source Las Vegas world geometry",
-  "status": "Local GLB prototypes passed standalone QA; Stadium position derives from a matched source footprint; Paris hotel and Eiffel Tower have separate OSM anchors; in-game alignment pending",
+  "status": "Browser smoke passed for gameplay, landmark QA, source-tile focus and evidence export; in-game footprint alignment, heading and final silhouette review remain pending",
   "allocations": {
     "HELL_STADIUM": 35,
     "HELL_PARIS": 35,
@@ -67,6 +67,26 @@
     "prototype_parse_validation": "PASSED",
     "qa_render_review": "RUN_LOCALLY"
   },
+  "qa_interface": {
+    "status": "BROWSER_SMOKE_PASSED_ALIGNMENT_REVIEW_PENDING",
+    "modes": ["preview", "geo", "off"],
+    "focus": "Reloads in source-tile stream mode at the selected landmark anchor",
+    "evidence_export": "Copies or downloads a jc-hell-landmark-qa-v1 JSON snapshot",
+    "review_boundary": "Source-tile alignment and heading remain explicitly unverified until visual review",
+    "smoke_checks": [
+      "default GTA gameplay boots without page errors",
+      "preview builds both procedural landmark models",
+      "panel hide and reopen controls work",
+      "Stadium and Paris source footprint tiles render in stream mode",
+      "QA JSON export completes",
+      "QA panel fits a 320 pixel viewport"
+    ]
+  },
+  "release_delivery": {
+    "target": "GitHub Pages",
+    "workflow": ".github/workflows/deploy-pages.yml",
+    "verification": "Successful deployment workflow run for the released commit"
+  },
   "pending": [
     "visual source-tile footprint alignment",
     "Stadium heading and silhouette alignment",
@@ -74,7 +94,6 @@
     "hosted binary GLB assets",
     "mobile performance measurement",
     "landmark silhouette human review",
-    "live deployment",
     "Paris final roof texture and signage art direction"
   ],
   "units": [
@@ -780,4 +799,3 @@
     }
   ]
 }
-

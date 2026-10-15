@@ -298,7 +298,12 @@ if (!window[KEY]) {
     const index=window.JC_REAL_DISTRICT_INDEX;if(!index?.districts?.length)throw new Error("district index missing or empty");
     const c=roadContract();
     state.contract=c;state.toGame=transformer(c);state.index=index;state.districts=new Map();state.loading=new Set();state.errors={};state.ready=true;
-    const previous=THREE.WebGLRenderer.prototype.render;
-    if(!THREE.WebGLRenderer.prototype.__jcRealVegasDistrictsV1){Object.defineProperty(THREE.WebGLRenderer.prototype,"__jcRealVegasDistrictsV1",{value:true});THREE.WebGLRenderer.prototype.render=function(scene,camera){if(!state.scene)state.scene=scene;scheduleUpdate(camera);return previous.call(this,scene,camera)}}
+    // WebGLRenderer owns render on each instance; a prototype patch never runs.
+    // The main render loop calls this explicitly for the active game scene.
+    state.tick=(scene,camera)=>{
+      if(!scene||!camera)return;
+      state.scene=scene;
+      scheduleUpdate(camera);
+    };
   }).catch(e=>{state.error=String(e.message||e);window.JC_REAL_VEGAS_DISTRICT_STATUS={active:false,error:state.error}});
 }

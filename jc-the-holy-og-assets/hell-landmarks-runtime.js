@@ -107,9 +107,10 @@ function anchorEvidence(kind,map=window.JC_GLB_MAP){
   const districtTile=district?.tiles?.get?.(sourceTile);
   result.sourceTile=sourceTile;
   result.sourceTileState=!map?"MAP_NOT_READY":map.gtaVegasMode?"NOT_RENDERED_IN_GTA_MODE":
+    loaded?"LOADED":
     districtTile?.group?.visible&&district.root?.visible&&districtState.worldRoot?.visible!==false?"STRIP_FOOTPRINT_TILE_VISIBLE":
     districtTile?.built?"STRIP_FOOTPRINT_TILE_READY":districtTile?"STRIP_FOOTPRINT_TILE_NOT_BUILT":
-    loaded?"LOADED":inManifest?"IN_MANIFEST_NOT_LOADED":
+    inManifest?"IN_MANIFEST_NOT_LOADED":
     districtState?.disabledForPerformance?"DISTRICT_FOOTPRINTS_DISABLED":
     districtState?.ready?"WAITING_FOR_STRIP_FOOTPRINT_TILE":"NOT_IN_MANIFEST";
   if(districtState?.errors?.strip||districtState?.error)result.sourceTileError=String(districtState.errors?.strip||districtState.error);

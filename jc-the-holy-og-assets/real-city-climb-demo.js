@@ -5,7 +5,7 @@ import { createCityMirrorFinish } from "./jc-city-mirror-finish.js";
 import { buildGtaVegasCity, initializeGtaVegasMap, GTA_VEGAS_LANDMARKS, gtaVegasToWorld } from "./jc-gta-vegas-map.js?rev=jc-strip-photo-v1";
 import { installLibraryCity } from "./jc-library-city-runtime.js?rev=jc-streetscape-upgrade-v3";
 import { createJcPavedRoads } from "./jc-paved-roads.js?rev=jc-streetscape-upgrade-v3";
-import "./hell-landmarks-runtime.js?rev=jc-landmark-qa-v1";
+import "./hell-landmarks-runtime.js?rev=jc-landmark-qa-v2";
 
 const mount=document.getElementById("game");
 const statusEl=document.getElementById("status");

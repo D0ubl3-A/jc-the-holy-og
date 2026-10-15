@@ -22,6 +22,8 @@
     const text=String(value||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200d\u2060\ufeff]/g,'');
     const parts=text.match(/[^\s]+/g)||[];
     for(const part of parts){
+      // Ordinary contractions such as "he'll" are not the word "hell".
+      if(/^(?:he|she|it)['’]ll[.,!?;:]*$/.test(part))continue;
       const word=normalizeWord(part);
       if(BAD.has(word))return {detected:true,word};
     }

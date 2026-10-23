@@ -3128,7 +3128,7 @@ function updateCamera(dt){
   camera.up.set(0,1,0);
   const target=player.pos.clone().add(new THREE.Vector3(0,PLAYER_HEIGHT*0.68,0));
   const speedFx=THREE.MathUtils.clamp(player.mach/12,0,1);
-  const d=hyper.active?24:camDist+speedFx*18;
+  const d=THREE.MathUtils.clamp(camDist+speedFx*1.5,3.8,7.0); // Keep JC framed during ascent and hyperspeed
   const desired=target.clone().add(new THREE.Vector3(
     Math.sin(camYaw)*Math.cos(camPitch)*d,
     Math.sin(camPitch)*d+0.55,
@@ -3142,7 +3142,7 @@ function updateCamera(dt){
   }
   camera.position.lerp(desired,1-Math.exp(-(hyper.active?10:7)*dt));
   const powerFov=powerState.secondComing>0?8:(powerState.timeGrace>0?5:0);
-  const targetFov=(hyper.active?94:54+speedFx*30)+powerFov;
+  const targetFov=THREE.MathUtils.clamp(54+speedFx*5+powerFov,50,70); // Prevent flight zoom-out
   camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-5*dt));
   camera.updateProjectionMatrix();
   camera.lookAt(target);

@@ -1,0 +1,45 @@
+name: Deploy JC browser prototype to GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'world/**'
+      - 'jc-the-holy-og-assets/**'
+      - 'real-city-climb-demo.html'
+      - '.github/workflows/jc-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: jc-pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage browser build
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          grep -q 'type="module"' index.html
+          mkdir -p _site
+          cp index.html _site/index.html
+          for path in world jc-the-holy-og-assets; do
+            if [ -d "$path" ]; then cp -a "$path" "_site/$path"; fi
+          done
+          if [ -f real-city-climb-demo.html ]; then cp real-city-climb-demo.html _site/; fi
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

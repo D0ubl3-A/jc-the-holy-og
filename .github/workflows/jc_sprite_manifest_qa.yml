@@ -1,0 +1,24 @@
+name: JC Sprite Manifest Integrity
+on:
+  push:
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/tools/validate_sprite_manifest.py'
+      - '.github/workflows/jc_sprite_manifest_qa.yml'
+  pull_request:
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/tools/validate_sprite_manifest.py'
+  workflow_dispatch:
+jobs:
+  validate-manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify numbered manifest and release gates
+        run: python production/sprites/tools/validate_sprite_manifest.py production/sprites/manifest_0001-2000.json

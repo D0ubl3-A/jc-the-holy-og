@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032 — native individual Savior rerenders; then 0013-0020 remediation",
+  "next_batch": "0021-0032 individual native-resolution Savior sprites",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -333,7 +333,21 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0021_jc_savior_neutral_front.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run19_preview_variant": {
+        "filename": "0021_jc_savior_neutral_front_REFERENCE_DERIVED.png",
+        "sha256": "b8d0ff018a225cceaf24e652e6cd51cb0c2822585847452ad4b8c52b127e8131",
+        "source_detail_px": [
+          193,
+          432
+        ],
+        "preview_dimensions_px": [
+          512,
+          768
+        ],
+        "status": "generated_unverified_reference_derived",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0022",
@@ -378,7 +392,21 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0024_jc_savior_neutral_back.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run19_preview_variant": {
+        "filename": "0024_jc_savior_neutral_back_REFERENCE_DERIVED.png",
+        "sha256": "70a2e14dbdb3ee602def7292de1a82be49abd9a6e464ab03be9ca02250633b66",
+        "source_detail_px": [
+          178,
+          432
+        ],
+        "preview_dimensions_px": [
+          512,
+          768
+        ],
+        "status": "generated_unverified_reference_derived",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0025",
@@ -393,7 +421,21 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0025_jc_savior_three_quarter_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run19_preview_variant": {
+        "filename": "0025_jc_savior_three_quarter_left_REFERENCE_DERIVED.png",
+        "sha256": "57bae7de8cca498b2ca9b4dec9176b4f4bb0a444d7fc59aec1d0839f735a1c67",
+        "source_detail_px": [
+          197,
+          431
+        ],
+        "preview_dimensions_px": [
+          512,
+          768
+        ],
+        "status": "generated_unverified_reference_derived",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0026",
@@ -408,7 +450,21 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0026_jc_savior_three_quarter_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run19_preview_variant": {
+        "filename": "0026_jc_savior_three_quarter_right_REFERENCE_DERIVED.png",
+        "sha256": "0577ee719ba03cf09f7062fbf40b4781b5535586f65a167507f395e44a6d7c9b",
+        "source_detail_px": [
+          189,
+          433
+        ],
+        "preview_dimensions_px": [
+          512,
+          768
+        ],
+        "status": "generated_unverified_reference_derived",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0027",
@@ -26086,7 +26142,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 18,
+  "latest_run": 19,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26128,5 +26184,20 @@
     "godot4_import": "NOT_RUN",
     "physical_mobile_benchmark": "NOT_RUN",
     "next_batch": "0021–0032"
+  },
+  "run19_summary": {
+    "new_alpha_isolated_preview_pngs": 4,
+    "new_verified_game_ready": 0,
+    "preview_ids": [
+      "0021",
+      "0024",
+      "0025",
+      "0026"
+    ],
+    "preview_binary_uploaded": false,
+    "visual_qa": "reference-derived, not native-resolution",
+    "godot_import": "not_run",
+    "mobile_performance": "not_tested",
+    "next_batch": "0021-0032"
   }
 }

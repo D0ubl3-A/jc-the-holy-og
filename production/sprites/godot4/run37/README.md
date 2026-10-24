@@ -1,8 +1,8 @@
 # Run37 Godot 4 import gate (not yet executed)
-Put twelve independently rendered native RGBA8 PNG masters named `0001_slug.png` to `0012_slug.png` under `production/sprites/godot4/run37/masters/`.
+Put twelve independently rendered native RGBA8 PNG masters named `0001_slug.png` to `0012_slug.png` under `production/sprites/godot4/run37/sprites/masters/`.
 Run from a Godot 4 project root:
 ```
-godot --headless --path . --script res://production/sprites/godot4/run37/qa_import.gd
+godot --headless --path production/sprites/godot4/run37 --script res://qa_import.gd
 ```
 A PASS proves image decode, dimensions and texture creation only. It does NOT verify anatomy, canonical identity, native detail, independent provenance, or actual mobile FPS. Keep all sprites unverified until every release gate is evidenced.
 

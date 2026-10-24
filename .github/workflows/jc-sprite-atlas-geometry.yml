@@ -1,0 +1,49 @@
+name: JC Sprite Atlas Geometry Integrity
+
+on:
+  push:
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - '.github/workflows/jc-sprite-atlas-geometry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate 2000 unique IDs, atlas geometry and ending routes
+        run: |
+          python3 - <<'PY'
+          import collections, json
+          from pathlib import Path
+          p=Path("production/sprites/manifest_0001-2000.json")
+          m=json.loads(p.read_text(encoding="utf-8"))
+          assets=m["assets"]
+          assert len(assets)==2000, "expected exactly 2000 manifest entries"
+          assert [a["id"] for a in assets]==[f"{i:04d}" for i in range(1,2001)], "IDs must be ordered 0001-2000"
+          assert len({a["title"] for a in assets})==2000, "duplicate asset title"
+          assert len({a["slug"] for a in assets})==2000, "duplicate asset slug"
+          counts=dict(collections.Counter(a["category"] for a in assets))
+          assert counts==m["category_targets"], "category allocation mismatch"
+          routes=collections.Counter(a.get("route") for a in assets if a["category"]=="five_endings")
+          assert len(routes)==5 and set(routes.values())=={10}, "five endings must each have 10 entries"
+          for a in assets:
+              grid=a.get("grid",[1,1]); cell=a.get("cell_px"); master=a.get("master_px")
+              frames=a.get("frames",1)
+              assert grid[0]*grid[1]==frames, f'{a["id"]}: grid count != frames'
+              assert [grid[0]*cell[0],grid[1]*cell[1]]==master, f'{a["id"]}: master_px is entire sheet; grid*cell_px mismatch'
+              if a["status"]=="verified":
+                  assert a.get("sha256"), f'{a["id"]}: verified asset lacks hash'
+                  assert a.get("release_evidence"), f'{a["id"]}: verified asset lacks release evidence'
+          statuses=collections.Counter(a["status"] for a in assets)
+          assert statuses["verified"]==m.get("verified_completed",0), "verified count mismatch"
+          assert statuses["generated_unverified"]==m.get("generated_unverified",0), "candidate count mismatch"
+          assert statuses["planned"]==m.get("planned",0), "planned count mismatch"
+          print("PASS: 2000 IDs, unique titles/slugs, category totals, five endings, frame geometry, status accounting")
+          print("verified:",statuses["verified"],"/ 2000; unverified:",statuses["generated_unverified"])
+          print("sample 8-frame atlas 0121:", next(a["master_px"] for a in assets if a["id"]=="0121"))
+          PY

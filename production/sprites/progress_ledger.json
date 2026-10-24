@@ -1,13 +1,13 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 32,
-  "date_utc": "2026-10-24T18:41:05Z",
+  "run": 33,
+  "date_utc": "2026-10-24T19:48:00Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
   "planned_without_archived_candidate": 1968,
   "current_priority_batch": "0001-0012",
-  "next_after_acceptance": "0013-0020 then 0021-0032",
+  "next_after_acceptance": "0013-0020",
   "batch_0001_0012": {
     "archived_candidates": 12,
     "sha256_unique": 12,
@@ -104,5 +104,14 @@
     "godot4_runtime": "not_run",
     "physical_mobile": "not_run",
     "verified_game_ready": 0
+  },
+  "run33_audit_summary": {
+    "candidate_pngs_accessible": 16,
+    "missing_candidate_pngs": 16,
+    "native_master_dimension_pass": 0,
+    "hash_matches": 12,
+    "reference_boards_rejected": 2,
+    "godot4_executed": false,
+    "mobile_test_executed": false
   }
 }

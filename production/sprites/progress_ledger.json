@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 34,
-  "date_utc": "2026-10-24T20:38:48Z",
+  "run": 35,
+  "date_utc": "2026-10-24T21:42:34.273Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -136,5 +136,20 @@
     "physical_mobile": "not_executed",
     "next_batch": "0001-0012",
     "github_actions_success_url": "https://github.com/D0ubl3-A/jc-the-holy-og/actions/runs/40131158919"
+  },
+  "run35_summary": {
+    "actual_png_binaries_audited": 17,
+    "automatic_native_preflight_pass": 0,
+    "unique_sha256": 17,
+    "new_reference_boards_rejected": 1,
+    "new_independent_native_sprites": 0,
+    "new_verified_sprites": 0,
+    "prompts_written": 20,
+    "local_preflight_regression_tests_passed": 6,
+    "godot4_runtime": "not_run",
+    "physical_mobile": "not_run",
+    "reference_sha256": "8562237fcf973eeb1dfb10e901fb1c1be0631625a9b0a037bd1c9ef1380b68f3",
+    "candidate_sources": "Run31 ZIP archive (12 JC 1024x1024, 4 Savior 512x768); Run35 composite 1536x1024",
+    "next_batch": "0001-0012"
   }
 }

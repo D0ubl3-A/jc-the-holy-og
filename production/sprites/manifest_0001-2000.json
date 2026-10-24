@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032: native independent Savior sprites; then 0013-0020 and 0033-0044",
+  "next_batch": "0021–0032: independently render 12 native transparent Savior masters and validate",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -359,6 +359,24 @@
         "pose_visual_review": "tentative_match_unapproved",
         "pose_visual_note": "front neutral plausible, pending QA",
         "binary_in_repository": false
+      },
+      "run22_preview_candidate": {
+        "status": "generated_unverified",
+        "sha256": "f0fbf1517a08c839e0b5daafa866b7bb6ae52a742ed8095f3ef13503c22085d1",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source_panel_px": [
+          256,
+          458
+        ],
+        "package": "JC_Hell_Vegas_Sprite_Production_Run22_2026-10-24.zip",
+        "github_binary_uploaded": false,
+        "visual_pose_review": "PROVISIONAL; no final anatomy approval",
+        "native_master": false,
+        "godot_import": "not_tested",
+        "mobile_benchmark": "not_tested"
       }
     },
     {
@@ -386,6 +404,24 @@
         "pose_visual_review": "pose_mismatch",
         "pose_visual_note": "three-quarter front, not strict left profile",
         "binary_in_repository": false
+      },
+      "run22_preview_candidate": {
+        "status": "generated_unverified",
+        "sha256": "15af2c964f34ece232faa81cf67b0f197fd339a7f9cae8078bbe77ca3412515d",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source_panel_px": [
+          256,
+          458
+        ],
+        "package": "JC_Hell_Vegas_Sprite_Production_Run22_2026-10-24.zip",
+        "github_binary_uploaded": false,
+        "visual_pose_review": "REJECTED: three-quarter rather than true 90-degree profile",
+        "native_master": false,
+        "godot_import": "not_tested",
+        "mobile_benchmark": "not_tested"
       }
     },
     {
@@ -413,6 +449,24 @@
         "pose_visual_review": "pose_mismatch",
         "pose_visual_note": "back three-quarter, not strict right profile",
         "binary_in_repository": false
+      },
+      "run22_preview_candidate": {
+        "status": "generated_unverified",
+        "sha256": "90f879ce9ae5bcc2b2077e448720b11e43b52c59cd862f22f9baa3935f348f51",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source_panel_px": [
+          256,
+          458
+        ],
+        "package": "JC_Hell_Vegas_Sprite_Production_Run22_2026-10-24.zip",
+        "github_binary_uploaded": false,
+        "visual_pose_review": "REJECTED: three-quarter rather than true 90-degree profile",
+        "native_master": false,
+        "godot_import": "not_tested",
+        "mobile_benchmark": "not_tested"
       }
     },
     {
@@ -454,6 +508,24 @@
         "pose_visual_review": "tentative_match_unapproved",
         "pose_visual_note": "back neutral plausible, pending QA",
         "binary_in_repository": false
+      },
+      "run22_preview_candidate": {
+        "status": "generated_unverified",
+        "sha256": "702794180601fd9510d18c87aeac616264fc541e25c507b2e4b4f31eee4b9ec2",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source_panel_px": [
+          256,
+          458
+        ],
+        "package": "JC_Hell_Vegas_Sprite_Production_Run22_2026-10-24.zip",
+        "github_binary_uploaded": false,
+        "visual_pose_review": "PROVISIONAL; no final anatomy approval",
+        "native_master": false,
+        "godot_import": "not_tested",
+        "mobile_benchmark": "not_tested"
       }
     },
     {
@@ -26286,7 +26358,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 21,
+  "latest_run": 22,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26371,5 +26443,14 @@
     "physical_mobile_benchmarks": "NOT EXECUTED",
     "qa_notes": "A labeled composite is not individual sprites. Archived previews are low-detail prototype-only. No promotion to verified.",
     "qa_package": "JC_Hell_Vegas_Sprite_Production_Run21_2026-10-24.zip (conversation attachment; binaries not uploaded to GitHub)"
+  },
+  "run22_summary": {
+    "new_unverified_preview_variants": 4,
+    "new_distinct_candidate_ids": 0,
+    "new_verified": 0,
+    "reference_board_count": 1,
+    "manifest_ids": 2000,
+    "preview_source": "a_wide_composite_reference_sheet_a_clean_studio.png",
+    "notes": "Run22 PNGs in downloadable package, not GitHub; 0022/0023 profile mismatch; Godot/mobile untested."
   }
 }

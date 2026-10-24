@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 33,
-  "date_utc": "2026-10-24T19:48:00Z",
+  "run": 34,
+  "date_utc": "2026-10-24T20:38:48Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -113,5 +113,27 @@
     "reference_boards_rejected": 2,
     "godot4_executed": false,
     "mobile_test_executed": false
+  },
+  "run34_summary": {
+    "manifest_integrity": "2000 contiguous IDs; 11 categories sum to 2000; SHA256 and file paths deduplicated",
+    "verified_completed": 0,
+    "candidate_ids_unverified": 32,
+    "planned_without_candidate": 1968,
+    "reference_composite_generated_rejected": 1,
+    "reference_composite_sha256": "db4d286aadd9bf3faddec495df5e9f51bce9242af001f2e4fe6069be3bf5fc7a",
+    "reference_composite_dimensions": [
+      1448,
+      1086
+    ],
+    "reference_composite_alpha_min": 54,
+    "new_native_independent_sprites": 0,
+    "new_release_gate": "production/sprites/tools/validate_manifest_integrity.py",
+    "regression_tests_added": 5,
+    "github_workflow_added": ".github/workflows/jc-sprite-integrity-v2.yml",
+    "local_structural_test": "pass",
+    "github_actions_run_status": "not_yet_confirmed",
+    "godot4_runtime": "not_executed",
+    "physical_mobile": "not_executed",
+    "next_batch": "0001-0012"
   }
 }

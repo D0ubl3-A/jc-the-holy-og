@@ -1,11 +1,11 @@
 extends SceneTree
 # JC Hell Vegas Run37: fail-closed Godot 4 import probe.
 # Run from a Godot 4 project root:
-# godot --headless --path . --script res://production/sprites/godot4/run37/qa_import.gd
-# Place independent native PNGs in res://production/sprites/godot4/run37/masters/
+# godot --headless --path production/sprites/godot4/run37 --script res://qa_import.gd
+# Place independent native PNGs in res://sprites/masters/
 func _initialize() -> void:
     var failed := 0
-    var folder := "res://production/sprites/godot4/run37/masters/"
+    var folder := "res://sprites/masters/"
     var files := DirAccess.get_files_at(folder)
     for n in range(1, 13):
         var id := "%04d" % n

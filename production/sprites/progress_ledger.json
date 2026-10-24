@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 36,
-  "date_utc": "2026-10-24T22:39:43.974Z",
+  "run": 37,
+  "date_utc": "2026-10-24T23:37:38Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -177,5 +177,25 @@
     "unique_slug_count": 2000,
     "github_actions_workflow_committed": true,
     "github_actions_execution_verified": false
+  },
+  "run37_summary": {
+    "verified_completed": 0,
+    "generated_unverified_candidate_ids": 32,
+    "planned_without_candidate": 1968,
+    "new_composite_reference_boards_generated": 1,
+    "new_individual_reference_crops_not_release_assets": 12,
+    "archived_candidate_and_board_binaries_audited": 13,
+    "native_master_preflight_passes": 0,
+    "original_native_masters_created": 0,
+    "new_verified_sprites": 0,
+    "perceptual_similarity_review_ids": [
+      "0010",
+      "0012"
+    ],
+    "godot4_actual_import": "not_run",
+    "physical_mobile_benchmark": "not_run",
+    "next_batch": "0001-0012",
+    "production_package": "JC_Hell_Vegas_Sprite_Production_Run37_2026-10-24.zip",
+    "note": "No prompts, composites or derived crops count as verified sprites."
   }
 }

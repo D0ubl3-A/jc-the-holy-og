@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 35,
-  "date_utc": "2026-10-24T21:42:34.273Z",
+  "run": 36,
+  "date_utc": "2026-10-24T22:39:43.974Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -151,5 +151,26 @@
     "reference_sha256": "8562237fcf973eeb1dfb10e901fb1c1be0631625a9b0a037bd1c9ef1380b68f3",
     "candidate_sources": "Run31 ZIP archive (12 JC 1024x1024, 4 Savior 512x768); Run35 composite 1536x1024",
     "next_batch": "0001-0012"
+  },
+  "run36_summary": {
+    "verified_new": 0,
+    "verified_total": 0,
+    "archive_candidate_ids": 32,
+    "planned_without_candidates": 1968,
+    "priority_batch": "0001-0012",
+    "next_after_acceptance": "0013-0020",
+    "new_reference_composites_rejected": 3,
+    "binaries_audited": 19,
+    "automatic_native_master_pass": 0,
+    "exact_duplicate_binary_hashes": 0,
+    "independent_native_masters_generated": 0,
+    "regression_tests_passed": 8,
+    "manifest_entries_validated": 2000,
+    "manifest_category_allocations_validated": true,
+    "five_endings_validated": true,
+    "validator_bug_fixed": "Run35 multiplied master_px by grid although master_px already denotes full atlas; Run36 checks grid*cell_px==master_px",
+    "godot_runtime_tested": false,
+    "physical_mobile_tested": false,
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run36_2026-10-24.zip"
   }
 }

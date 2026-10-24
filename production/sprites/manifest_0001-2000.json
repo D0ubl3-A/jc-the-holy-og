@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 independent native JC masters (blocked); 0013-0020 after acceptance",
+  "next_batch": "0001-0012 independent native JC masters; 0013-0020 only after release gates",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -101,7 +101,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0002",
@@ -185,7 +188,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0003",
@@ -269,7 +275,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0004",
@@ -352,7 +361,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0005",
@@ -435,7 +447,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0006",
@@ -518,7 +533,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0007",
@@ -601,7 +619,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0008",
@@ -684,7 +705,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0009",
@@ -767,7 +791,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0010",
@@ -850,7 +877,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0011",
@@ -933,7 +963,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0012",
@@ -1016,7 +1049,10 @@
       "run30_priority": "REPLACE_NATIVE_MASTER",
       "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
       "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "NEXT_UNCOMPLETED_NATIVE_MASTER",
+      "run36_verified": false,
+      "run36_rejected_reference_composites_not_counted": true
     },
     {
       "id": "0013",
@@ -1035,7 +1071,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0014",
@@ -1054,7 +1092,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0015",
@@ -1073,7 +1113,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0016",
@@ -1092,7 +1134,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0017",
@@ -1111,7 +1155,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0018",
@@ -1130,7 +1176,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0019",
@@ -1149,7 +1197,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0020",
@@ -1168,7 +1218,9 @@
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
       "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
       "run31_binary_accessibility": "not_present_in_available_archives",
-      "run31_verified": false
+      "run31_verified": false,
+      "run36_priority": "STAGED_AFTER_0001_0012_ACCEPTANCE",
+      "run36_verified": false
     },
     {
       "id": "0021",
@@ -29300,7 +29352,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 35,
+  "latest_run": 36,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -29454,7 +29506,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T21:42:22.105Z",
+  "last_updated_utc": "2026-10-24T22:39:43.974Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -29602,5 +29654,26 @@
     "physical_mobile_benchmark_executed": false,
     "package": "JC_Hell_Vegas_Sprite_Production_Run35_2026-10-24.zip",
     "note": "ImageGen produced a 12-panel contact sheet. It is a reference, not independent native masters. All verified counts remain zero."
+  },
+  "run36_summary": {
+    "verified_new": 0,
+    "verified_total": 0,
+    "archive_candidate_ids": 32,
+    "planned_without_candidates": 1968,
+    "priority_batch": "0001-0012",
+    "next_after_acceptance": "0013-0020",
+    "new_reference_composites_rejected": 3,
+    "binaries_audited": 19,
+    "automatic_native_master_pass": 0,
+    "exact_duplicate_binary_hashes": 0,
+    "independent_native_masters_generated": 0,
+    "regression_tests_passed": 8,
+    "manifest_entries_validated": 2000,
+    "manifest_category_allocations_validated": true,
+    "five_endings_validated": true,
+    "validator_bug_fixed": "Run35 multiplied master_px by grid although master_px already denotes full atlas; Run36 checks grid*cell_px==master_px",
+    "godot_runtime_tested": false,
+    "physical_mobile_tested": false,
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run36_2026-10-24.zip"
   }
 }

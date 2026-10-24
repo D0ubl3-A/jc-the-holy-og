@@ -1,15 +1,31 @@
-# Hell Vegas sprite production — 2,000 asset registry
+# JC: The Holy OG — Hell Vegas sprite production
 
-**Current verified count: 0 / 2,000** (2026-10-23). **Next batch: 0001–0012**.
+**Verified game-ready: 0 / 2,000 (2026-10-24).** Archived candidate IDs: **32** (all unverified). Planned without candidates: **1,968**.
 
-This directory holds the canonical, deduplicated numbered manifest for JC: The Holy OG. Do not infer completion from concept art, image-generation prompts, old archives or presentation boards. Every verified record needs a unique isolated binary PNG, SHA-256, dimensions/alpha QA, human anatomy/frame review and a Godot 4 mobile test.
+The canonical manifest is `manifest_0001-2000.json`, containing 2,000 contiguous unique IDs and 11 category allocations. Its status fields are the source of truth, not labels printed in generated artwork.
 
-The first twelve full-body JC base poses use a locked 6-foot, average-build, brown-haired, short-bearded character in a white hoodie, blue jeans and white sneakers. Five route transformations preserve the same facial identity.
+## Next production batch: 0021–0032
 
-**Export:** static master 1024×1024 RGBA PNG, 8% padding; 8-frame animations 4×2 cells at 512 px each (2048×1024); 12-frame animations 4×3 (2048×1536); mobile atlas maximum 2048 px per side; LOD derivatives 512/256/128; use AnimatedSprite2D/3D or Sprite3D impostors in Godot 4, with selective streaming.
+Replace twelve JC Savior reference-derived candidates with **twelve independent source-native 1024×1536 transparent RGBA PNGs**, one per exact manifest ID. The manifest maps 0021 front, 0022 left profile, 0023 right profile, 0024 back, 0025 three-quarter left, 0026 three-quarter right, 0027 relaxed idle, 0028 alert idle, 0029/0030 dual aim left/right, 0031/0032 dual fire left/right. Do not substitute a 12-panel contact sheet or mislabel these as a walking sequence.
 
-**Provisional runtime gates:** representative low-tier phone ≥30 FPS, mid-tier ≥60 FPS, active sprite texture residency target ≤64 MiB. These are targets, not measured results.
+JC is an average-height, long-brown-haired, bearded adult in a white hoodie, ripped white jeans and white sneakers with gold pistols. No sunglasses or baseball cap. Maintain the same identity, anatomy, proportions, camera, scale, foot baseline, and weapon model across assets and five transformation routes.
 
-**Anatomy and QA:** no cropped limbs/wings/vehicles, extra fingers, broken weapon grips, face morphing, baked checkerboards, wrong ground baselines, repeated frames or near-duplicates. Automated checks do not replace visual sign-off.
+## Non-negotiable release gates
 
-**Counting rule:** one verified atlas = one asset, not eight or twelve. Never count prompts, briefs or concept sheets.
+- **Image provenance:** independent native-detail source PNG, not an upscaled crop of a collage. Retain generation job ID and source hash.
+- **Pixel QA:** dimensions, real alpha (where required), >=2% transparent silhouette safety margin, no truncated limbs or guns, verified SHA-256 and deduplication.
+- **Visual QA:** actual human review of anatomy, face, clothing, orientation, full body, hand-to-weapon grip, consistent character identity and frame continuity.
+- **Godot 4:** actual import log and alpha-fringe check. Use Sprite2D/AnimatedSprite2D or Sprite3D as appropriate; keep mobile atlases <=2048 px and extrude edges.
+- **Mobile QA:** measured device logs. Targets: low-tier Android >=30 FPS, mid-tier >=60 FPS, active sprite texture residency <=64 MiB. These are **targets**, not current measurements.
+- **Evidence:** verified entries require existing QA evidence files in the repository, source-native approval, human visual approval, Godot import pass, mobile device pass and the actual PNG binary with matching hash. CI enforces the machine-verifiable parts; no computer vision or automated checks can certify human anatomy.
+
+A single 1024×1536 RGBA8 image is ~6 MiB uncompressed, twelve ~72 MiB before mipmaps. Generate 512×768 (~1.5 MiB each) and 256×384 LODs from approved masters. Test compressed textures on physical hardware.
+
+## Production order
+
+1. 0021–0032 native Savior masters (all remain unverified).
+2. Repair 0013–0020 reference crops.
+3. 0033–0044 Savior extensions and next transformation.
+4. Continue through 2000 only as independently accepted evidence allows.
+
+**Do not count** briefs, prompts, composites, atlases, thumbnails, or PNGs that have not passed all release gates as verified sprites.

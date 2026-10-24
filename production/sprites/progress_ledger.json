@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 30,
+  "run": 31,
   "date_utc": "2026-10-24T16:35:00Z",
   "verified_completed": 0,
   "target": 2000,
@@ -74,5 +74,20 @@
     "godot4_runtime_executed": false,
     "physical_mobile_benchmark_executed": false,
     "original_2026_10_23_user_face_photo_available": false
+  },
+  "run31_summary": {
+    "accessible_candidate_or_preview_binaries": 16,
+    "registered_candidate_ids_without_binary": 16,
+    "new_verified": 0,
+    "new_native": 0,
+    "reference_sheets_rejected": 2,
+    "new_single_sprite_prompts": 12,
+    "next_batch_prepared_prompts": 8,
+    "all_2000_manifest_ids_unique": true,
+    "categories_sum_to_2000": true,
+    "godot4_test": "not_run",
+    "physical_mobile_test": "not_run",
+    "canonical_face_photo": "not_available",
+    "next_priority": "0001-0012"
   }
 }

@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 27,
-  "date_utc": "2026-10-24T13:40:00Z",
+  "run": 28,
+  "date_utc": "2026-10-24T14:37:38Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -11,16 +11,22 @@
   "batch_0001_0012": {
     "archived_candidates": 12,
     "new_native_masters": 0,
-    "sha256_unique": 12,
+    "sha256_matches": 12,
+    "development_lod_generated_unverified": 12,
+    "lod_unique_hashes": 12,
+    "lod_alpha_margin_pass": 12,
     "native_1024x1536_dimensions_pass": 0,
-    "anatomy_identity_camera_approved": 0,
+    "canonical_identity_pass": 0,
     "godot4_runtime_import_verified": 0,
     "physical_mobile_benchmark_verified": 0,
     "fully_verified": 0
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
-  "new_composite_boards_rejected": 3,
+  "new_composite_boards_rejected": 2,
   "prompts_written": 12,
-  "new_visuals_are_reference_only": true
+  "new_visuals_are_reference_only": true,
+  "new_development_lod_previews_unverified": 12,
+  "new_lod_sha256_unique": 12,
+  "audit": "Run28 ZIP: qa/run28_candidate_lod_audit.json"
 }

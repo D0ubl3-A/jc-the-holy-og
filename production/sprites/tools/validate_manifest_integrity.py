@@ -40,6 +40,10 @@ def audit(manifest_path,ledger_path=None,repo_root=None):
     if len(paths)!=len(set(paths)): errors.append("duplicate asset file paths")
     if len(hashes)!=len(set(hashes)): errors.append("duplicate asset SHA-256 hashes")
     if any(not re.fullmatch("[0-9a-f]{64}",h) for h in hashes): errors.append("invalid SHA-256")
+    archive_hashes=[x.get("run29_archived_candidate_audit",{}).get("sha256_archived_binary") for x in a]
+    archive_hashes=[h for h in archive_hashes if h]
+    if len(archive_hashes)!=len(set(archive_hashes)): errors.append("duplicate archived candidate SHA-256 hashes")
+    if any(not re.fullmatch("[0-9a-f]{64}",h) for h in archive_hashes): errors.append("invalid archived candidate SHA-256")
     if ledger_path:
         ledger=json.loads(Path(ledger_path).read_text(encoding="utf-8"))
         if ledger.get("verified_completed")!=counts["verified"] or ledger.get("target")!=TARGET:

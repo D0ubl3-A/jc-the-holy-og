@@ -3,9 +3,9 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 — native independent 1024x1536 transparent masters; Godot + physical mobile QA pending",
+  "next_batch": "0001-0012 — independently rendered 1024x1536 RGBA masters; visual/Godot/physical mobile release gates pending",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
-  "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
+  "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
   "category_targets": {
     "jc_route_transformations": 120,
     "locomotion_combat_flying": 380,
@@ -48,7 +48,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0001_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0001_jc_base_neutral_front_DEV_LOD_512x768.png",
         "sha256": "c7db6242b9a6742737f7af2fbbd0126f768adf6d921887be90617c9f5feab11e",
         "size_px": [
           512,
@@ -68,6 +68,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "5b6c92d910154d8cda73d5a523766881d78e271744fdded6f681832e14a3d613",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -98,7 +113,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0002_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0002_jc_base_neutral_left_profile_DEV_LOD_512x768.png",
         "sha256": "db8e8da773f34e3273963dc3e13bdbecba567ae8284950bf41e21b39b4e71533",
         "size_px": [
           512,
@@ -119,7 +134,22 @@
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
       },
-      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render."
+      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render.",
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "b11082267a15c0f674ca633361c3a3d0c98ef8433d256093cb55104b4d9e8f51",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0003",
@@ -149,7 +179,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0003_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0003_jc_base_neutral_right_profile_DEV_LOD_512x768.png",
         "sha256": "fa58096be5bd5908c24153e9d5e4637dd3f3d01b64ad18ac88244c56f3edf82b",
         "size_px": [
           512,
@@ -170,7 +200,22 @@
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
       },
-      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render."
+      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render.",
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "339e125b4fdefdc69e32a5f62dc1eb7ea38d316d82410301a7764fe898f5f036",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0004",
@@ -200,7 +245,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0004_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0004_jc_base_neutral_back_DEV_LOD_512x768.png",
         "sha256": "8651e6a4d9e6d691e2a84613e3eb072f135389932ac22211c3cd332457a38327",
         "size_px": [
           512,
@@ -220,6 +265,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "e4b0c1b9734865e3181bbb55bfdf5ea70292b26bdc7a8ff5facd1403ec102e0e",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -250,7 +310,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0005_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0005_jc_base_three_quarter_left_DEV_LOD_512x768.png",
         "sha256": "562d7afcd9ddf50fc14a9f43aa7445d56ec3d5435a7f8c2319695a40c713de1f",
         "size_px": [
           512,
@@ -270,6 +330,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "835d86ce850f4c266b105b53b393b1be254d751bab7e9d1c5350b103d97f02ec",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -300,7 +375,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0006_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0006_jc_base_three_quarter_right_DEV_LOD_512x768.png",
         "sha256": "c6abca639af6fcccd8fb3eb4ebca979b4bbf7d88dbe144ccc0602f696ee33c91",
         "size_px": [
           512,
@@ -320,6 +395,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "76fbd2ea04c9afba7b3f27270d10dad9cd44daac5365e7d4680797317f80cebd",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -350,7 +440,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0007_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0007_jc_base_idle_relaxed_DEV_LOD_512x768.png",
         "sha256": "08faf26fc9d1597030b1870aabc95a54dc6373af2714c1e255f66338a8d69867",
         "size_px": [
           512,
@@ -370,6 +460,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "7cafdd1f3020581df30cecf74fdec3748126b4efe59b5b675ca7b3f0c9445c3a",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -400,7 +505,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0008_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0008_jc_base_idle_alert_DEV_LOD_512x768.png",
         "sha256": "22e59ae51dda3302b1fb731b49b6b12a722be8a78de9affbe4056f53f429d1fc",
         "size_px": [
           512,
@@ -420,6 +525,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "65ad00dde192c72901e4ec53a7b8c8050a6baf64f6c7cdb205dc1d2ac3be63ee",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -450,7 +570,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0009_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0009_jc_base_dual_pistols_aim_left_DEV_LOD_512x768.png",
         "sha256": "55d9f04eb2f429dfb68546e2e7ad56be1aa517b27541e6c514202f53272c078c",
         "size_px": [
           512,
@@ -470,6 +590,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "118a92f3fb55ccbfb857bfbce6bb039a8cca3d8d7bffa16d6860786b6035ada8",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -500,7 +635,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0010_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0010_jc_base_dual_pistols_aim_right_DEV_LOD_512x768.png",
         "sha256": "2f72c174eade75e009b8043590f5fc958346c19bada34f542eb0c494f9d814bf",
         "size_px": [
           512,
@@ -520,6 +655,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "2d38395b192936e0f0dfda42f740c81e7be6e412dd8dfa5da03f081e4ca7ce50",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -550,7 +700,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0011_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0011_jc_base_dual_pistols_fire_left_DEV_LOD_512x768.png",
         "sha256": "a101e46c787cef86134ea84abc6c2fda2fec5e69a7bc570fe0ce83e87ad12fa3",
         "size_px": [
           512,
@@ -570,6 +720,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "7ddce9f6fc7d5cb4d5c0f4aa33d0693f58656a9f3fe99d4896dfcf9158ab0a5f",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -600,7 +765,7 @@
       "run26_physical_mobile_qa": "not_tested",
       "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
       "development_lod_run28": {
-        "file_path": "development_lod_unverified/0012_undefined_DEV_LOD_512x768.png",
+        "file_path": "development_lod_unverified/0012_jc_base_dual_pistols_fire_right_DEV_LOD_512x768.png",
         "sha256": "8c2a64ca850530ba17758781874a8f6aaa1b9db6d55c3f1252db0627820f1d23",
         "size_px": [
           512,
@@ -620,6 +785,21 @@
         "godot4_runtime": "not_run",
         "mobile_device_benchmark": "not_run",
         "fully_verified": false
+      },
+      "run29_archived_candidate_audit": {
+        "sha256_archived_binary": "67adef14ca706617cf479c1db468d2d84e2c3556021c2764320f067bcc30fe51",
+        "source_package": "Run28/Run29 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "true_alpha": true,
+        "safe_margin_48px": true,
+        "independent_native_master": false,
+        "canonical_identity_approved": false,
+        "godot4_import_tested": false,
+        "physical_mobile_tested": false,
+        "release_eligible": false
       }
     },
     {
@@ -26856,7 +27036,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 28,
+  "latest_run": 29,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -27010,7 +27190,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T14:37:38Z",
+  "last_updated_utc": "2026-10-24T15:40:00Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -27050,5 +27230,22 @@
     "godot_runtime_executed": false,
     "physical_mobile_benchmark_executed": false,
     "note": "Development LOD PNGs are packaged separately, not uploaded to repository. No asset promoted."
+  },
+  "run29_summary": {
+    "verified_completed": 0,
+    "existing_unverified_ids": 32,
+    "planned_ids": 1968,
+    "archived_candidates_reaudited": 12,
+    "sha256_unique": 12,
+    "true_alpha_pass": 12,
+    "safe_margin_48px_pass": 12,
+    "native_1024x1536_master_pass": 0,
+    "new_native_independent_sprites": 0,
+    "rejected_composite_reference_boards": 1,
+    "single_asset_prompts_prepared": 12,
+    "godot4_runtime_tested": false,
+    "physical_mobile_tested": false,
+    "next_priority": "0001-0012",
+    "original_facial_photo_reverification": "pending"
   }
 }

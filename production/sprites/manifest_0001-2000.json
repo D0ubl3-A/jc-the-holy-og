@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021–0032: render 12 independent native Savior masters; verify before promotion",
+  "next_batch": "0021-0032: 12 independent native-source Savior renders, one 1024x1536 transparent PNG per ID",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -26358,8 +26358,8 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 23,
-  "last_updated_local": "2026-10-23T20:40:59-07:00",
+  "latest_run": 24,
+  "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
     "archived_unverified_candidate_ids": 32,
@@ -26481,5 +26481,19 @@
     "visual_pose_mismatches": 9,
     "canonical_identity_mismatches": 12,
     "visual_release_qa": "FAIL"
+  },
+  "run24_summary": {
+    "verified_completed": 0,
+    "generated_unverified": 32,
+    "planned": 1968,
+    "new_generated_composite_reference_boards": 1,
+    "new_independent_native_source_pngs": 0,
+    "new_verified_assets": 0,
+    "candidate_archive_hashes_checked": 32,
+    "candidate_archive_hashes_matching": 32,
+    "candidate_archive_transparent_corners_4of4": 24,
+    "source_native_anatomy_godot_mobile": "not_verified",
+    "reference_board_printed_12_verified": "false_claim_not_counted",
+    "next_batch": "0021-0032"
   }
 }

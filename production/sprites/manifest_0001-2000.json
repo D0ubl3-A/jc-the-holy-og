@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 — JC Base: replace 12 1024x1024 upscaled composite cutouts with 12 independent native 1024x1536 transparent masters; preserve uncovered hair, face, and exact camera angles.",
+  "next_batch": "0001-0012 — replace JC Base composite-derived candidates with independent native 1024x1536 transparent masters",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -26590,7 +26590,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 26,
+  "latest_run": 27,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26744,7 +26744,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T12:39:00Z",
+  "last_updated_utc": "2026-10-24T13:40:00Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -26760,5 +26760,15 @@
     "physical_mobile_test": "not_run_no_device",
     "result": "No assets promoted to verified. Reference boards are not assets.",
     "priority_correction": "Earlier runs focused on 0021-0032; canonical first-unverified priority is 0001-0012."
+  },
+  "run27_summary": {
+    "verified": 0,
+    "archived_candidates_audited": 32,
+    "new_native_isolated_assets": 0,
+    "new_composite_boards_rejected": 3,
+    "prompts_generated": 12,
+    "godot4_runtime": "not_executed",
+    "physical_mobile_benchmark": "not_executed",
+    "priority_batch": "0001-0012"
   }
 }

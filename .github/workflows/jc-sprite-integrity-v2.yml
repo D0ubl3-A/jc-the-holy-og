@@ -1,0 +1,42 @@
+name: JC Sprite Manifest Integrity v2
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production/sprites/**'
+      - '.github/workflows/jc-sprite-integrity-v2.yml'
+  pull_request:
+    paths:
+      - 'production/sprites/**'
+      - '.github/workflows/jc-sprite-integrity-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manifest-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PNG inspection dependency
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Validate registry, native sprite evidence and deduplication
+        run: |
+          python production/sprites/tools/validate_manifest_integrity.py \
+            --manifest production/sprites/manifest_0001-2000.json \
+            --ledger production/sprites/progress_ledger.json \
+            --repo-root . \
+            --json-report production/sprites/qa/latest_integrity_report.json
+      - name: Regression tests
+        run: python -m unittest discover -s production/sprites/tools -p 'test_manifest_integrity.py' -v
+      - name: Upload integrity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-sprite-integrity-report
+          path: production/sprites/qa/latest_integrity_report.json
+          if-no-files-found: warn

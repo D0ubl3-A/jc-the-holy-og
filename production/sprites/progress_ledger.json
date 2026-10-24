@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 29,
-  "date_utc": "2026-10-24T15:40:00Z",
+  "run": 30,
+  "date_utc": "2026-10-24T16:35:00Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -22,7 +22,7 @@
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
-  "new_composite_boards_rejected": 1,
+  "new_composite_boards_rejected": 2,
   "prompts_written": 12,
   "new_visuals_are_reference_only": true,
   "new_development_lod_previews_unverified": 12,
@@ -44,5 +44,35 @@
     "facial_reference_signoff": "pending",
     "canonical_outfit": "uncovered long brown hair, beard, white hoodie, white jeans, white sneakers, two gold pistols; no cap",
     "next_priority": "0001-0012"
+  },
+  "source_manifest": "Run29 verified current in GitHub; local Run29 ZIP",
+  "release_gates": [
+    "independent_native_render",
+    "native_texture_detail",
+    "dimensions_rgba",
+    "true_alpha",
+    "48px_margin",
+    "correct_camera",
+    "identity_visual_signoff",
+    "anatomy_weapon_signoff",
+    "animation_alignment_signoff",
+    "distinct_sha256_and_semantics",
+    "godot4_import_pass",
+    "physical_mobile_60fps_pass"
+  ],
+  "run30_summary": {
+    "verified_completed": 0,
+    "candidate_ids_preserved": 32,
+    "locally_reaudited_png_files": 12,
+    "candidate_hash_matches": 12,
+    "candidate_hashes_distinct": 12,
+    "native_independent_1024x1536_masters": 0,
+    "reference_boards_rejected": 2,
+    "new_native_assets": 0,
+    "new_verified_assets": 0,
+    "batch": "0001-0012",
+    "godot4_runtime_executed": false,
+    "physical_mobile_benchmark_executed": false,
+    "original_2026_10_23_user_face_photo_available": false
   }
 }

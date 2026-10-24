@@ -1,0 +1,10 @@
+# Godot 4 — Sprite Import, Validation, and Mobile Release Gate (Run31)
+
+- **Master:** one independently rendered 1024×1536 RGBA8 sRGB PNG per ID, straight transparent alpha, no baked backdrop or labels. Do not accept upscaled composite crops. Preserve source-generation metadata and SHA-256.
+- **Canvas:** character anchored consistently at x=512, standing feet baseline y=1440, at least 48px clear alpha margin around all hair, shoes, hands and complete weapons. Lock camera direction, character scale, proportions, outfit and lighting across animations.
+- **Godot:** import as Texture2D / CompressedTexture2D, repeat disabled; for photorealistic 2D scaling use linear filtering rather than pixel-art nearest. Evaluate mipmaps based on actual zoom and device behavior. Use Sprite2D with explicit bottom-center pivot and per-frame duration/event metadata. Verify orientation, transparency halos, silhouette, collision alignment and animation jitter in a running Godot 4 scene.
+- **VRAM:** RGBA8 1024×1536 uses 6 MiB uncompressed per texture. Twelve simultaneous textures are 72 MiB, before mipmaps and overhead; all 2,000 would occupy about 11.72 GiB. Stream, atlas judiciously and load LOD textures for distant NPCs. Downsample only from approved masters; LOD does not prove master resolution.
+- **Mobile benchmark:** record 120 seconds of representative gameplay on an identified midrange Android device; target 60 FPS with p95 frame time <=16.7ms, no texture-upload spike >50ms, and report peak GPU texture residency, system memory and alpha overdraw. A separate 30 FPS tier may be documented but cannot be labeled a 60 FPS pass.
+- **Release gate:** binary checks (dimensions, alpha, 48px margins, unique SHA-256) PLUS human visual review (canonical face, anatomy, exact view, both weapons, frame consistency) PLUS successful Godot 4 import PLUS physical mobile benchmark. Never mark verified from a prompt, composite, resized cutout, or an unexecuted test.
+
+**Run31 actual execution:** Godot runtime NOT RUN; mobile hardware benchmark NOT RUN; 0/2000 verified.

@@ -128,12 +128,13 @@
     "reference_composite_alpha_min": 54,
     "new_native_independent_sprites": 0,
     "new_release_gate": "production/sprites/tools/validate_manifest_integrity.py",
-    "regression_tests_added": 5,
+    "regression_tests_added": 6,
     "github_workflow_added": ".github/workflows/jc-sprite-integrity-v2.yml",
     "local_structural_test": "pass",
-    "github_actions_run_status": "not_yet_confirmed",
+    "github_actions_run_status": "success",
     "godot4_runtime": "not_executed",
     "physical_mobile": "not_executed",
-    "next_batch": "0001-0012"
+    "next_batch": "0001-0012",
+    "github_actions_success_url": "https://github.com/D0ubl3-A/jc-the-holy-og/actions/runs/40131158919"
   }
 }

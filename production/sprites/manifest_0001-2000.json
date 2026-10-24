@@ -26477,6 +26477,9 @@
     "atlas_godot_import": "not_executed",
     "physical_mobile_benchmark": "not_executed",
     "new_binary_pngs_pushed_to_github": 0,
-    "package": "JC_Hell_Vegas_Sprite_Production_Run23_2026-10-24.zip"
+    "package": "JC_Hell_Vegas_Sprite_Production_Run23_2026-10-24.zip",
+    "visual_pose_mismatches": 9,
+    "canonical_identity_mismatches": 12,
+    "visual_release_qa": "FAIL"
   }
 }

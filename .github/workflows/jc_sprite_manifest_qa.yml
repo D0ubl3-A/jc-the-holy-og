@@ -20,5 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install PNG validation dependency
+        run: python -m pip install Pillow==12.3.0
       - name: Verify numbered manifest and release gates
         run: python production/sprites/tools/validate_sprite_manifest.py production/sprites/manifest_0001-2000.json

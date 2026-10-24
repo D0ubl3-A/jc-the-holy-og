@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 — replace JC Base composite-derived candidates with independent native 1024x1536 transparent masters",
+  "next_batch": "0001-0012 — native independent 1024x1536 transparent masters; Godot + physical mobile QA pending",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -46,7 +46,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0001_undefined_DEV_LOD_512x768.png",
+        "sha256": "c7db6242b9a6742737f7af2fbbd0126f768adf6d921887be90617c9f5feab11e",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0002",
@@ -74,7 +96,30 @@
       "run26_camera_qa": "fail_label_direction",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0002_undefined_DEV_LOD_512x768.png",
+        "sha256": "db8e8da773f34e3273963dc3e13bdbecba567ae8284950bf41e21b39b4e71533",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      },
+      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render."
     },
     {
       "id": "0003",
@@ -102,7 +147,30 @@
       "run26_camera_qa": "fail_label_direction",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0003_undefined_DEV_LOD_512x768.png",
+        "sha256": "fa58096be5bd5908c24153e9d5e4637dd3f3d01b64ad18ac88244c56f3edf82b",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      },
+      "run28_directional_qa": "Screen-left/screen-right orientation appears swapped; reject pending corrected native render."
     },
     {
       "id": "0004",
@@ -130,7 +198,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0004_undefined_DEV_LOD_512x768.png",
+        "sha256": "8651e6a4d9e6d691e2a84613e3eb072f135389932ac22211c3cd332457a38327",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0005",
@@ -158,7 +248,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0005_undefined_DEV_LOD_512x768.png",
+        "sha256": "562d7afcd9ddf50fc14a9f43aa7445d56ec3d5435a7f8c2319695a40c713de1f",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0006",
@@ -186,7 +298,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0006_undefined_DEV_LOD_512x768.png",
+        "sha256": "c6abca639af6fcccd8fb3eb4ebca979b4bbf7d88dbe144ccc0602f696ee33c91",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0007",
@@ -214,7 +348,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0007_undefined_DEV_LOD_512x768.png",
+        "sha256": "08faf26fc9d1597030b1870aabc95a54dc6373af2714c1e255f66338a8d69867",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0008",
@@ -242,7 +398,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0008_undefined_DEV_LOD_512x768.png",
+        "sha256": "22e59ae51dda3302b1fb731b49b6b12a722be8a78de9affbe4056f53f429d1fc",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0009",
@@ -270,7 +448,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0009_undefined_DEV_LOD_512x768.png",
+        "sha256": "55d9f04eb2f429dfb68546e2e7ad56be1aa517b27541e6c514202f53272c078c",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0010",
@@ -298,7 +498,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0010_undefined_DEV_LOD_512x768.png",
+        "sha256": "2f72c174eade75e009b8043590f5fc958346c19bada34f542eb0c494f9d814bf",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0011",
@@ -326,7 +548,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0011_undefined_DEV_LOD_512x768.png",
+        "sha256": "a101e46c787cef86134ea84abc6c2fda2fec5e69a7bc570fe0ce83e87ad12fa3",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0012",
@@ -354,7 +598,29 @@
       "run26_camera_qa": "unverified",
       "run26_godot_runtime_qa": "not_tested",
       "run26_physical_mobile_qa": "not_tested",
-      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face.",
+      "development_lod_run28": {
+        "file_path": "development_lod_unverified/0012_undefined_DEV_LOD_512x768.png",
+        "sha256": "8c2a64ca850530ba17758781874a8f6aaa1b9db6d55c3f1252db0627820f1d23",
+        "size_px": [
+          512,
+          768
+        ],
+        "origin": "Derived from low-resolution archived composite crop; NOT native-resolution master",
+        "release_eligible": false,
+        "automated_alpha_margins_pass": true,
+        "binary_location": "Run28 ZIP package only; not committed to GitHub"
+      },
+      "release_gates_run28": {
+        "source_native_detail": false,
+        "canonical_identity": false,
+        "strict_camera_view": "unverified",
+        "complete_anatomy_weapons": "unverified",
+        "alpha_margin_preview": true,
+        "godot4_runtime": "not_run",
+        "mobile_device_benchmark": "not_run",
+        "fully_verified": false
+      }
     },
     {
       "id": "0013",
@@ -26590,7 +26856,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 27,
+  "latest_run": 28,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26744,7 +27010,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T13:40:00Z",
+  "last_updated_utc": "2026-10-24T14:37:38Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -26770,5 +27036,19 @@
     "godot4_runtime": "not_executed",
     "physical_mobile_benchmark": "not_executed",
     "priority_batch": "0001-0012"
+  },
+  "run28_summary": {
+    "new_verified_sprites": 0,
+    "verified_total": 0,
+    "new_independent_native_sprites": 0,
+    "new_unverified_development_lod_pngs": 12,
+    "new_composite_reference_boards_rejected": 2,
+    "source_candidates_sha_verified": 12,
+    "lod_sha_unique": 12,
+    "lod_alpha_margin_pass": 12,
+    "native_resolution_master_pass": 0,
+    "godot_runtime_executed": false,
+    "physical_mobile_benchmark_executed": false,
+    "note": "Development LOD PNGs are packaged separately, not uploaded to repository. No asset promoted."
   }
 }

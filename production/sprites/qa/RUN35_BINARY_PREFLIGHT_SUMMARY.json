@@ -1,0 +1,62 @@
+{
+  "schema": "jc-run35-binary-preflight-summary-v1",
+  "date": "2026-10-24",
+  "verified_completed": 0,
+  "target": 2000,
+  "inspected": 17,
+  "automatic_native_master_pass": 0,
+  "unique_sha256": 17,
+  "groups": [
+    {
+      "group": "archived JC candidate PNGs",
+      "count": 12,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "expected": [
+        1024,
+        1536
+      ],
+      "release_eligible": 0
+    },
+    {
+      "group": "Savior preview PNGs",
+      "count": 4,
+      "dimensions": [
+        512,
+        768
+      ],
+      "expected": [
+        1024,
+        1536
+      ],
+      "release_eligible": 0
+    },
+    {
+      "group": "new image generation composite",
+      "count": 1,
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "expected": [
+        1024,
+        1536
+      ],
+      "alpha_min": 1,
+      "alpha_max": 253,
+      "fully_transparent_percent": 0,
+      "fully_opaque_percent": 0,
+      "sha256": "8562237fcf973eeb1dfb10e901fb1c1be0631625a9b0a037bd1c9ef1380b68f3",
+      "release_eligible": 0
+    }
+  ],
+  "local_regression_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "godot_runtime_test": "not_executed",
+  "physical_mobile_benchmark": "not_executed",
+  "notes": "Summary of actual PNG inspection; full per-file evidence in Run35 downloadable production package. Neither this report nor the prompts count as completed sprites."
+}

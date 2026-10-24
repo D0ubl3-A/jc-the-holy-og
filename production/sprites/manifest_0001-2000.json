@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032 isolated native-detail Savior sprites; LOD prototypes are not verified",
+  "next_batch": "0021-0032: native independent Savior sprites; then 0013-0020 and 0033-0044",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -26286,7 +26286,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 20,
+  "latest_run": 21,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26355,5 +26355,21 @@
     "godot_import": "not executed",
     "mobile_fps": "not measured",
     "binaries_in_github": false
+  },
+  "run21_summary": {
+    "verified_completed": 0,
+    "generated_unverified_ids": 32,
+    "planned_ids_without_candidates": 1968,
+    "archived_512x768_previews_retested": 12,
+    "sha256_matches": 12,
+    "alpha_dimension_margin_checks_passed": 12,
+    "duplicate_preview_hashes": 0,
+    "new_composite_reference_board": 1,
+    "new_independent_native_renders": 0,
+    "new_verified": 0,
+    "godot_import": "NOT EXECUTED",
+    "physical_mobile_benchmarks": "NOT EXECUTED",
+    "qa_notes": "A labeled composite is not individual sprites. Archived previews are low-detail prototype-only. No promotion to verified.",
+    "qa_package": "JC_Hell_Vegas_Sprite_Production_Run21_2026-10-24.zip (conversation attachment; binaries not uploaded to GitHub)"
   }
 }

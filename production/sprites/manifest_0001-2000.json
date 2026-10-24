@@ -3,9 +3,9 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032 (isolated native JC Savior re-renders)",
+  "next_batch": "0021-0032 isolated native Savior rerenders; 0013-0020 remediation next",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
-  "canonical_identity": "JC: 6-foot average-build adult male, messy brown hair, short beard, white hoodie/shirt, blue jeans, white sneakers; keep identity consistent across five transformations.",
+  "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
     "jc_route_transformations": 120,
     "locomotion_combat_flying": 380,
@@ -26086,7 +26086,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 16,
+  "latest_run": 17,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26102,5 +26102,15 @@
     "physical_mobile_tested": false,
     "reference_board_sha256": "47389f537f981eea0cb9094aac55080c42015f4adae8fec548acc347e143e5e0",
     "reference_disposition": "REJECTED: composite infographic with printed, unverified test claims"
+  },
+  "run17_summary": {
+    "verified_completed": 0,
+    "generated_unverified": 32,
+    "planned": 1968,
+    "new_reference_boards": 1,
+    "new_verified_assets": 0,
+    "source_reference": "a_clean_high_resolution_sprite_sheet_style_compos.png (local, NOT uploaded as individual sprites)",
+    "qa": "Composite board not counted; no native PNGs, Godot import or device benchmarks confirmed",
+    "upload_note": "Manifest synchronized; local sprite binaries not uploaded by this commit."
   }
 }

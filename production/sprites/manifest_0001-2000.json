@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032: 12 independent native-source Savior renders, one 1024x1536 transparent PNG per ID",
+  "next_batch": "0021-0032: independently render 12 native 1024x1536 transparent Savior sprites",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -377,6 +377,25 @@
         "native_master": false,
         "godot_import": "not_tested",
         "mobile_benchmark": "not_tested"
+      },
+      "run25_alpha_preview_variant": {
+        "file": "candidates_unverified/0021_savior_front_RUN25_ALPHA_PREVIEW.png",
+        "sha256": "a443f64ce8260f1a29123e38aa072cb8f33bd232b7c438ff7d80bd1aaa87a8dc",
+        "resolution": [
+          512,
+          768
+        ],
+        "source_silhouette_px": [
+          195,
+          446
+        ],
+        "source": "Run25 new composite sheet; extracted with original alpha; source not native 1024x1536",
+        "status": "generated_unverified_preview_only",
+        "pose_qa": "tentative_match",
+        "identity_qa": "fail_red_scarf_and_gold_armor_vs_white_hoodie_jeans",
+        "godot4_import_qa": "not_executed",
+        "mobile_performance_qa": "not_executed",
+        "github_binary_uploaded": false
       }
     },
     {
@@ -422,6 +441,25 @@
         "native_master": false,
         "godot_import": "not_tested",
         "mobile_benchmark": "not_tested"
+      },
+      "run25_alpha_preview_variant": {
+        "file": "candidates_unverified/0022_savior_left_RUN25_ALPHA_PREVIEW.png",
+        "sha256": "3b898f00a1f8918ce8cb32eb3cbc14745bca2592cee992d73f7ee1043a229b94",
+        "resolution": [
+          512,
+          768
+        ],
+        "source_silhouette_px": [
+          166,
+          445
+        ],
+        "source": "Run25 new composite sheet; extracted with original alpha; source not native 1024x1536",
+        "status": "generated_unverified_preview_only",
+        "pose_qa": "tentative_match",
+        "identity_qa": "fail_red_scarf_and_gold_armor_vs_white_hoodie_jeans",
+        "godot4_import_qa": "not_executed",
+        "mobile_performance_qa": "not_executed",
+        "github_binary_uploaded": false
       }
     },
     {
@@ -467,6 +505,25 @@
         "native_master": false,
         "godot_import": "not_tested",
         "mobile_benchmark": "not_tested"
+      },
+      "run25_alpha_preview_variant": {
+        "file": "candidates_unverified/0023_savior_right_RUN25_ALPHA_PREVIEW.png",
+        "sha256": "1a6d0a4bab4bc3c92e0f5c481b3f044264cab7fc2076fd45c24b381009d7651d",
+        "resolution": [
+          512,
+          768
+        ],
+        "source_silhouette_px": [
+          148,
+          445
+        ],
+        "source": "Run25 new composite sheet; extracted with original alpha; source not native 1024x1536",
+        "status": "generated_unverified_preview_only",
+        "pose_qa": "tentative_match",
+        "identity_qa": "fail_red_scarf_and_gold_armor_vs_white_hoodie_jeans",
+        "godot4_import_qa": "not_executed",
+        "mobile_performance_qa": "not_executed",
+        "github_binary_uploaded": false
       }
     },
     {
@@ -526,6 +583,25 @@
         "native_master": false,
         "godot_import": "not_tested",
         "mobile_benchmark": "not_tested"
+      },
+      "run25_alpha_preview_variant": {
+        "file": "candidates_unverified/0024_savior_back_RUN25_ALPHA_PREVIEW.png",
+        "sha256": "48a7ffd943e9353de227babd8f0c8ae3e074d168e17df7852d5a2cf117cb64b6",
+        "resolution": [
+          512,
+          768
+        ],
+        "source_silhouette_px": [
+          203,
+          443
+        ],
+        "source": "Run25 new composite sheet; extracted with original alpha; source not native 1024x1536",
+        "status": "generated_unverified_preview_only",
+        "pose_qa": "tentative_match",
+        "identity_qa": "fail_red_scarf_and_gold_armor_vs_white_hoodie_jeans",
+        "godot4_import_qa": "not_executed",
+        "mobile_performance_qa": "not_executed",
+        "github_binary_uploaded": false
       }
     },
     {
@@ -26358,7 +26434,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 24,
+  "latest_run": 25,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26494,6 +26570,22 @@
     "candidate_archive_transparent_corners_4of4": 24,
     "source_native_anatomy_godot_mobile": "not_verified",
     "reference_board_printed_12_verified": "false_claim_not_counted",
+    "next_batch": "0021-0032"
+  },
+  "run25_summary": {
+    "verified_completed": 0,
+    "distinct_unverified_candidate_ids": 32,
+    "planned_ids_without_candidates": 1968,
+    "new_generated_composite_reference_boards": 1,
+    "new_transparent_preview_variants": 4,
+    "new_verified_assets": 0,
+    "source_alpha_extraction": "true_alpha_not_estimated_segmentation",
+    "source_panel_resolution": "approximately 148-203x443-446 px",
+    "identity_visual_gate": "FAIL_red_scarf_armor_vs_canonical_hoodie_jeans",
+    "archive_sha256_matches": "32/32",
+    "godot4_runtime": "not_executed",
+    "physical_mobile_benchmark": "not_executed",
+    "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   }
 }

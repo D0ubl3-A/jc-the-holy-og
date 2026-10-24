@@ -29300,7 +29300,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 33,
+  "latest_run": 35,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -29454,7 +29454,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T19:48:00Z",
+  "last_updated_utc": "2026-10-24T21:42:22.105Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -29558,6 +29558,13 @@
       "classification": "concept_board_only",
       "verified_sprite_count": 0,
       "reason": "Multi-panel dashboard with unsubstantiated verified/test claims; not an independent sprite."
+    },
+    {
+      "filename": "RUN35_GENERATED_COMPOSITE.png",
+      "sha256": "8562237fcf973eeb1dfb10e901fb1c1be0631625a9b0a037bd1c9ef1380b68f3",
+      "classification": "rejected_composite_reference",
+      "verified_sprite_count": 0,
+      "reason": "Composite image 1536x1024; alpha has zero fully transparent or fully opaque pixels; not twelve independent sprites."
     }
   ],
   "run33_summary": {
@@ -29572,5 +29579,28 @@
     "godot_import_test": "godot4/tools/run33_import_audit.gd (prepared, not executed)",
     "mobile_test": "not executed",
     "next_priority": "0001-0012"
+  },
+  "run35_summary": {
+    "verified_completed": 0,
+    "generated_unverified_candidate_ids": 32,
+    "planned_without_candidate": 1968,
+    "next_batch": "0001-0012",
+    "after_acceptance": "0013-0020",
+    "new_reference_composites_rejected": 1,
+    "reference_sha256": "8562237fcf973eeb1dfb10e901fb1c1be0631625a9b0a037bd1c9ef1380b68f3",
+    "actual_png_binaries_inspected": 17,
+    "distinct_png_sha256": 17,
+    "automatic_native_master_preflight_pass": 0,
+    "archived_jc_1024x1024": 12,
+    "savior_512x768_previews": 4,
+    "new_reference_1536x1024": 1,
+    "reference_alpha_zero_percent": 0,
+    "reference_alpha_opaque_percent": 0,
+    "regression_tests_local_passed": 6,
+    "prompts_written": 20,
+    "godot4_runtime_executed": false,
+    "physical_mobile_benchmark_executed": false,
+    "package": "JC_Hell_Vegas_Sprite_Production_Run35_2026-10-24.zip",
+    "note": "ImageGen produced a 12-panel contact sheet. It is a reference, not independent native masters. All verified counts remain zero."
   }
 }

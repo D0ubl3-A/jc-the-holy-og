@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032 isolated native Savior rerenders; 0013-0020 remediation next",
+  "next_batch": "0021-0032 — native individual Savior rerenders; then 0013-0020 remediation",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -26086,7 +26086,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 17,
+  "latest_run": 18,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26112,5 +26112,21 @@
     "source_reference": "a_clean_high_resolution_sprite_sheet_style_compos.png (local, NOT uploaded as individual sprites)",
     "qa": "Composite board not counted; no native PNGs, Godot import or device benchmarks confirmed",
     "upload_note": "Manifest synchronized; local sprite binaries not uploaded by this commit."
+  },
+  "run18_summary": {
+    "generated_reference_boards": 1,
+    "verified_new_sprites": 0,
+    "existing_candidates_hash_checked": 32,
+    "hash_matches": 32,
+    "exact_duplicates": 0,
+    "reference_board": "a_high_resolution_sprite_sheet_style_image_with_a.png",
+    "reference_board_dimensions": [
+      1536,
+      1024
+    ],
+    "reference_board_gate": "REJECTED composite, captions and backgrounds; pose IDs 0025–0028 do not match canonical manifest",
+    "godot4_import": "NOT_RUN",
+    "physical_mobile_benchmark": "NOT_RUN",
+    "next_batch": "0021–0032"
   }
 }

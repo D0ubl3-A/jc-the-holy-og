@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032 individual native-resolution Savior sprites",
+  "next_batch": "0021-0032 isolated native-detail Savior sprites; LOD prototypes are not verified",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -347,6 +347,18 @@
         ],
         "status": "generated_unverified_reference_derived",
         "binary_in_repository": false
+      },
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0021_jc_savior_neutral_front.png",
+        "sha256": "4d32238064d8f5abb41c5ad396ba3effe73aafe77c2668374567fe05f61a5bf4",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "tentative_match_unapproved",
+        "pose_visual_note": "front neutral plausible, pending QA",
+        "binary_in_repository": false
       }
     },
     {
@@ -362,7 +374,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0022_jc_savior_neutral_left_profile.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0022_jc_savior_neutral_left_profile.png",
+        "sha256": "5ca61c2bb6a16937a617efa51957589360a78abfc9e58fdefdb265447332d587",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "three-quarter front, not strict left profile",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0023",
@@ -377,7 +401,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0023_jc_savior_neutral_right_profile.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0023_jc_savior_neutral_right_profile.png",
+        "sha256": "ad2e83550befbb9620fc10ce686388b2112f4551a657812d57ab2eec6718c20b",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "back three-quarter, not strict right profile",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0024",
@@ -405,6 +441,18 @@
           768
         ],
         "status": "generated_unverified_reference_derived",
+        "binary_in_repository": false
+      },
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0024_jc_savior_neutral_back.png",
+        "sha256": "2f8b0e2e9fc32c2920b0ade2a0af4aec89b0c27f05611faa436db5915dfc4aac",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "tentative_match_unapproved",
+        "pose_visual_note": "back neutral plausible, pending QA",
         "binary_in_repository": false
       }
     },
@@ -435,6 +483,18 @@
         ],
         "status": "generated_unverified_reference_derived",
         "binary_in_repository": false
+      },
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0025_jc_savior_three_quarter_left.png",
+        "sha256": "bf8d697ebdc811a3c75370fef7c5c3fb1db64041513acf0683ecc65551162de5",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "side profile rather than three-quarter left",
+        "binary_in_repository": false
       }
     },
     {
@@ -464,6 +524,18 @@
         ],
         "status": "generated_unverified_reference_derived",
         "binary_in_repository": false
+      },
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0026_jc_savior_three_quarter_right.png",
+        "sha256": "f0936caf2a50b8a62e8b87d45fd3fc24fc573b515609f9b66818d400d5fc7504",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "tentative_match_unapproved",
+        "pose_visual_note": "three-quarter orientation plausible, pending QA",
+        "binary_in_repository": false
       }
     },
     {
@@ -479,7 +551,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0027_jc_savior_idle_relaxed.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0027_jc_savior_idle_relaxed.png",
+        "sha256": "68a55ae2e97bd0ebde54fc7c5dc2feda2fe4cc7691bdcd4430f36dce205e4aad",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "aiming two pistols, not relaxed idle",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0028",
@@ -494,7 +578,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0028_jc_savior_idle_alert.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0028_jc_savior_idle_alert.png",
+        "sha256": "2abc1f5d8ee4038d931aad4b5c4bb562d42ccb768c7b2015c6a039558966612c",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "aiming one pistol, not low-ready alert",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0029",
@@ -509,7 +605,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0029_jc_savior_dual_pistols_aim_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0029_jc_savior_dual_pistols_aim_left.png",
+        "sha256": "f11e4cfcaba924d5a74d5affc95a8ec469cea4193320dd0ef5821f1a3aa43d15",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "not dual pistols aiming left",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0030",
@@ -524,7 +632,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0030_jc_savior_dual_pistols_aim_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0030_jc_savior_dual_pistols_aim_right.png",
+        "sha256": "c16f30052a506523d723df6119cf82044096890e95261ccca2a8d47bf1912aa3",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "one pistol firing left, not dual aiming right",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0031",
@@ -539,7 +659,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0031_jc_savior_dual_pistols_fire_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0031_jc_savior_dual_pistols_fire_left.png",
+        "sha256": "52877fc43adce3a4c9520e2fc8ca608d14d75436583967ac73b0974bbba6d31e",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "firing toward right, not dual firing left",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0032",
@@ -554,7 +686,19 @@
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0032_jc_savior_dual_pistols_fire_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run20_mobile_lod": {
+        "path": "mobile_lod/0032_jc_savior_dual_pistols_fire_right.png",
+        "sha256": "1940d10411802a84374f79f097c7f7f638e543bcd1c337fb0af70a29e40c1107",
+        "dimensions": [
+          512,
+          768
+        ],
+        "status": "prototype_only",
+        "pose_visual_review": "pose_mismatch",
+        "pose_visual_note": "airborne, not dual pistols firing right",
+        "binary_in_repository": false
+      }
     },
     {
       "id": "0033",
@@ -26142,7 +26286,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 19,
+  "latest_run": 20,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26199,5 +26343,17 @@
     "godot_import": "not_run",
     "mobile_performance": "not_tested",
     "next_batch": "0021-0032"
+  },
+  "run20_summary": {
+    "verified_completed": 0,
+    "existing_unverified_candidates": 32,
+    "planned_without_candidates": 1968,
+    "new_mobile_lod_prototypes": 12,
+    "distinct_lod_hashes": 12,
+    "pose_mismatches": 9,
+    "pose_tentative_unapproved": 3,
+    "godot_import": "not executed",
+    "mobile_fps": "not measured",
+    "binaries_in_github": false
   }
 }

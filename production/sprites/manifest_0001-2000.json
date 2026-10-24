@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 — independent native 1024x1536 masters required; 0 fully verified",
+  "next_batch": "0001-0012 independent native JC masters (blocked); 0013-0020 after acceptance",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -29300,7 +29300,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 31,
+  "latest_run": 33,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -29454,7 +29454,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T16:35:00Z",
+  "last_updated_utc": "2026-10-24T19:48:00Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -29543,5 +29543,34 @@
     "canonical_photo": "not_available",
     "next_priority": "0001-0012",
     "qa_file": "qa/RUN31_BINARY_QA.json"
+  },
+  "concept_references_unverified": [
+    {
+      "filename": "run33/rejected_reference_only/a_clean_production_asset_sheet_layout_on_a_transpa.png",
+      "sha256": "6f680288423e3d29f4e3883c52b2af560e55d9e53da15a857a9e564a8c2e9522",
+      "classification": "concept_board_only",
+      "verified_sprite_count": 0,
+      "reason": "Multi-panel dashboard with unsubstantiated verified/test claims; not an independent sprite."
+    },
+    {
+      "filename": "run33/rejected_reference_only/a_high_resolution_game_asset_showcase_sheet_on_a_t.png",
+      "sha256": "52d1073b9ce777109ca325d1b8294e917add94a510ec0bf0a35562f4ea50fdce",
+      "classification": "concept_board_only",
+      "verified_sprite_count": 0,
+      "reason": "Multi-panel dashboard with unsubstantiated verified/test claims; not an independent sprite."
+    }
+  ],
+  "run33_summary": {
+    "verified_completed": 0,
+    "registered_unverified_candidates": 32,
+    "accessible_candidate_binaries": 16,
+    "native_1024x1536_masters_accepted": 0,
+    "new_reference_boards_rejected": 2,
+    "generated_native_masters_this_run": 0,
+    "prompts_created_this_run": 12,
+    "new_qa_tooling": "tools/audit_manifest_and_pngs.py (Run33 package)",
+    "godot_import_test": "godot4/tools/run33_import_audit.gd (prepared, not executed)",
+    "mobile_test": "not executed",
+    "next_priority": "0001-0012"
   }
 }

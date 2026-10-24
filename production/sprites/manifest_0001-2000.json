@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021–0032: independently render 12 native transparent Savior masters and validate",
+  "next_batch": "0021–0032: render 12 independent native Savior masters; verify before promotion",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -26358,7 +26358,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 22,
+  "latest_run": 23,
   "last_updated_local": "2026-10-23T20:40:59-07:00",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26452,5 +26452,31 @@
     "manifest_ids": 2000,
     "preview_source": "a_wide_composite_reference_sheet_a_clean_studio.png",
     "notes": "Run22 PNGs in downloadable package, not GitHub; 0022/0023 profile mismatch; Godot/mobile untested."
+  },
+  "run23_summary": {
+    "verified_completed": 0,
+    "generated_unverified": 32,
+    "planned": 1968,
+    "new_independent_native_masters": 0,
+    "new_reference_boards": 1,
+    "reference_board_game_ready": false,
+    "new_preview_atlas_textures": 2,
+    "atlas_regions": 12,
+    "atlas_px": [
+      1536,
+      1536
+    ],
+    "atlas_runtime_rgba8_mib": 18,
+    "archived_candidate_hash_matches": 32,
+    "archived_candidate_count": 32,
+    "archived_master_dimension_matches": 12,
+    "archived_transparent_corner_matches": 24,
+    "atlas_region_hashes_distinct": 12,
+    "atlas_regions_with_transparent_corners": 12,
+    "atlas_regions_with_12px_margins": 12,
+    "atlas_godot_import": "not_executed",
+    "physical_mobile_benchmark": "not_executed",
+    "new_binary_pngs_pushed_to_github": 0,
+    "package": "JC_Hell_Vegas_Sprite_Production_Run23_2026-10-24.zip"
   }
 }

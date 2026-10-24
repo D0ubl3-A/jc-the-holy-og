@@ -18,12 +18,17 @@ class IntegrityTests(unittest.TestCase):
     def test_duplicate_id_rejected(self):
         self.assertFalse(self.check(lambda m:m["assets"][1].update(id="0001"))["passed"])
     def test_duplicate_hash_rejected(self):
-        self.assertFalse(self.check(lambda m:m["assets"][1].update(sha256=m["assets"][0]["sha256"]))["passed"])
+        self.assertFalse(self.check(lambda m:(m["assets"][0].update(sha256="a"*64),m["assets"][1].update(sha256="a"*64)))["passed"])
     def test_false_verified_rejected(self):
         def fake(m):
             m["assets"][0]["status"]="verified"
             m["verified_completed"]=1
             m["generated_unverified"]-=1
+        self.assertFalse(self.check(fake)["passed"])
+    def test_duplicate_archive_hash_rejected(self):
+        def fake(m):
+            h=m["assets"][0]["run29_archived_candidate_audit"]["sha256_archived_binary"]
+            m["assets"][1]["run29_archived_candidate_audit"]["sha256_archived_binary"]=h
         self.assertFalse(self.check(fake)["passed"])
     def test_wrong_category_rejected(self):
         self.assertFalse(self.check(lambda m:m["assets"][-1].update(category="ui"))["passed"])

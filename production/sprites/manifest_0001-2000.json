@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0021-0032: independently render 12 native 1024x1536 transparent Savior sprites",
+  "next_batch": "0001-0012 — JC Base: replace 12 1024x1024 upscaled composite cutouts with 12 independent native 1024x1536 transparent masters; preserve uncovered hair, face, and exact camera angles.",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers, gold jewelry and dual golden pistols. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -29,11 +29,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0001_jc_base_neutral_front.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0002",
@@ -44,11 +57,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0002_jc_base_neutral_left_profile.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "fail_label_direction",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0003",
@@ -59,11 +85,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0003_jc_base_neutral_right_profile.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "fail_label_direction",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0004",
@@ -74,11 +113,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0004_jc_base_neutral_back.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0005",
@@ -89,11 +141,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0005_jc_base_three_quarter_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0006",
@@ -104,11 +169,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0006_jc_base_three_quarter_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0007",
@@ -119,11 +197,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0007_jc_base_idle_relaxed.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0008",
@@ -134,11 +225,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0008_jc_base_idle_alert.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0009",
@@ -149,11 +253,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0009_jc_base_dual_pistols_aim_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0010",
@@ -164,11 +281,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0010_jc_base_dual_pistols_aim_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0011",
@@ -179,11 +309,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0011_jc_base_dual_pistols_fire_left.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0012",
@@ -194,11 +337,24 @@
       "background": "transparent",
       "route": null,
       "sha256": null,
-      "visual_qa": "not_approved",
+      "visual_qa": "fail_canonical_identity_white_cap",
       "automated_qa": "blocked_native_detail",
       "file_path": "assets/0012_jc_base_dual_pistols_fire_right.png",
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
-      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested."
+      "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
+      "run26_release_gate": "blocked_native_detail_dimensions_identity_godot_mobile",
+      "run26_png_dimensions": [
+        1024,
+        1024
+      ],
+      "run26_native_master_dimensions_pass": false,
+      "run26_alpha_margin_pass": true,
+      "run26_sha256_match": true,
+      "run26_qa_report": "qa/asset_0001_0012_audit.json",
+      "run26_camera_qa": "unverified",
+      "run26_godot_runtime_qa": "not_tested",
+      "run26_physical_mobile_qa": "not_tested",
+      "run26_next_action": "Replace with one independently generated 1024x1536 RGBA sprite preserving uncovered hair and canonical face."
     },
     {
       "id": "0013",
@@ -26434,7 +26590,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 25,
+  "latest_run": 26,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -26587,5 +26743,22 @@
     "physical_mobile_benchmark": "not_executed",
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
+  },
+  "last_updated_utc": "2026-10-24T12:39:00Z",
+  "run26_summary": {
+    "focus": "0001-0012",
+    "verified_completed": 0,
+    "existing_archived_candidate_ids": 32,
+    "new_native_individual_pngs": 0,
+    "new_reference_composites": 2,
+    "new_prompt_specs": 12,
+    "archive_candidate_hashes_match": 12,
+    "archive_candidates_wrong_dimensions": 12,
+    "alpha_margin_pass": 12,
+    "canonical_identity_failures": 12,
+    "godot4_runtime_test": "not_run_no_godot_binary",
+    "physical_mobile_test": "not_run_no_device",
+    "result": "No assets promoted to verified. Reference boards are not assets.",
+    "priority_correction": "Earlier runs focused on 0021-0032; canonical first-unverified priority is 0001-0012."
   }
 }

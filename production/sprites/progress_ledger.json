@@ -171,6 +171,11 @@
     "validator_bug_fixed": "Run35 multiplied master_px by grid although master_px already denotes full atlas; Run36 checks grid*cell_px==master_px",
     "godot_runtime_tested": false,
     "physical_mobile_tested": false,
-    "artifact": "JC_Hell_Vegas_Sprite_Production_Run36_2026-10-24.zip"
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run36_2026-10-24.zip",
+    "geometry_entries_backfilled": 2000,
+    "authoritative_manifest_geometry_validated": 2000,
+    "unique_slug_count": 2000,
+    "github_actions_workflow_committed": true,
+    "github_actions_execution_verified": false
   }
 }

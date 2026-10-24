@@ -3,7 +3,7 @@
   "target": 2000,
   "verified_completed": 0,
   "generated_unverified": 32,
-  "next_batch": "0001-0012 — native independent 1024x1536 transparent masters required; no approved originals",
+  "next_batch": "0001-0012 — independent native 1024x1536 masters required; 0 fully verified",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
   "category_targets": {
@@ -99,7 +99,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0002",
@@ -181,7 +183,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0003",
@@ -263,7 +267,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0004",
@@ -344,7 +350,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0005",
@@ -425,7 +433,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0006",
@@ -506,7 +516,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0007",
@@ -587,7 +599,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0008",
@@ -668,7 +682,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0009",
@@ -749,7 +765,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0010",
@@ -830,7 +848,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0011",
@@ -911,7 +931,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0012",
@@ -992,7 +1014,9 @@
         "physical_mobile_60fps_pass": "PENDING"
       },
       "run30_priority": "REPLACE_NATIVE_MASTER",
-      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json"
+      "run30_binary_evidence": "qa/priority_0001_0012_binary_audit.json",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0013",
@@ -1009,7 +1033,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0014",
@@ -1026,7 +1052,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0015",
@@ -1043,7 +1071,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0016",
@@ -1060,7 +1090,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0017",
@@ -1077,7 +1109,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0018",
@@ -1094,7 +1128,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0019",
@@ -1111,7 +1147,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0020",
@@ -1128,7 +1166,9 @@
       "candidate_storage": "Run11 production ZIP archive; not deployed as game assets",
       "qa_notes": "Composite-derived or reference crop; not native-resolution game-ready. Godot/mobile untested.",
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0021",
@@ -1208,7 +1248,9 @@
         "github_binary_uploaded": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0022",
@@ -1274,7 +1316,9 @@
         "github_binary_uploaded": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0023",
@@ -1340,7 +1384,9 @@
         "github_binary_uploaded": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0024",
@@ -1420,7 +1466,9 @@
         "github_binary_uploaded": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "accessible_unverified_candidate_or_preview",
+      "run31_verified": false
     },
     {
       "id": "0025",
@@ -1463,7 +1511,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0026",
@@ -1506,7 +1556,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0027",
@@ -1535,7 +1587,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0028",
@@ -1564,7 +1618,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0029",
@@ -1593,7 +1649,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0030",
@@ -1622,7 +1680,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0031",
@@ -1651,7 +1711,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0032",
@@ -1680,7 +1742,9 @@
         "binary_in_repository": false
       },
       "run30_priority": "RETAIN_UNVERIFIED_ARCHIVE_CANDIDATE",
-      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package"
+      "run30_binary_evidence": "not_all_archived_sources_present_in_run29_package",
+      "run31_binary_accessibility": "not_present_in_available_archives",
+      "run31_verified": false
     },
     {
       "id": "0033",
@@ -29236,7 +29300,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 30,
+  "latest_run": 31,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -29464,5 +29528,20 @@
     "physical_mobile_benchmark_executed": false,
     "original_2026_10_23_user_face_photo_available": false,
     "release_policy": "All gates evidence-backed; no collage, prompt, upscaled extraction or dashboard may be verified."
+  },
+  "run31_summary": {
+    "verified": 0,
+    "registered_unverified": 32,
+    "accessible_binary_candidates_or_previews": 16,
+    "registered_candidates_missing_binary": 16,
+    "new_independent_native_assets": 0,
+    "new_reference_boards_rejected": 2,
+    "new_individual_generation_prompts": 12,
+    "next_batch_prepared_prompts": 8,
+    "godot4_runtime": "not_run",
+    "physical_mobile_test": "not_run",
+    "canonical_photo": "not_available",
+    "next_priority": "0001-0012",
+    "qa_file": "qa/RUN31_BINARY_QA.json"
   }
 }

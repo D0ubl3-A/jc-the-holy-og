@@ -1,0 +1,38 @@
+{
+  "run": 43,
+  "date_local": "2026-10-24",
+  "authoritative_manifest": "production/sprites/manifest_0001-2000.json",
+  "id": "0001",
+  "canonical_title": "JC Base — neutral front",
+  "new_variant": {
+    "name": "run43_alpha_preserving_composite_derived_lod",
+    "status": "generated_unverified",
+    "size_px": [
+      512,
+      768
+    ],
+    "sha256": "f391282f662f28107e7cab87853fcd647ae76f9ff0d1d6f4028836051cfec122",
+    "alpha_margins_px": [
+      95,
+      48,
+      96,
+      48
+    ],
+    "source": "a_clean_high_resolution_png_sprite_sheet_style_ima.png",
+    "source_panel_detail_px": [
+      196,
+      411
+    ],
+    "independent_native_render": false,
+    "native_master": false,
+    "release_accepted": false
+  },
+  "generated_composite_boards": 2,
+  "rejected_composite_boards": 2,
+  "verified_completed": 0,
+  "target": 2000,
+  "next_batch": "0001-0012",
+  "godot4_import_executed": false,
+  "physical_android_test_executed": false,
+  "note": "Supplemental provenance record; 2000-entry manifest remains authoritative. Binary included in downloadable Run43 package, not uploaded to GitHub."
+}

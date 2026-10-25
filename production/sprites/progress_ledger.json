@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 38,
+  "run": 39,
   "date_utc": "2026-10-25T00:44:19Z",
   "verified_completed": 0,
   "target": 2000,
@@ -221,5 +221,26 @@
     "godot4_runtime_test_executed": false,
     "physical_mobile_test_executed": false,
     "priority": "replace 0001–0012 with independent native RGBA masters"
+  },
+  "run39_summary": {
+    "verified_completed": 0,
+    "registered_unverified_candidate_ids": 32,
+    "planned_without_candidate": 1968,
+    "new_native_independent_masters": 0,
+    "new_derived_prototype_mobile_lod_files": 12,
+    "staging_lod_dimensions": [
+      512,
+      768
+    ],
+    "staging_source_hashes_matching_manifest": 12,
+    "staging_unique_hashes": 12,
+    "route_tag_bug": "40 New Devil Las Vegas variants previously tagged route=New; normalized manifest prepared and GitHub Actions repair workflow added",
+    "canonical_outfit_review": "failed: all 12 archived base candidates show an incorrect white cap",
+    "new_generated_composite_reference_rejected": 1,
+    "godot4_project_prepared": true,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "verified_release_count_added": 0,
+    "next_batch": "0001-0012"
   }
 }

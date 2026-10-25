@@ -1,0 +1,10 @@
+# Run 51: Corrective independent-master generation queue (0001–0004)
+
+**For each ID independently:** Produce ONE full-body, native 1024×1536 photorealistic PNG, straight-alpha RGBA, real transparent background (not a checkerboard), no labels, no composite. Keep at least 48 fully transparent pixels around hair, hands, feet, BOTH pistols, and any effects. JC is an adult male with long wavy brown hair FULLY UNCOVERED, beard, WHITE hoodie, WHITE jeans, white sneakers, exactly two intact gold pistols. NO CAP, NO HAT, no coat, no sunglasses. Match the original October 23 facial photo before release. Camera eye level, fixed scale, complete anatomy (two arms, two legs, five fingers per hand), consistent hoodie seam/zipper and face across views. This must be a fresh independent native render, not an upscaled crop.
+
+- **0001 — neutral front:** Camera 0° yaw, direct front face and torso, feet planted, two pistols relaxed pointing downward.
+- **0002 — neutral left profile:** Camera EXACT 90° left profile; nose and both shoes point to IMAGE LEFT. No looking at camera, no three-quarter head turn. Both pistols distinct and intact.
+- **0003 — neutral right profile:** Camera EXACT 90° right profile; nose and both shoes point to IMAGE RIGHT. No looking at camera, no three-quarter head turn. Both pistols distinct and intact.
+- **0004 — neutral back:** Camera exactly 180° from front, long uncovered hair over the white hoodie, both heels visible, two separate gold pistols down.
+
+Output names: `0001_jc_base_neutral_front.png`, `0002_jc_base_neutral_left_profile.png`, `0003_jc_base_neutral_right_profile.png`, `0004_jc_base_neutral_back.png`. Each requires recorded generation provenance, SHA-256 uniqueness, true alpha/margins, identity/anatomy signoff, Godot import, and measured Android performance. **Prompts do not count as completed sprites.**

@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 53,
+  "run": 54,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -12,13 +12,14 @@
     "archived_candidates": 12,
     "sha256_unique": 12,
     "real_alpha_pass": 12,
-    "safe_margin_48px_pass": 12,
+    "safe_margin_48px_pass": 0,
     "native_master_1024x1536_pass": 0,
     "independent_native_render_provenance_pass": 0,
     "canonical_identity_signoff_pass": 0,
     "godot4_runtime_import_verified": 0,
     "physical_mobile_benchmark_verified": 0,
-    "fully_verified": 0
+    "fully_verified": 0,
+    "fully_opaque_foreground_pass": 0
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
@@ -572,5 +573,31 @@
     "facial_reference_approved": false,
     "next_priority": "0001-0012",
     "run53_report": "production/sprites/RUN53_STATUS_2026-10-25.md"
+  },
+  "run54_summary": {
+    "verified_completed": 0,
+    "manifest_ids_unique_and_sequential": 2000,
+    "manifest_unique_slugs": 2000,
+    "category_targets_valid": 11,
+    "manifest_release_gate_pass": true,
+    "negative_regression_cases_rejected": 6,
+    "new_composite_reference_rejected": 1,
+    "composite_size_px": [
+      1536,
+      1024
+    ],
+    "composite_alpha_extrema": [
+      18,
+      254
+    ],
+    "new_native_independent_masters": 0,
+    "run52_lod_reaudited": 12,
+    "lod_safe_margin_pass": 0,
+    "lod_opaque_core_pass": 0,
+    "unverified_candidates_retained": 32,
+    "godot4_executed": false,
+    "physical_android_benchmark_executed": false,
+    "next_priority": "0001-0012",
+    "note": "Run54 fixed the stale top-level 12/12 margin-pass claim and added a fail-closed regression-tested release validator. Image-generated 12/12 verified badges were rejected as visual text, not evidence."
   }
 }

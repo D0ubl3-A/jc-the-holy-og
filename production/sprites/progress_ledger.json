@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 57,
+  "run": 58,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -657,5 +657,31 @@
     "priority": "0001-0012",
     "after_acceptance": "0013-0024",
     "note": "Generated verification labels are not evidence. No composites, prompts, crops or fixtures count as completed sprites."
+  },
+  "run58_summary": {
+    "verified_completed": 0,
+    "new_reference_composites_generated": 1,
+    "new_reference_composites_rejected": 1,
+    "reference_sha256": "312c62e8633348cfb8b04538488f8f1bf6ea915f3537669a95af96520c989878",
+    "reference_size_px": [
+      1536,
+      1024
+    ],
+    "reference_alpha_range": [
+      0,
+      254
+    ],
+    "fully_opaque_pixels": 0,
+    "independent_native_masters_generated": 0,
+    "new_verified_sprites": 0,
+    "manifest_snapshot_ids_unique_and_contiguous": 2000,
+    "category_totals_valid": true,
+    "canonical_prompts_prepared": 12,
+    "mechanical_png_preflight_written": true,
+    "actual_godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "priority": "0001-0012",
+    "after_acceptance": "0013-0024",
+    "note": "Reference image contains a false 12/2000 verified label; no source provenance, Godot import or Android evidence. Composite rejected."
   }
 }

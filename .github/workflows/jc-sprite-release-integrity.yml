@@ -1,0 +1,52 @@
+name: JC Sprite Release Integrity (2000-ID Fail Closed)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/tools/run54_ci_manifest_gate.py'
+      - '.github/workflows/jc-sprite-release-integrity.yml'
+  pull_request:
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/tools/run54_ci_manifest_gate.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sprite-release-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PNG inspection dependency
+        run: python -m pip install --disable-pip-version-check Pillow
+      - name: Validate manifest, release provenance, binary dimensions, alpha and SHA-256
+        run: python production/sprites/tools/run54_ci_manifest_gate.py production/sprites/manifest_0001-2000.json | tee sprite_release_qa.json
+      - name: Negative test: a premature verified asset must be rejected
+        shell: bash
+        run: |
+          python - <<'PY'
+          import copy, importlib.util, json
+          from pathlib import Path
+          path=Path('production/sprites/tools/run54_ci_manifest_gate.py')
+          spec=importlib.util.spec_from_file_location('gate',path)
+          module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+          source=json.loads(Path('production/sprites/manifest_0001-2000.json').read_text())
+          assert not module.check(source)[0]
+          altered=copy.deepcopy(source)
+          altered['assets'][0]['status']='verified'
+          altered['verified']=source['verified']+1
+          altered['candidate_unverified']=source['candidate_unverified']-1
+          assert module.check(altered)[0], 'Gate improperly accepted unverified asset'
+          print('PASS: premature verification rejected')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jc-sprite-release-integrity
+          path: sprite_release_qa.json
+          if-no-files-found: ignore

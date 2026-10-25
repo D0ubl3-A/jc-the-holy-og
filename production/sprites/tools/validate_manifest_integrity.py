@@ -44,6 +44,28 @@ def audit(manifest_path,ledger_path=None,repo_root=None):
     archive_hashes=[h for h in archive_hashes if h]
     if len(archive_hashes)!=len(set(archive_hashes)): errors.append("duplicate archived candidate SHA-256 hashes")
     if any(not re.fullmatch("[0-9a-f]{64}",h) for h in archive_hashes): errors.append("invalid archived candidate SHA-256")
+    if len({x.get("slug") for x in a})!=len(a): errors.append("duplicate asset slugs")
+    routes={"Savior","King","Destroyer","Liberator","New Devil"}
+    endings=[x for x in a if x.get("category")=="five_endings"]
+    if len(endings)!=50 or any(sum(x.get("route")==route for x in endings)!=10 for route in routes):
+        errors.append("five endings must each have exactly 10 assets")
+    if {x.get("route") for x in a if x.get("route")}!=routes:
+        errors.append("route names inconsistent")
+    for x in a:
+        ident=x.get("id")
+        try:
+            cols,rows=x["grid"]
+            w,h=x["cell_px"]
+            mw,mh=x["master_px"]
+            frames=x["frames"]
+            if any(not isinstance(v,int) or v<=0 for v in (cols,rows,w,h,mw,mh,frames)):
+                raise ValueError("invalid geometry values")
+            if cols*rows!=frames or (cols*w,rows*h)!=(mw,mh):
+                raise ValueError("atlas frame grid and dimensions disagree")
+            if x.get("category")=="locomotion_combat_flying" and (w,h)!=(512,768):
+                raise ValueError("JC animation frame must be 512x768, not 512x512")
+        except (KeyError,TypeError,ValueError) as exc:
+            errors.append(f"{ident}: geometry error: {exc}")
     if ledger_path:
         ledger=json.loads(Path(ledger_path).read_text(encoding="utf-8"))
         if ledger.get("verified_completed")!=counts["verified"] or ledger.get("target")!=TARGET:
@@ -59,18 +81,33 @@ def audit(manifest_path,ledger_path=None,repo_root=None):
             from PIL import Image
             with Image.open(png) as im:
                 im.load()
-                if im.format!="PNG" or im.mode!="RGBA" or im.size!=(1024,1536):
-                    errors.append(f"{ident}: native PNG must be 1024x1536 RGBA")
+                expected=tuple(x["master_px"])
+                if im.format!="PNG" or im.size!=expected:
+                    errors.append(f"{ident}: PNG dimensions must match manifest master_px {expected}")
                 if str(x.get("background","")).startswith("transparent"):
-                    alpha=im.getchannel("A")
-                    bbox=alpha.getbbox()
-                    if alpha.getextrema()[0]==255 or not bbox or min(bbox[0],bbox[1],im.width-bbox[2],im.height-bbox[3])<48:
-                        errors.append(f"{ident}: transparency or 48px safety margin failed")
+                    if im.mode!="RGBA":
+                        errors.append(f"{ident}: transparent asset requires RGBA")
+                    else:
+                        alpha=im.getchannel("A")
+                        if alpha.getextrema()!=(0,255):
+                            errors.append(f"{ident}: missing real fully transparent and opaque alpha")
+                        cols,rows=x["grid"]
+                        w,h=x["cell_px"]
+                        margin=16 if x["frames"]>1 else 48
+                        for row in range(rows):
+                            for col in range(cols):
+                                cell=alpha.crop((col*w,row*h,(col+1)*w,(row+1)*h))
+                                bbox=cell.getbbox()
+                                if not bbox or min(bbox[0],bbox[1],w-bbox[2],h-bbox[3])<margin:
+                                    errors.append(f"{ident}: frame {row*cols+col+1} alpha or {margin}px margin failed")
+                elif x.get("background")=="opaque":
+                    if im.mode not in ("RGB","RGBA") or (im.mode=="RGBA" and im.getchannel("A").getextrema()!=(255,255)):
+                        errors.append(f"{ident}: opaque asset has unsupported mode/alpha")
         except Exception as exc: errors.append(f"{ident}: PNG check failed: {exc}")
         e=x.get("release_evidence")
         if not isinstance(e,dict): errors.append(f"{ident}: missing release_evidence"); continue
-        if e.get("provenance")!="independent_native_render" or e.get("source_native_px")!=[1024,1536]:
-            errors.append(f"{ident}: independent native render evidence missing")
+        if e.get("provenance")!="independent_native_render" or e.get("source_native_px")!=x.get("master_px"):
+            errors.append(f"{ident}: independent native render evidence must match this asset's master_px")
         v=e.get("visual_qa",{})
         if not isinstance(v,dict) or any(v.get(k)!="pass" for k in VISUAL) or not e.get("visual_reviewer") or not e.get("visual_review_utc"):
             errors.append(f"{ident}: visual QA/reviewer incomplete")

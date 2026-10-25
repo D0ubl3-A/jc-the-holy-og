@@ -5093,11 +5093,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_idle_breathing_front_8_frame_cycle"
     },
@@ -5120,11 +5120,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_idle_breathing_left_8_frame_cycle"
     },
@@ -5147,11 +5147,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_idle_breathing_right_8_frame_cycle"
     },
@@ -5174,11 +5174,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_idle_breathing_back_8_frame_cycle"
     },
@@ -5201,11 +5201,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_walk_front_8_frame_cycle"
     },
@@ -5228,11 +5228,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_walk_left_8_frame_cycle"
     },
@@ -5255,11 +5255,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_walk_right_8_frame_cycle"
     },
@@ -5282,11 +5282,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_walk_back_8_frame_cycle"
     },
@@ -5309,11 +5309,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_run_front_8_frame_cycle"
     },
@@ -5336,11 +5336,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_run_left_8_frame_cycle"
     },
@@ -5363,11 +5363,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_run_right_8_frame_cycle"
     },
@@ -5390,11 +5390,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_run_back_8_frame_cycle"
     },
@@ -5417,11 +5417,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_sprint_front_8_frame_cycle"
     },
@@ -5444,11 +5444,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_sprint_left_8_frame_cycle"
     },
@@ -5471,11 +5471,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_sprint_right_8_frame_cycle"
     },
@@ -5498,11 +5498,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_sprint_back_8_frame_cycle"
     },
@@ -5525,11 +5525,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_jump_front_8_frame_cycle"
     },
@@ -5552,11 +5552,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_jump_left_8_frame_cycle"
     },
@@ -5579,11 +5579,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_jump_right_8_frame_cycle"
     },
@@ -5606,11 +5606,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_jump_back_8_frame_cycle"
     },
@@ -5633,11 +5633,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fall_front_8_frame_cycle"
     },
@@ -5660,11 +5660,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fall_left_8_frame_cycle"
     },
@@ -5687,11 +5687,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fall_right_8_frame_cycle"
     },
@@ -5714,11 +5714,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fall_back_8_frame_cycle"
     },
@@ -5741,11 +5741,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_land_front_8_frame_cycle"
     },
@@ -5768,11 +5768,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_land_left_8_frame_cycle"
     },
@@ -5795,11 +5795,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_land_right_8_frame_cycle"
     },
@@ -5822,11 +5822,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_land_back_8_frame_cycle"
     },
@@ -5849,11 +5849,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_hover_front_8_frame_cycle"
     },
@@ -5876,11 +5876,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_hover_left_8_frame_cycle"
     },
@@ -5903,11 +5903,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_hover_right_8_frame_cycle"
     },
@@ -5930,11 +5930,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_hover_back_8_frame_cycle"
     },
@@ -5957,11 +5957,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_ascend_front_8_frame_cycle"
     },
@@ -5984,11 +5984,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_ascend_left_8_frame_cycle"
     },
@@ -6011,11 +6011,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_ascend_right_8_frame_cycle"
     },
@@ -6038,11 +6038,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_ascend_back_8_frame_cycle"
     },
@@ -6065,11 +6065,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_descend_front_8_frame_cycle"
     },
@@ -6092,11 +6092,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_descend_left_8_frame_cycle"
     },
@@ -6119,11 +6119,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_descend_right_8_frame_cycle"
     },
@@ -6146,11 +6146,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_fly_descend_back_8_frame_cycle"
     },
@@ -6173,11 +6173,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_air_dash_front_8_frame_cycle"
     },
@@ -6200,11 +6200,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_air_dash_left_8_frame_cycle"
     },
@@ -6227,11 +6227,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_air_dash_right_8_frame_cycle"
     },
@@ -6254,11 +6254,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_air_dash_back_8_frame_cycle"
     },
@@ -6281,11 +6281,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -6308,11 +6308,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -6335,11 +6335,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -6362,11 +6362,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -6389,11 +6389,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -6416,11 +6416,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -6443,11 +6443,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -6470,11 +6470,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -6497,11 +6497,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_melee_strike_front_8_frame_cycle"
     },
@@ -6524,11 +6524,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_melee_strike_left_8_frame_cycle"
     },
@@ -6551,11 +6551,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_melee_strike_right_8_frame_cycle"
     },
@@ -6578,11 +6578,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_melee_strike_back_8_frame_cycle"
     },
@@ -6605,11 +6605,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_holy_blast_front_8_frame_cycle"
     },
@@ -6632,11 +6632,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_holy_blast_left_8_frame_cycle"
     },
@@ -6659,11 +6659,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_holy_blast_right_8_frame_cycle"
     },
@@ -6686,11 +6686,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_base_holy_blast_back_8_frame_cycle"
     },
@@ -6713,11 +6713,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_idle_breathing_front_8_frame_cycle"
     },
@@ -6740,11 +6740,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_idle_breathing_left_8_frame_cycle"
     },
@@ -6767,11 +6767,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_idle_breathing_right_8_frame_cycle"
     },
@@ -6794,11 +6794,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_idle_breathing_back_8_frame_cycle"
     },
@@ -6821,11 +6821,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_walk_front_8_frame_cycle"
     },
@@ -6848,11 +6848,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_walk_left_8_frame_cycle"
     },
@@ -6875,11 +6875,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_walk_right_8_frame_cycle"
     },
@@ -6902,11 +6902,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_walk_back_8_frame_cycle"
     },
@@ -6929,11 +6929,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_run_front_8_frame_cycle"
     },
@@ -6956,11 +6956,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_run_left_8_frame_cycle"
     },
@@ -6983,11 +6983,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_run_right_8_frame_cycle"
     },
@@ -7010,11 +7010,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_run_back_8_frame_cycle"
     },
@@ -7037,11 +7037,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_sprint_front_8_frame_cycle"
     },
@@ -7064,11 +7064,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_sprint_left_8_frame_cycle"
     },
@@ -7091,11 +7091,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_sprint_right_8_frame_cycle"
     },
@@ -7118,11 +7118,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_sprint_back_8_frame_cycle"
     },
@@ -7145,11 +7145,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_jump_front_8_frame_cycle"
     },
@@ -7172,11 +7172,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_jump_left_8_frame_cycle"
     },
@@ -7199,11 +7199,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_jump_right_8_frame_cycle"
     },
@@ -7226,11 +7226,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_jump_back_8_frame_cycle"
     },
@@ -7253,11 +7253,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fall_front_8_frame_cycle"
     },
@@ -7280,11 +7280,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fall_left_8_frame_cycle"
     },
@@ -7307,11 +7307,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fall_right_8_frame_cycle"
     },
@@ -7334,11 +7334,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fall_back_8_frame_cycle"
     },
@@ -7361,11 +7361,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_land_front_8_frame_cycle"
     },
@@ -7388,11 +7388,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_land_left_8_frame_cycle"
     },
@@ -7415,11 +7415,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_land_right_8_frame_cycle"
     },
@@ -7442,11 +7442,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_land_back_8_frame_cycle"
     },
@@ -7469,11 +7469,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_hover_front_8_frame_cycle"
     },
@@ -7496,11 +7496,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_hover_left_8_frame_cycle"
     },
@@ -7523,11 +7523,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_hover_right_8_frame_cycle"
     },
@@ -7550,11 +7550,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_hover_back_8_frame_cycle"
     },
@@ -7577,11 +7577,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_ascend_front_8_frame_cycle"
     },
@@ -7604,11 +7604,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_ascend_left_8_frame_cycle"
     },
@@ -7631,11 +7631,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_ascend_right_8_frame_cycle"
     },
@@ -7658,11 +7658,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_ascend_back_8_frame_cycle"
     },
@@ -7685,11 +7685,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_descend_front_8_frame_cycle"
     },
@@ -7712,11 +7712,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_descend_left_8_frame_cycle"
     },
@@ -7739,11 +7739,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_descend_right_8_frame_cycle"
     },
@@ -7766,11 +7766,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_fly_descend_back_8_frame_cycle"
     },
@@ -7793,11 +7793,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_air_dash_front_8_frame_cycle"
     },
@@ -7820,11 +7820,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_air_dash_left_8_frame_cycle"
     },
@@ -7847,11 +7847,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_air_dash_right_8_frame_cycle"
     },
@@ -7874,11 +7874,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_air_dash_back_8_frame_cycle"
     },
@@ -7901,11 +7901,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -7928,11 +7928,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -7955,11 +7955,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -7982,11 +7982,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -8009,11 +8009,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -8036,11 +8036,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -8063,11 +8063,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -8090,11 +8090,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -8117,11 +8117,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_melee_strike_front_8_frame_cycle"
     },
@@ -8144,11 +8144,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_melee_strike_left_8_frame_cycle"
     },
@@ -8171,11 +8171,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_melee_strike_right_8_frame_cycle"
     },
@@ -8198,11 +8198,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_melee_strike_back_8_frame_cycle"
     },
@@ -8225,11 +8225,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_holy_blast_front_8_frame_cycle"
     },
@@ -8252,11 +8252,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_holy_blast_left_8_frame_cycle"
     },
@@ -8279,11 +8279,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_holy_blast_right_8_frame_cycle"
     },
@@ -8306,11 +8306,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_savior_holy_blast_back_8_frame_cycle"
     },
@@ -8333,11 +8333,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_idle_breathing_front_8_frame_cycle"
     },
@@ -8360,11 +8360,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_idle_breathing_left_8_frame_cycle"
     },
@@ -8387,11 +8387,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_idle_breathing_right_8_frame_cycle"
     },
@@ -8414,11 +8414,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_idle_breathing_back_8_frame_cycle"
     },
@@ -8441,11 +8441,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_walk_front_8_frame_cycle"
     },
@@ -8468,11 +8468,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_walk_left_8_frame_cycle"
     },
@@ -8495,11 +8495,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_walk_right_8_frame_cycle"
     },
@@ -8522,11 +8522,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_walk_back_8_frame_cycle"
     },
@@ -8549,11 +8549,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_run_front_8_frame_cycle"
     },
@@ -8576,11 +8576,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_run_left_8_frame_cycle"
     },
@@ -8603,11 +8603,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_run_right_8_frame_cycle"
     },
@@ -8630,11 +8630,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_run_back_8_frame_cycle"
     },
@@ -8657,11 +8657,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_sprint_front_8_frame_cycle"
     },
@@ -8684,11 +8684,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_sprint_left_8_frame_cycle"
     },
@@ -8711,11 +8711,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_sprint_right_8_frame_cycle"
     },
@@ -8738,11 +8738,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_sprint_back_8_frame_cycle"
     },
@@ -8765,11 +8765,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_jump_front_8_frame_cycle"
     },
@@ -8792,11 +8792,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_jump_left_8_frame_cycle"
     },
@@ -8819,11 +8819,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_jump_right_8_frame_cycle"
     },
@@ -8846,11 +8846,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_jump_back_8_frame_cycle"
     },
@@ -8873,11 +8873,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fall_front_8_frame_cycle"
     },
@@ -8900,11 +8900,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fall_left_8_frame_cycle"
     },
@@ -8927,11 +8927,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fall_right_8_frame_cycle"
     },
@@ -8954,11 +8954,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fall_back_8_frame_cycle"
     },
@@ -8981,11 +8981,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_land_front_8_frame_cycle"
     },
@@ -9008,11 +9008,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_land_left_8_frame_cycle"
     },
@@ -9035,11 +9035,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_land_right_8_frame_cycle"
     },
@@ -9062,11 +9062,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_land_back_8_frame_cycle"
     },
@@ -9089,11 +9089,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_hover_front_8_frame_cycle"
     },
@@ -9116,11 +9116,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_hover_left_8_frame_cycle"
     },
@@ -9143,11 +9143,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_hover_right_8_frame_cycle"
     },
@@ -9170,11 +9170,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_hover_back_8_frame_cycle"
     },
@@ -9197,11 +9197,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_ascend_front_8_frame_cycle"
     },
@@ -9224,11 +9224,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_ascend_left_8_frame_cycle"
     },
@@ -9251,11 +9251,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_ascend_right_8_frame_cycle"
     },
@@ -9278,11 +9278,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_ascend_back_8_frame_cycle"
     },
@@ -9305,11 +9305,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_descend_front_8_frame_cycle"
     },
@@ -9332,11 +9332,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_descend_left_8_frame_cycle"
     },
@@ -9359,11 +9359,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_descend_right_8_frame_cycle"
     },
@@ -9386,11 +9386,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_fly_descend_back_8_frame_cycle"
     },
@@ -9413,11 +9413,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_air_dash_front_8_frame_cycle"
     },
@@ -9440,11 +9440,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_air_dash_left_8_frame_cycle"
     },
@@ -9467,11 +9467,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_air_dash_right_8_frame_cycle"
     },
@@ -9494,11 +9494,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_air_dash_back_8_frame_cycle"
     },
@@ -9521,11 +9521,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -9548,11 +9548,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -9575,11 +9575,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -9602,11 +9602,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -9629,11 +9629,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -9656,11 +9656,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -9683,11 +9683,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -9710,11 +9710,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -9737,11 +9737,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_melee_strike_front_8_frame_cycle"
     },
@@ -9764,11 +9764,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_melee_strike_left_8_frame_cycle"
     },
@@ -9791,11 +9791,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_melee_strike_right_8_frame_cycle"
     },
@@ -9818,11 +9818,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_melee_strike_back_8_frame_cycle"
     },
@@ -9845,11 +9845,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_holy_blast_front_8_frame_cycle"
     },
@@ -9872,11 +9872,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_holy_blast_left_8_frame_cycle"
     },
@@ -9899,11 +9899,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_holy_blast_right_8_frame_cycle"
     },
@@ -9926,11 +9926,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_king_holy_blast_back_8_frame_cycle"
     },
@@ -9953,11 +9953,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_idle_breathing_front_8_frame_cycle"
     },
@@ -9980,11 +9980,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_idle_breathing_left_8_frame_cycle"
     },
@@ -10007,11 +10007,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_idle_breathing_right_8_frame_cycle"
     },
@@ -10034,11 +10034,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_idle_breathing_back_8_frame_cycle"
     },
@@ -10061,11 +10061,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_walk_front_8_frame_cycle"
     },
@@ -10088,11 +10088,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_walk_left_8_frame_cycle"
     },
@@ -10115,11 +10115,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_walk_right_8_frame_cycle"
     },
@@ -10142,11 +10142,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_walk_back_8_frame_cycle"
     },
@@ -10169,11 +10169,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_run_front_8_frame_cycle"
     },
@@ -10196,11 +10196,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_run_left_8_frame_cycle"
     },
@@ -10223,11 +10223,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_run_right_8_frame_cycle"
     },
@@ -10250,11 +10250,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_run_back_8_frame_cycle"
     },
@@ -10277,11 +10277,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_sprint_front_8_frame_cycle"
     },
@@ -10304,11 +10304,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_sprint_left_8_frame_cycle"
     },
@@ -10331,11 +10331,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_sprint_right_8_frame_cycle"
     },
@@ -10358,11 +10358,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_sprint_back_8_frame_cycle"
     },
@@ -10385,11 +10385,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_jump_front_8_frame_cycle"
     },
@@ -10412,11 +10412,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_jump_left_8_frame_cycle"
     },
@@ -10439,11 +10439,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_jump_right_8_frame_cycle"
     },
@@ -10466,11 +10466,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_jump_back_8_frame_cycle"
     },
@@ -10493,11 +10493,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fall_front_8_frame_cycle"
     },
@@ -10520,11 +10520,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fall_left_8_frame_cycle"
     },
@@ -10547,11 +10547,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fall_right_8_frame_cycle"
     },
@@ -10574,11 +10574,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fall_back_8_frame_cycle"
     },
@@ -10601,11 +10601,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_land_front_8_frame_cycle"
     },
@@ -10628,11 +10628,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_land_left_8_frame_cycle"
     },
@@ -10655,11 +10655,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_land_right_8_frame_cycle"
     },
@@ -10682,11 +10682,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_land_back_8_frame_cycle"
     },
@@ -10709,11 +10709,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_hover_front_8_frame_cycle"
     },
@@ -10736,11 +10736,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_hover_left_8_frame_cycle"
     },
@@ -10763,11 +10763,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_hover_right_8_frame_cycle"
     },
@@ -10790,11 +10790,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_hover_back_8_frame_cycle"
     },
@@ -10817,11 +10817,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_ascend_front_8_frame_cycle"
     },
@@ -10844,11 +10844,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_ascend_left_8_frame_cycle"
     },
@@ -10871,11 +10871,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_ascend_right_8_frame_cycle"
     },
@@ -10898,11 +10898,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_ascend_back_8_frame_cycle"
     },
@@ -10925,11 +10925,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_descend_front_8_frame_cycle"
     },
@@ -10952,11 +10952,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_descend_left_8_frame_cycle"
     },
@@ -10979,11 +10979,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_descend_right_8_frame_cycle"
     },
@@ -11006,11 +11006,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_fly_descend_back_8_frame_cycle"
     },
@@ -11033,11 +11033,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_air_dash_front_8_frame_cycle"
     },
@@ -11060,11 +11060,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_air_dash_left_8_frame_cycle"
     },
@@ -11087,11 +11087,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_air_dash_right_8_frame_cycle"
     },
@@ -11114,11 +11114,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_air_dash_back_8_frame_cycle"
     },
@@ -11141,11 +11141,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -11168,11 +11168,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -11195,11 +11195,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -11222,11 +11222,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -11249,11 +11249,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -11276,11 +11276,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -11303,11 +11303,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -11330,11 +11330,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -11357,11 +11357,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_melee_strike_front_8_frame_cycle"
     },
@@ -11384,11 +11384,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_melee_strike_left_8_frame_cycle"
     },
@@ -11411,11 +11411,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_melee_strike_right_8_frame_cycle"
     },
@@ -11438,11 +11438,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_melee_strike_back_8_frame_cycle"
     },
@@ -11465,11 +11465,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_holy_blast_front_8_frame_cycle"
     },
@@ -11492,11 +11492,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_holy_blast_left_8_frame_cycle"
     },
@@ -11519,11 +11519,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_holy_blast_right_8_frame_cycle"
     },
@@ -11546,11 +11546,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_destroyer_holy_blast_back_8_frame_cycle"
     },
@@ -11573,11 +11573,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_idle_breathing_front_8_frame_cycle"
     },
@@ -11600,11 +11600,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_idle_breathing_left_8_frame_cycle"
     },
@@ -11627,11 +11627,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_idle_breathing_right_8_frame_cycle"
     },
@@ -11654,11 +11654,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_idle_breathing_back_8_frame_cycle"
     },
@@ -11681,11 +11681,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_walk_front_8_frame_cycle"
     },
@@ -11708,11 +11708,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_walk_left_8_frame_cycle"
     },
@@ -11735,11 +11735,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_walk_right_8_frame_cycle"
     },
@@ -11762,11 +11762,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_walk_back_8_frame_cycle"
     },
@@ -11789,11 +11789,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_run_front_8_frame_cycle"
     },
@@ -11816,11 +11816,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_run_left_8_frame_cycle"
     },
@@ -11843,11 +11843,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_run_right_8_frame_cycle"
     },
@@ -11870,11 +11870,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_run_back_8_frame_cycle"
     },
@@ -11897,11 +11897,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_sprint_front_8_frame_cycle"
     },
@@ -11924,11 +11924,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_sprint_left_8_frame_cycle"
     },
@@ -11951,11 +11951,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_sprint_right_8_frame_cycle"
     },
@@ -11978,11 +11978,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_sprint_back_8_frame_cycle"
     },
@@ -12005,11 +12005,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_jump_front_8_frame_cycle"
     },
@@ -12032,11 +12032,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_jump_left_8_frame_cycle"
     },
@@ -12059,11 +12059,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_jump_right_8_frame_cycle"
     },
@@ -12086,11 +12086,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_jump_back_8_frame_cycle"
     },
@@ -12113,11 +12113,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fall_front_8_frame_cycle"
     },
@@ -12140,11 +12140,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fall_left_8_frame_cycle"
     },
@@ -12167,11 +12167,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fall_right_8_frame_cycle"
     },
@@ -12194,11 +12194,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fall_back_8_frame_cycle"
     },
@@ -12221,11 +12221,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_land_front_8_frame_cycle"
     },
@@ -12248,11 +12248,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_land_left_8_frame_cycle"
     },
@@ -12275,11 +12275,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_land_right_8_frame_cycle"
     },
@@ -12302,11 +12302,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_land_back_8_frame_cycle"
     },
@@ -12329,11 +12329,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_hover_front_8_frame_cycle"
     },
@@ -12356,11 +12356,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_hover_left_8_frame_cycle"
     },
@@ -12383,11 +12383,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_hover_right_8_frame_cycle"
     },
@@ -12410,11 +12410,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_hover_back_8_frame_cycle"
     },
@@ -12437,11 +12437,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_ascend_front_8_frame_cycle"
     },
@@ -12464,11 +12464,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_ascend_left_8_frame_cycle"
     },
@@ -12491,11 +12491,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_ascend_right_8_frame_cycle"
     },
@@ -12518,11 +12518,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_ascend_back_8_frame_cycle"
     },
@@ -12545,11 +12545,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_descend_front_8_frame_cycle"
     },
@@ -12572,11 +12572,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_descend_left_8_frame_cycle"
     },
@@ -12599,11 +12599,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_descend_right_8_frame_cycle"
     },
@@ -12626,11 +12626,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_fly_descend_back_8_frame_cycle"
     },
@@ -12653,11 +12653,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_air_dash_front_8_frame_cycle"
     },
@@ -12680,11 +12680,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_air_dash_left_8_frame_cycle"
     },
@@ -12707,11 +12707,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_air_dash_right_8_frame_cycle"
     },
@@ -12734,11 +12734,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_air_dash_back_8_frame_cycle"
     },
@@ -12761,11 +12761,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -12788,11 +12788,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -12815,11 +12815,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -12842,11 +12842,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -12869,11 +12869,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -12896,11 +12896,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -12923,11 +12923,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -12950,11 +12950,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -12977,11 +12977,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_melee_strike_front_8_frame_cycle"
     },
@@ -13004,11 +13004,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_melee_strike_left_8_frame_cycle"
     },
@@ -13031,11 +13031,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_melee_strike_right_8_frame_cycle"
     },
@@ -13058,11 +13058,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_melee_strike_back_8_frame_cycle"
     },
@@ -13085,11 +13085,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_holy_blast_front_8_frame_cycle"
     },
@@ -13112,11 +13112,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_holy_blast_left_8_frame_cycle"
     },
@@ -13139,11 +13139,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_holy_blast_right_8_frame_cycle"
     },
@@ -13166,11 +13166,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_liberator_holy_blast_back_8_frame_cycle"
     },
@@ -13193,11 +13193,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_idle_breathing_front_8_frame_cycle"
     },
@@ -13220,11 +13220,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_idle_breathing_left_8_frame_cycle"
     },
@@ -13247,11 +13247,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_idle_breathing_right_8_frame_cycle"
     },
@@ -13274,11 +13274,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_idle_breathing_back_8_frame_cycle"
     },
@@ -13301,11 +13301,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_walk_front_8_frame_cycle"
     },
@@ -13328,11 +13328,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_walk_left_8_frame_cycle"
     },
@@ -13355,11 +13355,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_walk_right_8_frame_cycle"
     },
@@ -13382,11 +13382,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_walk_back_8_frame_cycle"
     },
@@ -13409,11 +13409,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_run_front_8_frame_cycle"
     },
@@ -13436,11 +13436,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_run_left_8_frame_cycle"
     },
@@ -13463,11 +13463,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_run_right_8_frame_cycle"
     },
@@ -13490,11 +13490,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_run_back_8_frame_cycle"
     },
@@ -13517,11 +13517,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_sprint_front_8_frame_cycle"
     },
@@ -13544,11 +13544,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_sprint_left_8_frame_cycle"
     },
@@ -13571,11 +13571,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_sprint_right_8_frame_cycle"
     },
@@ -13598,11 +13598,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_sprint_back_8_frame_cycle"
     },
@@ -13625,11 +13625,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_jump_front_8_frame_cycle"
     },
@@ -13652,11 +13652,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_jump_left_8_frame_cycle"
     },
@@ -13679,11 +13679,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_jump_right_8_frame_cycle"
     },
@@ -13706,11 +13706,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_jump_back_8_frame_cycle"
     },
@@ -13733,11 +13733,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fall_front_8_frame_cycle"
     },
@@ -13760,11 +13760,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fall_left_8_frame_cycle"
     },
@@ -13787,11 +13787,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fall_right_8_frame_cycle"
     },
@@ -13814,11 +13814,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fall_back_8_frame_cycle"
     },
@@ -13841,11 +13841,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_land_front_8_frame_cycle"
     },
@@ -13868,11 +13868,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_land_left_8_frame_cycle"
     },
@@ -13895,11 +13895,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_land_right_8_frame_cycle"
     },
@@ -13922,11 +13922,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_land_back_8_frame_cycle"
     },
@@ -13949,11 +13949,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_hover_front_8_frame_cycle"
     },
@@ -13976,11 +13976,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_hover_left_8_frame_cycle"
     },
@@ -14003,11 +14003,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_hover_right_8_frame_cycle"
     },
@@ -14030,11 +14030,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_hover_back_8_frame_cycle"
     },
@@ -14057,11 +14057,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_ascend_front_8_frame_cycle"
     },
@@ -14084,11 +14084,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_ascend_left_8_frame_cycle"
     },
@@ -14111,11 +14111,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_ascend_right_8_frame_cycle"
     },
@@ -14138,11 +14138,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_ascend_back_8_frame_cycle"
     },
@@ -14165,11 +14165,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_descend_front_8_frame_cycle"
     },
@@ -14192,11 +14192,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_descend_left_8_frame_cycle"
     },
@@ -14219,11 +14219,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_descend_right_8_frame_cycle"
     },
@@ -14246,11 +14246,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_fly_descend_back_8_frame_cycle"
     },
@@ -14273,11 +14273,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_air_dash_front_8_frame_cycle"
     },
@@ -14300,11 +14300,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_air_dash_left_8_frame_cycle"
     },
@@ -14327,11 +14327,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_air_dash_right_8_frame_cycle"
     },
@@ -14354,11 +14354,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_air_dash_back_8_frame_cycle"
     },
@@ -14381,11 +14381,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_aim_front_8_frame_cycle"
     },
@@ -14408,11 +14408,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_aim_left_8_frame_cycle"
     },
@@ -14435,11 +14435,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_aim_right_8_frame_cycle"
     },
@@ -14462,11 +14462,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_aim_back_8_frame_cycle"
     },
@@ -14489,11 +14489,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_fire_front_8_frame_cycle"
     },
@@ -14516,11 +14516,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_fire_left_8_frame_cycle"
     },
@@ -14543,11 +14543,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_fire_right_8_frame_cycle"
     },
@@ -14570,11 +14570,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_dual_pistol_fire_back_8_frame_cycle"
     },
@@ -14597,11 +14597,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_melee_strike_front_8_frame_cycle"
     },
@@ -14624,11 +14624,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_melee_strike_left_8_frame_cycle"
     },
@@ -14651,11 +14651,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_melee_strike_right_8_frame_cycle"
     },
@@ -14678,11 +14678,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_melee_strike_back_8_frame_cycle"
     },
@@ -14705,11 +14705,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_holy_blast_front_8_frame_cycle"
     },
@@ -14732,11 +14732,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_holy_blast_left_8_frame_cycle"
     },
@@ -14759,11 +14759,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_holy_blast_right_8_frame_cycle"
     },
@@ -14786,11 +14786,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1024
+        1536
       ],
       "slug": "jc_new_devil_holy_blast_back_8_frame_cycle"
     },
@@ -14813,11 +14813,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_dual_pistol_reload_12_frame_animation"
     },
@@ -14840,11 +14840,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_dual_pistol_holster_12_frame_animation"
     },
@@ -14867,11 +14867,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_pistol_recoil_12_frame_animation"
     },
@@ -14894,11 +14894,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_airborne_spin_12_frame_animation"
     },
@@ -14921,11 +14921,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_dodge_roll_12_frame_animation"
     },
@@ -14948,11 +14948,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_wall_run_12_frame_animation"
     },
@@ -14975,11 +14975,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_wall_phase_12_frame_animation"
     },
@@ -15002,11 +15002,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_ground_impact_12_frame_animation"
     },
@@ -15029,11 +15029,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_resurrection_12_frame_animation"
     },
@@ -15056,11 +15056,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_soul_redemption_12_frame_animation"
     },
@@ -15083,11 +15083,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_soul_banishment_12_frame_animation"
     },
@@ -15110,11 +15110,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_soul_absorption_12_frame_animation"
     },
@@ -15137,11 +15137,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_wing_unfurl_12_frame_animation"
     },
@@ -15164,11 +15164,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_wing_retract_12_frame_animation"
     },
@@ -15191,11 +15191,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_halo_ignite_12_frame_animation"
     },
@@ -15218,11 +15218,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_holy_shield_12_frame_animation"
     },
@@ -15245,11 +15245,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_infernal_shield_12_frame_animation"
     },
@@ -15272,11 +15272,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_portal_traversal_12_frame_animation"
     },
@@ -15299,11 +15299,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_cinematic_landing_12_frame_animation"
     },
@@ -15326,11 +15326,11 @@
       ],
       "cell_px": [
         512,
-        512
+        768
       ],
       "master_px": [
         2048,
-        1536
+        2304
       ],
       "slug": "jc_special_final_judgment_charge_12_frame_animation"
     },
@@ -55836,7 +55836,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 41,
+  "latest_run": 42,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -56194,6 +56194,34 @@
     "independent_native_masters_accepted": 0,
     "git_status_compatibility": "Preserved generated_unverified for historical candidates; explicit per-ID binary evidence distinguishes missing files.",
     "next_batch": "0001-0012",
+    "godot_runtime": "not_executed",
+    "physical_android": "not_executed"
+  },
+  "run42_summary": {
+    "date": "2026-10-24",
+    "verified_completed": 0,
+    "priority_batch": "0001-0012",
+    "geometry_corrected_asset_count": 380,
+    "geometry_corrected_id_range": "0121-0500",
+    "old_animation_cell_px": [
+      512,
+      512
+    ],
+    "new_animation_cell_px": [
+      512,
+      768
+    ],
+    "eight_frame_atlas_px": [
+      2048,
+      1536
+    ],
+    "twelve_frame_atlas_px": [
+      2048,
+      2304
+    ],
+    "reason": "Preserve full-body 2:3 ratio consistent with 1024x1536 independent masters and Run41 512x768 mobile runtime specification",
+    "new_reference_composites_rejected": 1,
+    "new_independent_native_masters": 0,
     "godot_runtime": "not_executed",
     "physical_android": "not_executed"
   }

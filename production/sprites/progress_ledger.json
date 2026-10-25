@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 47,
+  "run": 48,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -432,5 +432,25 @@
     "physical_android_benchmark": "not_executed",
     "native_masters_accepted": 0,
     "verified_completed": 0
+  },
+  "run48": {
+    "new_reference_boards": 1,
+    "extracted_reference_panels": 12,
+    "independent_native_masters": 0,
+    "accepted_new_sprites": 0,
+    "canonical_generation_prompts": 12,
+    "future_prompts": 8,
+    "source_board_sha256": "53307e7ea238b848b176bbf7d6700e75b5a960d438fcc85280067f27037647f4",
+    "source_board_dimensions": [
+      1536,
+      1024
+    ],
+    "source_board_alpha_extrema": [
+      102,
+      253
+    ],
+    "board_status": "rejected_reference_only",
+    "reason": "composite board has no true alpha and printed verification claims are not evidence; no executed Godot or Android benchmark",
+    "run_report": "production/sprites/RUN48_STATUS_2026-10-25.md"
   }
 }

@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 45,
-  "date_utc": "2026-10-25T07:35:00Z",
+  "run": 46,
+  "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -380,5 +380,37 @@
     "physical_android_benchmark_executed": false,
     "source": "Run45 local production package; not shipped to GitHub as binary assets",
     "next_batch": "0001-0012"
+  },
+  "run46_summary": {
+    "manifest_snapshot_checked": 2000,
+    "manifest_integrity_pass": true,
+    "verified_completed": 0,
+    "historical_candidate_ids_unverified": 32,
+    "planned_without_candidate": 1968,
+    "run45_source_panels_audited": 12,
+    "source_panels_true_alpha": 12,
+    "source_panels_safe_48px": 0,
+    "new_reference_composite_boards_generated": 2,
+    "new_reference_boards_native_accepted": 0,
+    "new_reference_boards_alpha_extrema": [
+      [
+        83,
+        253
+      ],
+      [
+        112,
+        252
+      ]
+    ],
+    "new_native_independent_sprites": 0,
+    "new_verified_sprites": 0,
+    "canonical_native_prompts_prepared": 12,
+    "synthetic_godot_import_fixtures_prepared": 12,
+    "github_godot4_ci_smoke_workflow_committed": true,
+    "github_godot4_ci_execution_verified": false,
+    "actual_candidate_godot_import_verified": 0,
+    "physical_android_benchmark_verified": 0,
+    "next_priority": "0001-0012",
+    "report_path": "production/sprites/RUN46_STATUS_2026-10-25.md"
   }
 }

@@ -117,7 +117,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_neutral_front"
+      "slug": "jc_base_neutral_front",
+      "run40_capless_mobile_candidate": {
+        "sha256": "37f998f9e5706f2b8f49868ed4522d15afec365f3d7dab3b862d5f119cc42f66",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0002",
@@ -217,7 +231,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_neutral_left_profile"
+      "slug": "jc_base_neutral_left_profile",
+      "run40_capless_mobile_candidate": {
+        "sha256": "6e80a0d1a1875a5a6197c24a68af1128ef49a5c1f3d2639379695d33226228f1",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0003",
@@ -317,7 +345,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_neutral_right_profile"
+      "slug": "jc_base_neutral_right_profile",
+      "run40_capless_mobile_candidate": {
+        "sha256": "006c2026f65e8da5d48ba2311e0d167e9fb0314af0c5eb61528c59a61848827b",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0004",
@@ -416,7 +458,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_neutral_back"
+      "slug": "jc_base_neutral_back",
+      "run40_capless_mobile_candidate": {
+        "sha256": "9de9cb0b569da307680bb9762904ee86ad0787c73952732b0147848070218c87",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0005",
@@ -515,7 +571,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_three_quarter_left"
+      "slug": "jc_base_three_quarter_left",
+      "run40_capless_mobile_candidate": {
+        "sha256": "97fb2ad2b661408ca7e4f337cb2065a766b226921e67ddaa7bf9f48477dcbfa8",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0006",
@@ -614,7 +684,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_three_quarter_right"
+      "slug": "jc_base_three_quarter_right",
+      "run40_capless_mobile_candidate": {
+        "sha256": "2e24039fcc8ddfb892e7d3a5bb47eb5f6189dc3f57e82b6925c7d8b2cb3f792a",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0007",
@@ -713,7 +797,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_idle_relaxed"
+      "slug": "jc_base_idle_relaxed",
+      "run40_capless_mobile_candidate": {
+        "sha256": "897d3bc8205a30d9f084e2beb7cc6d1755350c210a6b840fba08f9c9e6f1f1e7",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0008",
@@ -812,7 +910,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_idle_alert"
+      "slug": "jc_base_idle_alert",
+      "run40_capless_mobile_candidate": {
+        "sha256": "c95ceede967e3ebba3956bfc570c6df0cfbe44dbdcf16e107c7c19ebf948e75f",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0009",
@@ -911,7 +1023,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_dual_pistols_aim_left"
+      "slug": "jc_base_dual_pistols_aim_left",
+      "run40_capless_mobile_candidate": {
+        "sha256": "22dd2d511619e57fa0b0c0d96fd964aa11a63b789a18db0a5c44705de3bab456",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0010",
@@ -1010,7 +1136,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_dual_pistols_aim_right"
+      "slug": "jc_base_dual_pistols_aim_right",
+      "run40_capless_mobile_candidate": {
+        "sha256": "9c9241b340437647cbfc9cf978f1dc06c819227ec20f80feaa117dfa38974e5b",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0011",
@@ -1109,7 +1249,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_dual_pistols_fire_left"
+      "slug": "jc_base_dual_pistols_fire_left",
+      "run40_capless_mobile_candidate": {
+        "sha256": "53c7d890b57f64a7bb260988a767407c74bde79be6df8cb62796a62c33f413bd",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0012",
@@ -1208,7 +1362,21 @@
         1024,
         1536
       ],
-      "slug": "jc_base_dual_pistols_fire_right"
+      "slug": "jc_base_dual_pistols_fire_right",
+      "run40_capless_mobile_candidate": {
+        "sha256": "386eb1de6a156b937df2a4b0b98924ed4b71bf3431bb7ec9fa13cc3a87960160",
+        "dimensions": [
+          512,
+          768
+        ],
+        "source": "run40 ImageGen composite with true alpha; isolated largest connected silhouette",
+        "source_sha256": "ab97763652fa5511a78ec6b4f116f122e4b5e8ebc55acf81b127b09f345ef53a",
+        "binary_location": "Run40 ZIP package; not committed to repository",
+        "source_truncation_risk": true,
+        "independent_native_master": false,
+        "verified": false,
+        "release_eligible": false
+      }
     },
     {
       "id": "0013",
@@ -55352,7 +55520,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 36,
+  "latest_run": 40,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -55681,5 +55849,21 @@
     "entries_enriched": 2000,
     "reason": "GitHub manifest omitted grid/cell_px/master_px/slug even though earlier offline baseline defined atlas geometry; restored per category/frame count and file_path slug",
     "verified_sprites_added": 0
+  },
+  "run40_summary": {
+    "verified_completed": 0,
+    "existing_candidate_ids": 32,
+    "new_capless_derived_variants": 12,
+    "independent_native_masters": 0,
+    "source_truncation_risk": 12,
+    "prototype_atlas_pages": 2,
+    "prototype_atlas_dimensions": [
+      1536,
+      1536
+    ],
+    "godot_runtime": "not_run",
+    "physical_android": "not_run",
+    "next_priority": "0001-0012",
+    "package": "JC_Hell_Vegas_Sprite_Production_Run40_2026-10-24.zip"
   }
 }

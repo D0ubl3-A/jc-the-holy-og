@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 51,
+  "run": 52,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -522,5 +522,36 @@
     "android_benchmarked": false,
     "new_replacement_prompts": 4,
     "next_priority": "0001-0012"
+  },
+  "run52_summary": {
+    "new_reference_source_sheets": 1,
+    "source_sha256": "246958ad4261b0b6c906e3580d5a34f596d8cde23304b37fd331a4c893a9e959",
+    "derived_individual_lod_pngs": 12,
+    "derived_lod_dimensions_px": [
+      320,
+      512
+    ],
+    "derived_lod_sha256_unique": 12,
+    "derived_lod_real_alpha_pass": 12,
+    "source_edge_contact_risk_cells": [
+      6,
+      7,
+      8,
+      10,
+      11,
+      12
+    ],
+    "derived_lod_canonical_manifest_ids_assigned": 0,
+    "new_independent_native_masters": 0,
+    "new_verified": 0,
+    "manifest_sequential_unique_ids": 2000,
+    "manifest_unique_slugs": 2000,
+    "category_totals": 2000,
+    "godot4_gallery_prepared": true,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "facial_reference_approved": false,
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run52_2026-10-25.zip",
+    "notes": "12 isolated transparent development LOD previews from a composite sheet; not native masters or verified assets."
   }
 }

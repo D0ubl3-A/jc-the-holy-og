@@ -131,6 +131,31 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "5b6c92d910154d8cda73d5a523766881d78e271744fdded6f681832e14a3d613",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
+      },
+      "run41_new_derived_preview": {
+        "sha256": "f2180ef386cc6be2ab396332ecc4544e27f87b388fff00c41df0ff23da60f3a4",
+        "dimensions": [
+          512,
+          768
+        ],
+        "provenance": "GrabCut matte from Run41 multipose reference composite",
+        "release_eligible": false,
+        "source_independent": false,
+        "source_binary_location": "Run41 downloadable production ZIP only",
+        "visual_issue": "matte/edge contamination"
       }
     },
     {
@@ -245,6 +270,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "b11082267a15c0f674ca633361c3a3d0c98ef8433d256093cb55104b4d9e8f51",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -359,6 +397,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "339e125b4fdefdc69e32a5f62dc1eb7ea38d316d82410301a7764fe898f5f036",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -472,6 +523,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "e4b0c1b9734865e3181bbb55bfdf5ea70292b26bdc7a8ff5facd1403ec102e0e",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -585,6 +649,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "835d86ce850f4c266b105b53b393b1be254d751bab7e9d1c5350b103d97f02ec",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -698,6 +775,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "76fbd2ea04c9afba7b3f27270d10dad9cd44daac5365e7d4680797317f80cebd",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -811,6 +901,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "7cafdd1f3020581df30cecf74fdec3748126b4efe59b5b675ca7b3f0c9445c3a",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -924,6 +1027,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "65ad00dde192c72901e4ec53a7b8c8050a6baf64f6c7cdb205dc1d2ac3be63ee",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -1037,6 +1153,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "118a92f3fb55ccbfb857bfbce6bb039a8cca3d8d7bffa16d6860786b6035ada8",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -1150,6 +1279,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "2d38395b192936e0f0dfda42f740c81e7be6e412dd8dfa5da03f081e4ca7ce50",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -1263,6 +1405,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "7ddce9f6fc7d5cb4d5c0f4aa33d0693f58656a9f3fe99d4896dfcf9158ab0a5f",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -1376,6 +1531,19 @@
         "independent_native_master": false,
         "verified": false,
         "release_eligible": false
+      },
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "sha256": "67adef14ca706617cf479c1db468d2d84e2c3556021c2764320f067bcc30fe51",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
       }
     },
     {
@@ -1410,7 +1578,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_holster_pistols"
+      "slug": "jc_base_holster_pistols",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0014",
@@ -1444,7 +1618,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_prayer_kneeling"
+      "slug": "jc_base_prayer_kneeling",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0015",
@@ -1478,7 +1658,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_transformation_beginning"
+      "slug": "jc_base_transformation_beginning",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0016",
@@ -1512,7 +1698,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_transformation_halfway"
+      "slug": "jc_base_transformation_halfway",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0017",
@@ -1546,7 +1738,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_transformation_completed"
+      "slug": "jc_base_transformation_completed",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0018",
@@ -1580,7 +1778,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_airborne_front"
+      "slug": "jc_base_airborne_front",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0019",
@@ -1614,7 +1818,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_airborne_side"
+      "slug": "jc_base_airborne_side",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0020",
@@ -1648,7 +1858,13 @@
         1024,
         1536
       ],
-      "slug": "jc_base_hero_portrait_full_body"
+      "slug": "jc_base_hero_portrait_full_body",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0021",
@@ -1743,7 +1959,20 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_neutral_front"
+      "slug": "jc_savior_neutral_front",
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          512,
+          768
+        ],
+        "sha256": "a443f64ce8260f1a29123e38aa072cb8f33bd232b7c438ff7d80bd1aaa87a8dc",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
+      }
     },
     {
       "id": "0022",
@@ -1824,7 +2053,20 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_neutral_left_profile"
+      "slug": "jc_savior_neutral_left_profile",
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          512,
+          768
+        ],
+        "sha256": "3b898f00a1f8918ce8cb32eb3cbc14745bca2592cee992d73f7ee1043a229b94",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
+      }
     },
     {
       "id": "0023",
@@ -1905,7 +2147,20 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_neutral_right_profile"
+      "slug": "jc_savior_neutral_right_profile",
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          512,
+          768
+        ],
+        "sha256": "1a6d0a4bab4bc3c92e0f5c481b3f044264cab7fc2076fd45c24b381009d7651d",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
+      }
     },
     {
       "id": "0024",
@@ -2000,7 +2255,20 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_neutral_back"
+      "slug": "jc_savior_neutral_back",
+      "run41_binary_evidence": {
+        "accessible": true,
+        "release_eligible": false,
+        "source_archive": "Run31 production ZIP",
+        "dimensions": [
+          512,
+          768
+        ],
+        "sha256": "48a7ffd943e9353de227babd8f0c8ae3e074d168e17df7852d5a2cf117cb64b6",
+        "native_independent_master": false,
+        "godot_import": "not_executed",
+        "android_benchmark": "not_executed"
+      }
     },
     {
       "id": "0025",
@@ -2058,7 +2326,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_three_quarter_left"
+      "slug": "jc_savior_three_quarter_left",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0026",
@@ -2116,7 +2390,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_three_quarter_right"
+      "slug": "jc_savior_three_quarter_right",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0027",
@@ -2160,7 +2440,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_idle_relaxed"
+      "slug": "jc_savior_idle_relaxed",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0028",
@@ -2204,7 +2490,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_idle_alert"
+      "slug": "jc_savior_idle_alert",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0029",
@@ -2248,7 +2540,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_dual_pistols_aim_left"
+      "slug": "jc_savior_dual_pistols_aim_left",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0030",
@@ -2292,7 +2590,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_dual_pistols_aim_right"
+      "slug": "jc_savior_dual_pistols_aim_right",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0031",
@@ -2336,7 +2640,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_dual_pistols_fire_left"
+      "slug": "jc_savior_dual_pistols_fire_left",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0032",
@@ -2380,7 +2690,13 @@
         1024,
         1536
       ],
-      "slug": "jc_savior_dual_pistols_fire_right"
+      "slug": "jc_savior_dual_pistols_fire_right",
+      "run41_binary_evidence": {
+        "accessible": false,
+        "release_eligible": false,
+        "verification": "registered_historical_candidate_missing_binary",
+        "note": "Do not infer that a previously registered image remains available or verified."
+      }
     },
     {
       "id": "0033",
@@ -55520,7 +55836,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 40,
+  "latest_run": 41,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -55674,7 +55990,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-24T22:41:05.074Z",
+  "last_updated_utc": "2026-10-25T03:36:15Z",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -55865,5 +56181,20 @@
     "physical_android": "not_run",
     "next_priority": "0001-0012",
     "package": "JC_Hell_Vegas_Sprite_Production_Run40_2026-10-24.zip"
+  },
+  "run41_summary": {
+    "verified_completed": 0,
+    "target": 2000,
+    "registered_unverified_candidates": 32,
+    "accessible_unverified_binary_ids": 16,
+    "historical_candidate_ids_missing_accessible_binary": 16,
+    "planned": 1968,
+    "reference_composites_rejected": 2,
+    "new_derived_preview_variants": 1,
+    "independent_native_masters_accepted": 0,
+    "git_status_compatibility": "Preserved generated_unverified for historical candidates; explicit per-ID binary evidence distinguishes missing files.",
+    "next_batch": "0001-0012",
+    "godot_runtime": "not_executed",
+    "physical_android": "not_executed"
   }
 }

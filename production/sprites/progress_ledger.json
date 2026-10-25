@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 58,
+  "run": 59,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -683,5 +683,29 @@
     "priority": "0001-0012",
     "after_acceptance": "0013-0024",
     "note": "Reference image contains a false 12/2000 verified label; no source provenance, Godot import or Android evidence. Composite rejected."
+  },
+  "run59_summary": {
+    "verified_completed": 0,
+    "manifest_unique_sequential_ids": 2000,
+    "category_targets_valid": true,
+    "five_routes_130_each": true,
+    "historical_unverified_candidate_ids": 32,
+    "planned_without_candidate": 1968,
+    "new_reference_composites_generated": 2,
+    "new_reference_composites_rejected": 2,
+    "reference_sha256": [
+      "ecce01c7d8bd11758e009afb77eeca226c2f4781b50e829dde655c935023894c",
+      "afac23931c6d62b0e65c9429ebc4cda2b99fd5416f78675dea203a53ff7ce778"
+    ],
+    "reference_only_panels_extracted": 24,
+    "new_native_independent_masters": 0,
+    "new_verified": 0,
+    "single_image_prompts_prepared": 12,
+    "local_synthetic_regression_tests_passed": 6,
+    "local_batch_preflight": "failed as expected: no independent native masters",
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "next_priority": "0001-0012",
+    "note": "No composites, crops, prompts or synthetic fixtures count as verified sprites."
   }
 }

@@ -1,0 +1,38 @@
+name: JC Sprite Godot 4 Import Smoke (QA Fixtures Only)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/jc-sprite-godot4-smoke.yml'
+      - 'production/sprites/tools/run46_make_import_fixtures.py'
+      - 'production/sprites/godot4/run46/**'
+jobs:
+  godot-import-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate deterministic synthetic test fixtures
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          python production/sprites/tools/run46_make_import_fixtures.py production/sprites/godot4/run46/fixtures
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: '4.4.1'
+          use-dotnet: false
+          include-templates: false
+      - name: Confirm Godot installation
+        run: godot --version
+      - name: Import QA-only textures
+        run: timeout 180s godot --headless --path production/sprites/godot4/run46 --import
+      - name: Verify imported textures and alpha
+        run: timeout 120s godot --headless --path production/sprites/godot4/run46 --script res://verify_import.gd
+      - name: Publish fixture audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-sprite-run46-synthetic-import-evidence
+          path: production/sprites/godot4/run46/fixtures/fixture_manifest.json

@@ -1,13 +1,13 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 54,
+  "run": 55,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
   "planned_without_archived_candidate": 1968,
   "current_priority_batch": "0001-0012",
-  "next_after_acceptance": "0013-0020",
+  "next_after_acceptance": "0013-0024",
   "batch_0001_0012": {
     "archived_candidates": 12,
     "sha256_unique": 12,
@@ -599,5 +599,28 @@
     "physical_android_benchmark_executed": false,
     "next_priority": "0001-0012",
     "note": "Run54 fixed the stale top-level 12/12 margin-pass claim and added a fail-closed regression-tested release validator. Image-generated 12/12 verified badges were rejected as visual text, not evidence."
+  },
+  "run55_summary": {
+    "verified_completed": 0,
+    "manifest_entries_checked": 2000,
+    "unique_slugs": true,
+    "manifest_release_gate_pass": true,
+    "registered_historical_candidates_unverified": 32,
+    "planned_without_candidate": 1968,
+    "new_reference_composite_generated": 1,
+    "new_reference_composite_rejected": 1,
+    "new_native_independent_masters": 0,
+    "new_verified": 0,
+    "reference_sha256": "a8562e15b876a27c1fa9e17311b381c0bffd4fbf0f8fa51c89d814d61baf9cf9",
+    "reference_dimensions": [
+      1536,
+      1024
+    ],
+    "reference_reason": "Labeled 12-pose composite with wardrobe/pose mismatches; not native independent RGBA masters",
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "original_face_reference_accessible": false,
+    "next_batch": "0001-0012",
+    "after_acceptance": "0013-0024"
   }
 }

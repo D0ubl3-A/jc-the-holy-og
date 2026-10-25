@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 44,
-  "date_utc": "2026-10-25T06:40:39.570Z",
+  "run": 45,
+  "date_utc": "2026-10-25T07:35:00Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -356,5 +356,29 @@
     "physical_android_benchmark": "not_executed",
     "next_priority": "0001-0012",
     "note": "Composite reference rejected. New fail-closed native PNG preflight tested locally; no release promotion."
+  },
+  "run45_summary": {
+    "date": "2026-10-25",
+    "reference_board_generated": 1,
+    "transparent_reference_lods_created": 12,
+    "reference_atlas_created": 1,
+    "reference_lod_dimensions": [
+      256,
+      384
+    ],
+    "reference_atlas_dimensions": [
+      1024,
+      1152
+    ],
+    "reference_lod_hashes_unique": 12,
+    "pose_label_mismatch_detected": true,
+    "independent_native_masters": 0,
+    "verified_new": 0,
+    "verified_total": 0,
+    "local_regression_tests_passed": 10,
+    "godot4_import_executed": false,
+    "physical_android_benchmark_executed": false,
+    "source": "Run45 local production package; not shipped to GitHub as binary assets",
+    "next_batch": "0001-0012"
   }
 }

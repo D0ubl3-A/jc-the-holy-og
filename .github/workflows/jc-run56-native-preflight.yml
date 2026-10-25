@@ -1,0 +1,53 @@
+name: JC Native Sprite Preflight Regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/tools/run56_native_sprite_preflight.py'
+      - '.github/workflows/jc-run56-native-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check Pillow
+      - name: Test pass/fail behavior using synthetic fixtures (NOT sprites)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import importlib.util, json, tempfile
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          path=Path("production/sprites/tools/run56_native_sprite_preflight.py")
+          spec=importlib.util.spec_from_file_location("preflight",path)
+          m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+          manifest=json.loads(Path("production/sprites/manifest_0001-2000.json").read_text())
+          assert len(manifest["assets"])==2000
+          assert [a["id"] for a in manifest["assets"]]==[f"{i:04d}" for i in range(1,2001)]
+          assert len({a["slug"] for a in manifest["assets"]})==2000
+          assert sum(a["status"]=="verified" for a in manifest["assets"])==manifest["verified"]
+          with tempfile.TemporaryDirectory() as tmp:
+              p=Path(tmp)/"fixture.png"
+              im=Image.new("RGBA",(1024,1536),(0,0,0,0))
+              ImageDraw.Draw(im).rectangle((100,100,924,1487),fill=(255,255,255,255))
+              im.save(p)
+              r=m.preflight(manifest,"0001",p)
+              assert r["technical_preflight_pass"] and not r["accepted_as_verified"]
+              im=Image.new("RGBA",(1024,1536),(0,0,0,0))
+              ImageDraw.Draw(im).rectangle((0,100,924,1487),fill=(255,255,255,255))
+              im.save(p)
+              assert not m.preflight(manifest,"0001",p)["technical_preflight_pass"]
+              Image.new("RGB",(1024,1536),"white").save(p)
+              assert not m.preflight(manifest,"0001",p)["technical_preflight_pass"]
+              Image.new("RGBA",(1536,1024),(0,0,0,0)).save(p)
+              assert not m.preflight(manifest,"0001",p)["technical_preflight_pass"]
+          print("PASS: 2000 manifest IDs and four synthetic preflight cases; zero fixtures promoted")
+          PY

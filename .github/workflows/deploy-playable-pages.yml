@@ -1,0 +1,49 @@
+name: Deploy JC Playable Web to GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'real-city-climb-demo.html'
+      - 'jc-the-holy-og-assets/**'
+      - '.github/workflows/deploy-playable-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: jc-pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify playable web entry and linked files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s real-city-climb-demo.html
+          test -s jc-the-holy-og-assets/replit-combined-runtime.js
+          test -s jc-the-holy-og-assets/battle-rap-launcher.js
+          grep -q 'JC_GAME' index.html
+          grep -q 'three' index.html
+      - name: Stage playable site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _pages
+          cp index.html real-city-climb-demo.html _pages/
+          cp -a jc-the-holy-og-assets _pages/
+          touch _pages/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _pages
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 40,
-  "date_utc": "2026-10-25T00:44:19Z",
+  "run": 41,
+  "date_utc": "2026-10-25T03:36:15Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -261,5 +261,24 @@
     "prompts_prepared": 20,
     "asset_binary_location": "Run40 ZIP; not uploaded to GitHub",
     "next_priority": "0001-0012"
+  },
+  "accessible_unverified_binary_ids": 16,
+  "registered_historical_candidates_missing_accessible_binary": 16,
+  "new_derived_preview_variants": 1,
+  "new_independent_native_sprite_files": 0,
+  "run41": {
+    "manifest_reconciled": true,
+    "registered_candidates": 32,
+    "accessible_binary_ids": 16,
+    "missing_binary_ids": 16,
+    "composite_reference_boards_rejected": 2,
+    "derived_preview_asset_id": "0001",
+    "derived_preview_sha256": "f2180ef386cc6be2ab396332ecc4544e27f87b388fff00c41df0ff23da60f3a4",
+    "derived_preview_native_master": false,
+    "verified_completed": 0,
+    "independent_native_masters_accepted": 0,
+    "godot4_runtime_import": "not_executed",
+    "physical_android_benchmark": "not_executed",
+    "asset_binary_location": "Run41 downloadable ZIP; not committed to GitHub"
   }
 }

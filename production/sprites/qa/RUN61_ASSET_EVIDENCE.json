@@ -1,0 +1,55 @@
+{
+  "run": 61,
+  "verified_completed": 0,
+  "target": 2000,
+  "independent_single_pose_source": {
+    "id": "0001",
+    "size_px": [
+      1024,
+      1536
+    ],
+    "sha256": "0d56c97868872bcc362144705d41de5ca43c9e227d9d145b43cd31a4d61bfd41",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "margins_px": [
+      151,
+      11,
+      145,
+      26
+    ],
+    "native_canvas": true,
+    "release_verified": false,
+    "reason": "not true alpha and 48px margins fail"
+  },
+  "derived_cutout": {
+    "id": "0001",
+    "size_px": [
+      1024,
+      1536
+    ],
+    "sha256": "2c130a767664f605f8235a126c5c3caabb8b3457e4013b59069ea9b2f5d19023",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "margins_px": [
+      175,
+      64,
+      176,
+      64
+    ],
+    "automated_preflight": true,
+    "release_verified": false,
+    "reason": "residual background fragments; no face approval, Godot import or Android benchmark"
+  },
+  "manifest_integrity": {
+    "ids_unique_sequential": 2000,
+    "slugs_unique": 2000,
+    "categories_sum": 2000,
+    "grid_geometry_pass": true
+  },
+  "next_batch": "0001-0012",
+  "following_batch": "0013-0024"
+}

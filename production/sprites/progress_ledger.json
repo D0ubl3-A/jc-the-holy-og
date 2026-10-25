@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 37,
-  "date_utc": "2026-10-24T23:37:38Z",
+  "run": 38,
+  "date_utc": "2026-10-25T00:44:19Z",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -197,5 +197,29 @@
     "next_batch": "0001-0012",
     "production_package": "JC_Hell_Vegas_Sprite_Production_Run37_2026-10-24.zip",
     "note": "No prompts, composites or derived crops count as verified sprites."
+  },
+  "run38_summary": {
+    "manifest_entries_checked": 2000,
+    "unique_ids": 2000,
+    "category_targets_pass": true,
+    "existing_candidate_ids_unverified": 32,
+    "planned": 1968,
+    "new_generated_reference_composite": 1,
+    "new_reference_composites_rejected": 1,
+    "new_native_independent_masters": 0,
+    "new_verified": 0,
+    "generated_reference_sha256": "4eb4103e4123bcf3efe2ea0a077d097133a4dd7f77911cf83cea6871de2edc72",
+    "generated_reference_dimensions": [
+      1536,
+      1024
+    ],
+    "generated_reference_alpha_extrema": [
+      0,
+      254
+    ],
+    "fail_closed_validator_tests_passed": 5,
+    "godot4_runtime_test_executed": false,
+    "physical_mobile_test_executed": false,
+    "priority": "replace 0001–0012 with independent native RGBA masters"
   }
 }

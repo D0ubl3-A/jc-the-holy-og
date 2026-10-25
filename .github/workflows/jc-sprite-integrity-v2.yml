@@ -33,6 +33,8 @@ jobs:
             --json-report production/sprites/qa/latest_integrity_report.json
       - name: Regression tests
         run: python -m unittest discover -s production/sprites/tools -p 'test_manifest_integrity.py' -v
+      - name: Run44 native-master PNG preflight regression tests
+        run: python -m unittest discover -s production/sprites/tools -p 'test_run44_preflight.py' -v
       - name: Upload integrity evidence
         if: always()
         uses: actions/upload-artifact@v4

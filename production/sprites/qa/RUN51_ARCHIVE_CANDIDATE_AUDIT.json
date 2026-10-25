@@ -1,0 +1,104 @@
+{
+  "run": 51,
+  "date": "2026-10-25",
+  "verified": 0,
+  "target": 2000,
+  "next_batch": "0001-0012",
+  "source_manifest_sha256": "247e835c6a9174720891c01e4b884c63f65b57333fdc7687aaf6a295fa71ed89",
+  "manifest_entries": 2000,
+  "unique_ids": 2000,
+  "unique_slugs": 2000,
+  "candidates": [
+    {
+      "id": "0001",
+      "sha256": "5b6c92d910154d8cda73d5a523766881d78e271744fdded6f681832e14a3d613",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "alpha_margins": [
+        320,
+        87,
+        321,
+        87
+      ],
+      "hash_matches": true,
+      "alpha_margin_pass": true,
+      "native_master": false,
+      "visual_defects": [
+        "cap present",
+        "face reference unverified"
+      ]
+    },
+    {
+      "id": "0002",
+      "sha256": "b11082267a15c0f674ca633361c3a3d0c98ef8433d256093cb55104b4d9e8f51",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "alpha_margins": [
+        353,
+        87,
+        353,
+        87
+      ],
+      "hash_matches": true,
+      "alpha_margin_pass": true,
+      "native_master": false,
+      "visual_defects": [
+        "cap present",
+        "head turned toward camera; not strict left profile"
+      ]
+    },
+    {
+      "id": "0003",
+      "sha256": "339e125b4fdefdc69e32a5f62dc1eb7ea38d316d82410301a7764fe898f5f036",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "alpha_margins": [
+        346,
+        87,
+        346,
+        87
+      ],
+      "hash_matches": true,
+      "alpha_margin_pass": true,
+      "native_master": false,
+      "visual_defects": [
+        "cap present",
+        "head turned toward camera; not strict right profile"
+      ]
+    },
+    {
+      "id": "0004",
+      "sha256": "e4b0c1b9734865e3181bbb55bfdf5ea70292b26bdc7a8ff5facd1403ec102e0e",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "alpha_margins": [
+        343,
+        87,
+        343,
+        87
+      ],
+      "hash_matches": true,
+      "alpha_margin_pass": true,
+      "native_master": false,
+      "visual_defects": [
+        "cap present",
+        "uncovered hair requirement failed"
+      ]
+    }
+  ],
+  "sha256_unique": 4,
+  "actual_godot_import": false,
+  "physical_android_benchmark": false,
+  "new_native_independent_masters": 0,
+  "new_composite_reference_boards_rejected": 1,
+  "new_replacement_prompts": 4,
+  "verified_added": 0
+}

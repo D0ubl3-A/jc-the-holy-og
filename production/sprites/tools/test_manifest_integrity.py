@@ -32,4 +32,16 @@ class IntegrityTests(unittest.TestCase):
         self.assertFalse(self.check(fake)["passed"])
     def test_wrong_category_rejected(self):
         self.assertFalse(self.check(lambda m:m["assets"][-1].update(category="ui"))["passed"])
+    def test_square_animation_cells_rejected(self):
+        def bad(m):
+            a=m["assets"][120]
+            a["cell_px"]=[512,512]
+            a["master_px"]=[a["grid"][0]*512,a["grid"][1]*512]
+        self.assertFalse(self.check(bad)["passed"])
+    def test_wrong_animation_master_dimensions_rejected(self):
+        self.assertFalse(self.check(lambda m:m["assets"][120].update(master_px=[2048,1024]))["passed"])
+    def test_incorrect_ending_route_rejected(self):
+        self.assertFalse(self.check(lambda m:m["assets"][-1].update(route="Savior"))["passed"])
+    def test_duplicate_slug_rejected(self):
+        self.assertFalse(self.check(lambda m:m["assets"][1].update(slug=m["assets"][0]["slug"]))["passed"])
 if __name__=="__main__": unittest.main()

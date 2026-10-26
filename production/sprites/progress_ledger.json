@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 81,
+  "run": 82,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1286,5 +1286,28 @@
     "independent_1024x1536_masters": 0,
     "next_priority": "0001-0012",
     "production_package": "JC_Hell_Vegas_Sprite_Production_Run81_2026-10-26.zip"
+  },
+  "run82_summary": {
+    "verified_completed": 0,
+    "native_jc_masters_new": 0,
+    "original_procedural_vfx_binaries_unverified": 4,
+    "vfx_ids": [
+      "1721",
+      "1722",
+      "1723",
+      "1724"
+    ],
+    "vfx_technical_checks_pass": 4,
+    "mobile_lod_derivatives_unverified": 8,
+    "new_composite_reference_boards_rejected_as_masters": 2,
+    "legacy_jc_sources_512x768_audited": 4,
+    "legacy_jc_native_master_pass": 0,
+    "independent_native_prompts_prepared": 12,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "verified_release_assets_new": 0,
+    "current_priority": "0001-0012",
+    "next_priority": "0013-0024",
+    "downloadable_artifact": "JC_Hell_Vegas_Sprite_Production_Run82_2026-10-26.zip"
   }
 }

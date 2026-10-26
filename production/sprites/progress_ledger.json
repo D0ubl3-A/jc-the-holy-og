@@ -1078,7 +1078,7 @@
     "verified_completed": 0,
     "target": 2000,
     "manifest_unique_contiguous_ids": 2000,
-    "manifest_categories": 11,
+    "manifest_categories": 12,
     "five_routes": true,
     "five_endings_asset_ids": 50,
     "newly_created_corrected_derived_lod3_frames": 4,
@@ -1103,6 +1103,9 @@
     "current_batch": "0001-0012",
     "next_batch": "0013-0024",
     "artifact": "JC_Hell_Vegas_Sprite_Production_Run75_2026-10-26.zip",
-    "note": "Do not count prompts, image-generation dashboards, composite-derived sprites, or resized LODs as verified."
+    "note": "Do not count prompts, image-generation dashboards, composite-derived sprites, or resized LODs as verified.",
+    "jc_base_ids": "0001-0020",
+    "five_route_transformations_ids": "0021-0120",
+    "category_schema_change": "Split former combined 120-entry JC category into 20 JC base and 100 five-route transformations; all IDs and statuses preserved."
   }
 }

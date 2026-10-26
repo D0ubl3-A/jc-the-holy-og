@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 68,
+  "run": 69,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -923,5 +923,24 @@
     "physical_android_tested": false,
     "identity_signoff": "pending",
     "note": "Three generated 1536x1024 composites rejected; 0001 alpha-bleed and LODs are development-only, not independent native masters."
+  },
+  "run69_summary": {
+    "verified_completed": 0,
+    "manifest_entries": 2000,
+    "unique_ids": 2000,
+    "unique_slugs": 2000,
+    "existing_generated_unverified_ids": 32,
+    "planned_ids": 1968,
+    "new_reference_boards": 2,
+    "rejected_reference_boards": 2,
+    "new_independent_native_masters": 0,
+    "new_release_verified_sprites": 0,
+    "run68_0001_structural_audit": "1024x1536 RGBA; 48px safe margin pass; derived, not independent",
+    "new_release_gate_tests_passed": 6,
+    "physical_android_tested": false,
+    "godot4_runtime_executed": false,
+    "canonical_face_approved": false,
+    "package": "JC_Hell_Vegas_Sprite_Production_Run69_2026-10-26.zip",
+    "note": "Two 1536x1024 four-pose images with noncanonical robe/crown were rejected. Six local QA tests passed. No sprite promoted."
   }
 }

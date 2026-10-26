@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 79,
+  "run": 80,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1236,5 +1236,27 @@
     "physical_android_benchmark": "not executed",
     "release_gate": "FAIL CLOSED; identity/anatomy/native source/Godot/physical Android pending",
     "package": "JC_Hell_Vegas_Sprite_Production_Run79_2026-10-26.zip"
+  },
+  "run80_summary": {
+    "generated_reference_composite_boards": 2,
+    "derived_rgba_pose_studies": 12,
+    "derived_atlas_dimensions": [
+      1592,
+      792
+    ],
+    "unique_derived_hashes": 12,
+    "visual_qa_failed_studies": 12,
+    "independent_native_masters": 0,
+    "new_verified": 0,
+    "total_verified": 0,
+    "manifest_unique_ids": 2000,
+    "archived_unverified_ids_preserved": 32,
+    "planned_without_archived_candidate": 1968,
+    "pose_label_swap": "reference 0002/0003 reversed relative to manifest",
+    "nonmatching_studies": "reference studies 0005–0012 not canonical manifest poses",
+    "godot4_runtime_executed": false,
+    "physical_android_benchmarked": false,
+    "next_priority": "0001-0012",
+    "source": "RUN80_STATUS_2026-10-26.md; binary package delivered in conversation"
   }
 }

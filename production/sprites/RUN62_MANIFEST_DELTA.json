@@ -1,0 +1,30 @@
+{
+  "run": 62,
+  "date_utc": "2026-10-25",
+  "verified_completed": 0,
+  "target": 2000,
+  "generated_unverified_asset_ids": 32,
+  "planned_asset_ids": 1968,
+  "new_independent_single_pose_source_ids": [
+    "0001"
+  ],
+  "new_native_single_pose_source_count": 1,
+  "new_safe_margin_candidate_count": 1,
+  "reference_composites_generated": 1,
+  "reference_composites_verified_as_sprites": 0,
+  "qa_local_tests_passed": 12,
+  "alpha_margin_0001_px": [
+    225,
+    84,
+    222,
+    94
+  ],
+  "godot4_runtime_verified": false,
+  "physical_android_benchmarked": false,
+  "identity_signoff": false,
+  "next_uncompleted_batch": "0001-0012",
+  "next_after_acceptance": "0013-0024",
+  "manifest_snapshot": "Run62 ZIP (full 2000-entry manifest, not yet pushed to GitHub)",
+  "binary_status": "Generated source and cutout in Run62 ZIP; no PNG binary pushed to GitHub",
+  "note": "Do not mark candidate or prompt verified."
+}

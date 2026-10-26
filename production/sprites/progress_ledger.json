@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 71,
+  "run": 72,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -981,5 +981,36 @@
     "godot4_runtime": "not_run",
     "physical_android_benchmark": "not_run",
     "report_path": "production/sprites/RUN71_STATUS_2026-10-26.md"
+  },
+  "run72_summary": {
+    "verified_completed": 0,
+    "archived_generated_unverified_candidate_ids": 32,
+    "accessible_prior_candidate_binaries": 4,
+    "planned_without_archived_candidate": 1968,
+    "new_independent_native_masters": 0,
+    "new_reference_only_boards": 2,
+    "new_derived_edge_repaired_candidate_ids": [
+      "0001"
+    ],
+    "new_derived_animation_preview_id": "0007",
+    "derived_animation_frames": 8,
+    "derived_frame_unique_sha256": 8,
+    "derived_frame_baseline_spread_px": 0,
+    "derived_frame_min_margin_px": 18,
+    "derived_atlas_dimensions_px": [
+      1088,
+      800
+    ],
+    "derived_atlas_rgba8_uncompressed_mib": 3.32,
+    "edge_cleanup_weighted_saturated_fringe_before": 677.29,
+    "edge_cleanup_weighted_saturated_fringe_after": 558.05,
+    "edge_cleanup_raw_saturated_fringe_before": 903,
+    "edge_cleanup_raw_saturated_fringe_after": 1528,
+    "godot4_runtime_import": "not_run",
+    "physical_android_benchmark": "not_run",
+    "face_identity_signoff": "pending",
+    "all_new_images_status": "reference_only_or_generated_unverified",
+    "next_batch": "0001-0012",
+    "next_after_acceptance": "0013-0024"
   }
 }

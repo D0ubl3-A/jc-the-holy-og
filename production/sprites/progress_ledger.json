@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 70,
+  "run": 71,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -963,5 +963,23 @@
     "next_batch": "0001-0012",
     "next_after_acceptance": "0013-0024",
     "artifact": "JC_Hell_Vegas_Sprite_Production_Run70_2026-10-26.zip"
+  },
+  "run71_summary": {
+    "verified_completed": 0,
+    "accessible_unverified_candidate_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "historical_candidate_ids_without_local_binary": 28,
+    "planned_without_archived_candidate": 1968,
+    "new_reference_boards": 2,
+    "new_independent_native_sprite_masters": 0,
+    "new_development_atlases": 1,
+    "per_id_generation_prompts_written": 2000,
+    "godot4_runtime": "not_run",
+    "physical_android_benchmark": "not_run",
+    "report_path": "production/sprites/RUN71_STATUS_2026-10-26.md"
   }
 }

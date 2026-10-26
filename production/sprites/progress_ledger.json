@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 67,
+  "run": 68,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -23,10 +23,10 @@
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
-  "new_composite_boards_rejected": 2,
+  "new_composite_boards_rejected": 3,
   "prompts_written": 12,
   "new_visuals_are_reference_only": true,
-  "new_development_lod_previews_unverified": 8,
+  "new_development_lod_previews_unverified": 3,
   "new_lod_sha256_unique": 12,
   "audit": "Run28 ZIP: qa/run28_candidate_lod_audit.json",
   "run29_summary": {
@@ -890,5 +890,38 @@
     "next_batch": "0013-0024",
     "source_package": "JC_Hell_Vegas_Sprite_Production_Run67_2026-10-25.zip",
     "warning": "Composite boards, derived crops, prompts and QA reports are not verified sprites."
+  },
+  "run68_summary": {
+    "verified_completed": 0,
+    "manifest_unique_ids": 2000,
+    "manifest_unique_slugs": 2000,
+    "five_routes": [
+      "Savior",
+      "King",
+      "Destroyer",
+      "Liberator",
+      "New Devil"
+    ],
+    "new_reference_boards": 3,
+    "rejected_reference_boards": 3,
+    "independent_native_masters": 0,
+    "release_verified_new": 0,
+    "source_0001_from_run62_reprocessed": true,
+    "new_0001_edge_bleed_variant_sha256": "27a84ab41b6432319b5741082a315d17d593a66b6e2987978b1370fee278f434",
+    "new_0001_lods": [
+      512,
+      384,
+      256
+    ],
+    "native_candidate_0001_margin_px": [
+      225,
+      89,
+      223,
+      95
+    ],
+    "godot_runtime_executed": false,
+    "physical_android_tested": false,
+    "identity_signoff": "pending",
+    "note": "Three generated 1536x1024 composites rejected; 0001 alpha-bleed and LODs are development-only, not independent native masters."
   }
 }

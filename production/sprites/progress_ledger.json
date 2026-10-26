@@ -4,8 +4,8 @@
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
-  "generated_unverified_archive_candidate_ids": 32,
-  "planned_without_archived_candidate": 1968,
+  "generated_unverified_archive_candidate_ids": 36,
+  "planned_without_archived_candidate": 1964,
   "current_priority_batch": "0001-0012",
   "next_after_acceptance": "0013-0024",
   "batch_0001_0012": {
@@ -1308,6 +1308,8 @@
     "verified_release_assets_new": 0,
     "current_priority": "0001-0012",
     "next_priority": "0013-0024",
-    "downloadable_artifact": "JC_Hell_Vegas_Sprite_Production_Run82_2026-10-26.zip"
+    "downloadable_artifact": "JC_Hell_Vegas_Sprite_Production_Run82_2026-10-26.zip",
+    "generated_unverified_total": 36,
+    "planned_total": 1964
   }
 }

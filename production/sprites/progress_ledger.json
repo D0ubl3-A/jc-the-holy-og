@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 65,
-  "date_utc": "2026-10-25",
+  "run": 66,
+  "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 32,
@@ -23,10 +23,10 @@
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
-  "new_composite_boards_rejected": 2,
+  "new_composite_boards_rejected": 1,
   "prompts_written": 12,
   "new_visuals_are_reference_only": true,
-  "new_development_lod_previews_unverified": 12,
+  "new_development_lod_previews_unverified": 8,
   "new_lod_sha256_unique": 12,
   "audit": "Run28 ZIP: qa/run28_candidate_lod_audit.json",
   "run29_summary": {
@@ -832,5 +832,35 @@
     "physical_android": "not_executed",
     "binary_artifacts": "Run65 downloadable package; not uploaded to GitHub",
     "next_priority": "0001-0012"
+  },
+  "date_local": "2026-10-25",
+  "run66_summary": {
+    "verified_completed": 0,
+    "reference_composites_generated": 1,
+    "reference_sha256": "d30e32ab5f042b6844b5355291e504b218acb2a2a4a3ae63c98b5f5097496c7c",
+    "reference_dimensions": [
+      1536,
+      1024
+    ],
+    "new_composite_derived_512x768_pngs": 4,
+    "new_composite_derived_256x384_webps": 4,
+    "derived_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "local_pytest_pass": 5,
+    "manifest_unique_ids": 2000,
+    "manifest_unique_slugs": 2000,
+    "archival_unverified_ids": 32,
+    "planned_ids": 1968,
+    "independent_native_masters": 0,
+    "godot_runtime": "not_run",
+    "physical_android_benchmark": "not_run",
+    "canonical_identity_signoff": "pending",
+    "next_priority": "0001-0012",
+    "following_batch": "0013-0024",
+    "full_binary_manifest_and_audit": "Run66 downloadable ZIP; not yet committed to repository"
   }
 }

@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 74,
+  "run": 75,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1073,5 +1073,36 @@
     "next_batch": "0001-0012",
     "following_batch": "0013-0024",
     "artifact": "JC_Hell_Vegas_Sprite_Production_Run74_2026-10-26.zip"
+  },
+  "run75_summary": {
+    "verified_completed": 0,
+    "target": 2000,
+    "manifest_unique_contiguous_ids": 2000,
+    "manifest_categories": 11,
+    "five_routes": true,
+    "five_endings_asset_ids": 50,
+    "newly_created_corrected_derived_lod3_frames": 4,
+    "new_upscaled_lod_variants": 8,
+    "new_dev_atlas": 1,
+    "visible_height_spread_px": 0,
+    "foot_baseline_spread_px": 0,
+    "source_frame_dimensions": [
+      256,
+      384
+    ],
+    "new_independent_native_masters": 0,
+    "new_verified": 0,
+    "generated_dashboard_reference_only": 1,
+    "visual_issues_remaining": [
+      "0004 brown hair-background block and side alpha contamination",
+      "0004 masked leg gap requires review",
+      "independent native masters and canonical facial signoff absent"
+    ],
+    "godot4_runtime_import": "not_executed",
+    "physical_android_benchmark": "not_executed",
+    "current_batch": "0001-0012",
+    "next_batch": "0013-0024",
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run75_2026-10-26.zip",
+    "note": "Do not count prompts, image-generation dashboards, composite-derived sprites, or resized LODs as verified."
   }
 }

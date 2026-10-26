@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 78,
+  "run": 79,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1216,5 +1216,25 @@
     "physical_android_benchmark": "not_executed",
     "package": "JC_Hell_Vegas_Sprite_Production_Run78_2026-10-26.zip",
     "local_regression_tests_passed": 7
+  },
+  "run79_summary": {
+    "verified_completed": 0,
+    "new_independent_native_masters": 0,
+    "new_release_verified": 0,
+    "new_reference_dashboards_rejected_as_sprite": 1,
+    "actual_recovered_development_binaries_reaudited": 4,
+    "actual_new_rgb_bleed_atlas": "1072x1584 RGBA with 16px gutters",
+    "actual_new_mobile_lod_derivatives": 8,
+    "independent_native_prompts_current_and_next": 24,
+    "unique_manifest_ids": 2000,
+    "manifest_categories": 12,
+    "transformation_routes": 5,
+    "endings": 5,
+    "baseline_spread_px": 0,
+    "source_native_1024x1536_masters": 0,
+    "godot_runtime": "not executed",
+    "physical_android_benchmark": "not executed",
+    "release_gate": "FAIL CLOSED; identity/anatomy/native source/Godot/physical Android pending",
+    "package": "JC_Hell_Vegas_Sprite_Production_Run79_2026-10-26.zip"
   }
 }

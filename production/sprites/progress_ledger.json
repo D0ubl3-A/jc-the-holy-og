@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 77,
+  "run": 78,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1167,5 +1167,53 @@
     "github_manifest_schema_migration_pending": true,
     "local_package": "JC_Hell_Vegas_Sprite_Production_Run77_2026-10-26.zip",
     "next_priority": "0001-0012"
+  },
+  "run78_summary": {
+    "manifest_unique_ids": 2000,
+    "categories": 12,
+    "transformation_routes": 5,
+    "endings": 5,
+    "registered_unverified_candidates": 32,
+    "planned_without_archived_candidate": 1968,
+    "new_development_candidate": "0004 composited pistol barrels from 0001; unverified derivative",
+    "recovered_LOD1_files_audited": 4,
+    "actual_staging_alpha_pass": 4,
+    "development_alpha_margin_px": {
+      "0001": [
+        123,
+        51,
+        124,
+        51
+      ],
+      "0002": [
+        190,
+        51,
+        191,
+        51
+      ],
+      "0003": [
+        190,
+        51,
+        190,
+        51
+      ],
+      "0004": [
+        133,
+        51,
+        130,
+        51
+      ]
+    },
+    "development_baseline_spread_px": 0,
+    "atlas_px": [
+      1072,
+      1584
+    ],
+    "new_independent_native_masters": 0,
+    "new_release_verified": 0,
+    "generated_reference_composite_rejected": 1,
+    "godot4_import": "not_executed",
+    "physical_android_benchmark": "not_executed",
+    "package": "JC_Hell_Vegas_Sprite_Production_Run78_2026-10-26.zip"
   }
 }

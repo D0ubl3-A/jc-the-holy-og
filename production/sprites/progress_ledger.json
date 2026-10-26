@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 75,
+  "run": 76,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1107,5 +1107,31 @@
     "jc_base_ids": "0001-0020",
     "five_route_transformations_ids": "0021-0120",
     "category_schema_change": "Split former combined 120-entry JC category into 20 JC base and 100 five-route transformations; all IDs and statuses preserved."
+  },
+  "run76_summary": {
+    "manifest_entries_checked": 2000,
+    "unique_ids": 2000,
+    "local_manifest_category_count": 12,
+    "existing_unverified_candidate_ids": 32,
+    "planned": 1968,
+    "actual_development_pngs_audited": 4,
+    "real_alpha_pass": 4,
+    "min_lod3_margin_px": 9,
+    "unique_hashes": 4,
+    "foot_baseline_spread_px": 1,
+    "development_atlas_created": 1,
+    "atlas_px": [
+      1104,
+      416
+    ],
+    "asset_0004_visual_alpha": "fail",
+    "new_independent_native_masters": 0,
+    "new_verified": 0,
+    "reference_dashboard_rejected": 1,
+    "godot4_runtime": "not_executed",
+    "physical_android": "not_executed",
+    "next_batch": "0001-0012",
+    "following_batch": "0013-0024",
+    "note": "Local Run76 ZIP manifest uses 12 categories; older repository manifest still uses 11-category allocation. No sprite promotion."
   }
 }

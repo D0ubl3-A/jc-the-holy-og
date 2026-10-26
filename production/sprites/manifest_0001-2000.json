@@ -7,7 +7,8 @@
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
   "category_targets": {
-    "jc_route_transformations": 120,
+    "jc_base": 20,
+    "jc_route_transformations": 100,
     "locomotion_combat_flying": 380,
     "humans": 280,
     "angels": 190,
@@ -22,7 +23,7 @@
   "assets": [
     {
       "id": "0001",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — neutral front",
       "status": "generated_unverified",
       "frames": 1,
@@ -160,7 +161,7 @@
     },
     {
       "id": "0002",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — neutral left profile",
       "status": "generated_unverified",
       "frames": 1,
@@ -287,7 +288,7 @@
     },
     {
       "id": "0003",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — neutral right profile",
       "status": "generated_unverified",
       "frames": 1,
@@ -414,7 +415,7 @@
     },
     {
       "id": "0004",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — neutral back",
       "status": "generated_unverified",
       "frames": 1,
@@ -540,7 +541,7 @@
     },
     {
       "id": "0005",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — three-quarter left",
       "status": "generated_unverified",
       "frames": 1,
@@ -666,7 +667,7 @@
     },
     {
       "id": "0006",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — three-quarter right",
       "status": "generated_unverified",
       "frames": 1,
@@ -792,7 +793,7 @@
     },
     {
       "id": "0007",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — idle relaxed",
       "status": "generated_unverified",
       "frames": 1,
@@ -918,7 +919,7 @@
     },
     {
       "id": "0008",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — idle alert",
       "status": "generated_unverified",
       "frames": 1,
@@ -1044,7 +1045,7 @@
     },
     {
       "id": "0009",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — dual pistols aim left",
       "status": "generated_unverified",
       "frames": 1,
@@ -1170,7 +1171,7 @@
     },
     {
       "id": "0010",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — dual pistols aim right",
       "status": "generated_unverified",
       "frames": 1,
@@ -1296,7 +1297,7 @@
     },
     {
       "id": "0011",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — dual pistols fire left",
       "status": "generated_unverified",
       "frames": 1,
@@ -1422,7 +1423,7 @@
     },
     {
       "id": "0012",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — dual pistols fire right",
       "status": "generated_unverified",
       "frames": 1,
@@ -1548,7 +1549,7 @@
     },
     {
       "id": "0013",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — holster pistols",
       "status": "generated_unverified",
       "frames": 1,
@@ -1588,7 +1589,7 @@
     },
     {
       "id": "0014",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — prayer kneeling",
       "status": "generated_unverified",
       "frames": 1,
@@ -1628,7 +1629,7 @@
     },
     {
       "id": "0015",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — transformation beginning",
       "status": "generated_unverified",
       "frames": 1,
@@ -1668,7 +1669,7 @@
     },
     {
       "id": "0016",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — transformation halfway",
       "status": "generated_unverified",
       "frames": 1,
@@ -1708,7 +1709,7 @@
     },
     {
       "id": "0017",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — transformation completed",
       "status": "generated_unverified",
       "frames": 1,
@@ -1748,7 +1749,7 @@
     },
     {
       "id": "0018",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — airborne front",
       "status": "generated_unverified",
       "frames": 1,
@@ -1788,7 +1789,7 @@
     },
     {
       "id": "0019",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — airborne side",
       "status": "generated_unverified",
       "frames": 1,
@@ -1828,7 +1829,7 @@
     },
     {
       "id": "0020",
-      "category": "jc_route_transformations",
+      "category": "jc_base",
       "title": "JC Base — hero portrait full body",
       "status": "generated_unverified",
       "frames": 1,
@@ -55836,7 +55837,7 @@
     }
   ],
   "planned": 1968,
-  "latest_run": 42,
+  "latest_run": 79,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -56224,5 +56225,6 @@
     "new_independent_native_masters": 0,
     "godot_runtime": "not_executed",
     "physical_android": "not_executed"
-  }
+  },
+  "run79_manifest_normalization": "IDs 0001-0020 are JC base, not route transformations; preserved 2,000 IDs, existing titles/statuses and 0 release-verified count. Run79."
 }

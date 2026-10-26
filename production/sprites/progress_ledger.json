@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 80,
+  "run": 81,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1258,5 +1258,33 @@
     "physical_android_benchmarked": false,
     "next_priority": "0001-0012",
     "source": "RUN80_STATUS_2026-10-26.md; binary package delivered in conversation"
+  },
+  "run81_summary": {
+    "new_native_independent_sprite_files": 0,
+    "new_verified_sprites": 0,
+    "audited_recovered_lod1_512x768": 4,
+    "sha256_unique": 4,
+    "alpha_and_48px_source_margin_pass": 4,
+    "atlas_dimensions": [
+      845,
+      688
+    ],
+    "atlas_raw_rgba8_mib": 2.218,
+    "previous_full_canvas_atlas_raw_rgba8_mib": 6.477,
+    "theoretical_raw_atlas_memory_reduction_pct": 65.8,
+    "source_pixel_integrity_pass": 4,
+    "run80_pose_studies_directly_matching_manifest_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "pose_semantic_mismatches_found": true,
+    "weapon_continuity_0004": "FAIL: holstered in back view vs held in front view",
+    "godot4_runtime_test": "NOT_EXECUTED",
+    "physical_android_benchmark": "NOT_EXECUTED",
+    "independent_1024x1536_masters": 0,
+    "next_priority": "0001-0012",
+    "production_package": "JC_Hell_Vegas_Sprite_Production_Run81_2026-10-26.zip"
   }
 }

@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 69,
+  "run": 70,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -942,5 +942,26 @@
     "canonical_face_approved": false,
     "package": "JC_Hell_Vegas_Sprite_Production_Run69_2026-10-26.zip",
     "note": "Two 1536x1024 four-pose images with noncanonical robe/crown were rejected. Six local QA tests passed. No sprite promoted."
+  },
+  "run70_summary": {
+    "new_reference_composites_generated": 2,
+    "reference_composites_rejected": 2,
+    "new_independent_native_masters": 0,
+    "new_verified": 0,
+    "carried_forward_0001_structural_pass": true,
+    "carried_forward_0001_sha256": "27a84ab41b6432319b5741082a315d17d593a66b6e2987978b1370fee278f434",
+    "new_mobile_lod_variants_unverified": 3,
+    "manifest_unique_ids": 2000,
+    "manifest_unique_slugs": 2000,
+    "manifest_generated_unverified_ids": 32,
+    "manifest_planned_ids": 1968,
+    "five_routes_and_endings_validated": true,
+    "local_deterministic_assertions_passed": 9,
+    "godot4_runtime_executed": false,
+    "physical_android_executed": false,
+    "canonical_face_signoff": false,
+    "next_batch": "0001-0012",
+    "next_after_acceptance": "0013-0024",
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run70_2026-10-26.zip"
   }
 }

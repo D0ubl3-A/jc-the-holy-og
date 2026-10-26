@@ -1,0 +1,73 @@
+name: JC Godot 4 Sprite Import Smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production/sprites/**'
+      - '.github/workflows/jc-sprite-godot-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  godot4-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned official Godot 4.5.2 Linux binary
+        run: |
+          curl --fail --location --retry 3 --output /tmp/godot.zip \
+            https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.5.2-stable_linux.x86_64
+          /tmp/Godot_v4.5.2-stable_linux.x86_64 --headless --version
+      - name: Generate synthetic RGBA import fixture (NOT a production sprite)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          root=Path('/tmp/jc-godot-sprite-smoke')
+          (root/'assets').mkdir(parents=True,exist_ok=True)
+          (root/'scripts').mkdir(parents=True,exist_ok=True)
+          (root/'project.godot').write_text('config_version=5\n[application]\nconfig/name="JC Sprite Smoke Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
+          im=Image.new('RGBA',(256,384),(0,0,0,0))
+          ImageDraw.Draw(im).ellipse((80,40,176,140),fill=(230,205,160,255))
+          ImageDraw.Draw(im).rectangle((72,145,184,325),fill=(240,240,240,255))
+          im.save(root/'assets/fixture.png')
+          (root/'scripts/smoke.gd').write_text('''extends SceneTree
+          func _initialize() -> void:
+              var im := Image.load_from_file("res://assets/fixture.png")
+              if im.is_empty() or im.get_width() != 256 or im.get_height() != 384:
+                  printerr("FAIL: image dimensions")
+                  quit(1)
+                  return
+              if im.detect_alpha() == Image.ALPHA_NONE or im.get_pixel(0, 0).a > 0.001:
+                  printerr("FAIL: transparent background")
+                  quit(1)
+                  return
+              var texture := ImageTexture.create_from_image(im)
+              if texture == null or texture.get_width() != 256:
+                  printerr("FAIL: texture construction")
+                  quit(1)
+                  return
+              print("JC_GODOT_IMPORT_SMOKE_PASS synthetic fixture only")
+              quit(0)
+          ''')
+          PY
+      - name: Godot 4 headless import and ImageTexture smoke
+        run: |
+          set -o pipefail
+          /tmp/Godot_v4.5.2-stable_linux.x86_64 --headless --path /tmp/jc-godot-sprite-smoke --editor --quit 2>&1 | tee /tmp/jc-godot-editor.log
+          /tmp/Godot_v4.5.2-stable_linux.x86_64 --headless --path /tmp/jc-godot-sprite-smoke --script res://scripts/smoke.gd 2>&1 | tee /tmp/jc-godot-smoke.log
+          grep -q JC_GODOT_IMPORT_SMOKE_PASS /tmp/jc-godot-smoke.log
+      - name: Upload engine test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc-godot4-synthetic-import-smoke
+          path: |
+            /tmp/jc-godot-editor.log
+            /tmp/jc-godot-smoke.log
+          if-no-files-found: warn

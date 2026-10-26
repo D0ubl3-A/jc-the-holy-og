@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 73,
+  "run": 74,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1034,5 +1034,44 @@
     "physical_android_5min_benchmark": "not_executed",
     "next_priority": "0001-0012",
     "report": "production/sprites/RUN73_STATUS_2026-10-26.md"
+  },
+  "run74_summary": {
+    "verified_completed": 0,
+    "new_independent_native_masters": 0,
+    "new_derived_lod_frames": 4,
+    "derived_lod_frame_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "development_atlas_dimensions": [
+      1088,
+      400
+    ],
+    "development_atlas_rgba8_mib": 1.66,
+    "alpha_present_and_hash_unique": true,
+    "foot_baseline_spread_px": 0,
+    "frame_scale_consistency_verified": false,
+    "clean_alpha_visual_verified": false,
+    "failed_extractions": [
+      "0009",
+      "0010"
+    ],
+    "reference_only_composite_images": 1,
+    "manifest_unique_ids": 2000,
+    "category_count": 11,
+    "route_names": [
+      "Savior",
+      "King",
+      "Destroyer",
+      "Liberator",
+      "New Devil"
+    ],
+    "godot_runtime_import_verified": false,
+    "physical_android_performance_verified": false,
+    "next_batch": "0001-0012",
+    "following_batch": "0013-0024",
+    "artifact": "JC_Hell_Vegas_Sprite_Production_Run74_2026-10-26.zip"
   }
 }

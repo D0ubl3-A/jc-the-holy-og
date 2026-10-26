@@ -1214,6 +1214,7 @@
     "generated_reference_composite_rejected": 1,
     "godot4_import": "not_executed",
     "physical_android_benchmark": "not_executed",
-    "package": "JC_Hell_Vegas_Sprite_Production_Run78_2026-10-26.zip"
+    "package": "JC_Hell_Vegas_Sprite_Production_Run78_2026-10-26.zip",
+    "local_regression_tests_passed": 7
   }
 }

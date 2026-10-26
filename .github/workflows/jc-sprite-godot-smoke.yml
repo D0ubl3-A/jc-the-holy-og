@@ -25,6 +25,7 @@ jobs:
           /tmp/Godot_v4.5.2-stable_linux.x86_64 --headless --version
       - name: Generate synthetic RGBA import fixture (NOT a production sprite)
         run: |
+          python -m pip install 'Pillow>=10,<13'
           python - <<'PY'
           from pathlib import Path
           from PIL import Image, ImageDraw
@@ -36,25 +37,27 @@ jobs:
           ImageDraw.Draw(im).ellipse((80,40,176,140),fill=(230,205,160,255))
           ImageDraw.Draw(im).rectangle((72,145,184,325),fill=(240,240,240,255))
           im.save(root/'assets/fixture.png')
-          (root/'scripts/smoke.gd').write_text('''extends SceneTree
-          func _initialize() -> void:
-              var im := Image.load_from_file("res://assets/fixture.png")
-              if im.is_empty() or im.get_width() != 256 or im.get_height() != 384:
-                  printerr("FAIL: image dimensions")
-                  quit(1)
-                  return
-              if im.detect_alpha() == Image.ALPHA_NONE or im.get_pixel(0, 0).a > 0.001:
-                  printerr("FAIL: transparent background")
-                  quit(1)
-                  return
-              var texture := ImageTexture.create_from_image(im)
-              if texture == null or texture.get_width() != 256:
-                  printerr("FAIL: texture construction")
-                  quit(1)
-                  return
-              print("JC_GODOT_IMPORT_SMOKE_PASS synthetic fixture only")
-              quit(0)
-          ''')
+          script = [
+              'extends SceneTree',
+              'func _initialize() -> void:',
+              '    var im := Image.load_from_file("res://assets/fixture.png")',
+              '    if im.is_empty() or im.get_width() != 256 or im.get_height() != 384:',
+              '        printerr("FAIL: image dimensions")',
+              '        quit(1)',
+              '        return',
+              '    if im.detect_alpha() == Image.ALPHA_NONE or im.get_pixel(0, 0).a > 0.001:',
+              '        printerr("FAIL: transparent background")',
+              '        quit(1)',
+              '        return',
+              '    var texture := ImageTexture.create_from_image(im)',
+              '    if texture == null or texture.get_width() != 256:',
+              '        printerr("FAIL: texture construction")',
+              '        quit(1)',
+              '        return',
+              '    print("JC_GODOT_IMPORT_SMOKE_PASS synthetic fixture only")',
+              '    quit(0)',
+          ]
+          (root/'scripts/smoke.gd').write_text('\\n'.join(script)+'\\n')
           PY
       - name: Godot 4 headless import and ImageTexture smoke
         run: |

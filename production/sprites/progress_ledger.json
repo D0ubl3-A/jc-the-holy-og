@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 63,
+  "run": 64,
   "date_utc": "2026-10-25",
   "verified_completed": 0,
   "target": 2000,
@@ -778,5 +778,37 @@
     "face_identity_signoff": false,
     "next_priority": "0001-0012",
     "report_path": "production/sprites/RUN63_STATUS_2026-10-25.md"
+  },
+  "run64_summary": {
+    "verified_completed": 0,
+    "manifest_ids_validated": 2000,
+    "unique_ids": true,
+    "generated_unverified_ids": 32,
+    "planned_ids": 1968,
+    "new_derived_rgba_cutouts": 3,
+    "new_webp_mobile_derivatives": 3,
+    "cutout_ids": [
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "source": "four-view transparent turnaround, not independent native masters",
+    "source_size_px": [
+      1536,
+      1024
+    ],
+    "derived_size_px": [
+      512,
+      768
+    ],
+    "rgba_alpha_and_margin_48_pass": 3,
+    "unique_sha256_pass": 3,
+    "canonical_face_signoff": false,
+    "godot4_import_executed": false,
+    "physical_android_benchmark_executed": false,
+    "generated_infographics_rejected_for_false_12_verified_claim": 2,
+    "next_priority": "0001-0012",
+    "binary_files_location": "Run 64 downloadable production ZIP; not committed to GitHub",
+    "qa_result": "10 local checks passed; full release gate failed"
   }
 }

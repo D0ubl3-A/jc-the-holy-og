@@ -51,5 +51,6 @@ try{
 }catch(err){console.error(err);$('boot').style.display='none';$('fatal').style.display='grid';$('fatalText').textContent='WebGL started in safe mode but hit: '+(err?.message||err)}
 </script>
 <script defer src="./jc-the-holy-og-assets/battle-rap-launcher.js"></script>
+<script type="module">import {initSpriteLibrary} from './jc-the-holy-og-assets/sprite-library-dev.js';initSpriteLibrary();</script>
 </body>
 </html>

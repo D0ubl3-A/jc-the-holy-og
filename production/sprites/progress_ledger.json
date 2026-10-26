@@ -1,6 +1,6 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 76,
+  "run": 77,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
@@ -1133,5 +1133,39 @@
     "next_batch": "0001-0012",
     "following_batch": "0013-0024",
     "note": "Local Run76 ZIP manifest uses 12 categories; older repository manifest still uses 11-category allocation. No sprite promotion."
+  },
+  "run77_summary": {
+    "recovered_original_lod1_512x768_candidates": 4,
+    "recovered_candidate_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ],
+    "recovered_sha256_unique": 4,
+    "min_alpha_margins_px": [
+      50,
+      51,
+      50,
+      50
+    ],
+    "baseline_spread_px": 1,
+    "development_atlas_px": [
+      1072,
+      1584
+    ],
+    "new_independent_native_masters": 0,
+    "new_verified": 0,
+    "composite_reference_sheets_rejected": 2,
+    "manual_weapon_continuity_fail": [
+      "0004"
+    ],
+    "native_master_1024x1536_pass": 0,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "local_manifest_12_category_contiguous_unique": true,
+    "github_manifest_schema_migration_pending": true,
+    "local_package": "JC_Hell_Vegas_Sprite_Production_Run77_2026-10-26.zip",
+    "next_priority": "0001-0012"
   }
 }

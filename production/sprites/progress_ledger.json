@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 89,
-  "date_utc": "2026-10-26",
+  "run": 90,
+  "date_utc": "2026-10-27",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 48,
@@ -1485,5 +1485,25 @@
     "asset_binaries": "Run89 ZIP only; not uploaded to GitHub",
     "current_priority": "0001-0012",
     "following_batch": "0013-0024"
+  },
+  "run90_summary": {
+    "verified_completed": 0,
+    "manifest_ids_checked": 2000,
+    "manifest_candidate_registry_reconciled": true,
+    "previous_manifest_candidates": 32,
+    "updated_manifest_candidates": 48,
+    "previous_manifest_planned": 1968,
+    "updated_manifest_planned": 1952,
+    "reclassified_existing_vfx_ids": "1721-1736",
+    "new_generated_native_character_masters": 0,
+    "new_release_verified_assets": 0,
+    "new_composite_reference_board_rejected": 1,
+    "composite_reference_reason": "12-pose labeled collage, 1536x1024, not isolated native 1024x1536 RGBA",
+    "original_oct23_face_photo_available": false,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmarked": false,
+    "source_vfx_binaries_reaudited": false,
+    "priority": "0001-0012",
+    "next_after_full_acceptance": "0013-0024"
   }
 }

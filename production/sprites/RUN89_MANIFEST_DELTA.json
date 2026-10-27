@@ -1,0 +1,23 @@
+{
+  "run": 89,
+  "verified_completed": 0,
+  "updated_ids": [
+    "1733",
+    "1734",
+    "1735",
+    "1736"
+  ],
+  "new_original_procedural_vfx_development": 4,
+  "unverified_candidate_ids": 48,
+  "planned_without_candidate": 1952,
+  "current_priority_batch": "0001-0012",
+  "next_batch_after_acceptance": "0013-0024",
+  "binary_assets": "Run89 ZIP only, not uploaded to game repository",
+  "source_sha256": {
+    "1733": "183b62f13ce5",
+    "1734": "bacabf53268e",
+    "1735": "91760142badf",
+    "1736": "4bd80d4b942e"
+  },
+  "note": "SHA256 prefixes only in GitHub delta; complete hashes in packaged RUN89_STATIC_QA.json"
+}

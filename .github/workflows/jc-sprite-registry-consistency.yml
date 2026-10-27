@@ -1,0 +1,23 @@
+name: JC Sprite Registry Consistency
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production/sprites/manifest_0001-2000.json'
+      - 'production/sprites/progress_ledger.json'
+      - 'production/sprites/tools/check_candidate_registry_consistency.py'
+      - '.github/workflows/jc-sprite-registry-consistency.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check all 2000 IDs, candidate status counts and VFX evidence
+        run: python production/sprites/tools/check_candidate_registry_consistency.py

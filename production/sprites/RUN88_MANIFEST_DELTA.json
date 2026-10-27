@@ -1,0 +1,33 @@
+{
+  "run": 88,
+  "verified_completed": 0,
+  "target": 2000,
+  "new_unverified_development_vfx": [
+    {
+      "id": "1729",
+      "title": "holy shield impact — start",
+      "sha256": "58295c6129da7921b423582f86f97428b0fc556793f5e76bbb00cf72a5e899cb"
+    },
+    {
+      "id": "1730",
+      "title": "holy shield impact — loop",
+      "sha256": "f55ab43798de6242c1481c1d0c0bf8fa823e0fcbe0aa981715e93f25cd7cd51f"
+    },
+    {
+      "id": "1731",
+      "title": "holy shield impact — impact",
+      "sha256": "a7b77a5ccffac25e2adac4a9a1cde401db037be29dde9053033ac0021605ea89"
+    },
+    {
+      "id": "1732",
+      "title": "holy shield impact — fade",
+      "sha256": "c8d3e12692efa24f87654e81626bc5d3feeab336f6888646a418eff2ac82f0c1"
+    }
+  ],
+  "candidate_ids_total": 44,
+  "planned_without_candidate": 1956,
+  "release_verified": false,
+  "asset_binaries": "Run88 ZIP, not committed to GitHub",
+  "next_priority": "0001-0012",
+  "next_after_acceptance": "0013-0024"
+}

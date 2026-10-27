@@ -4,8 +4,8 @@
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
-  "generated_unverified_archive_candidate_ids": 36,
-  "planned_without_archived_candidate": 1964,
+  "generated_unverified_archive_candidate_ids": 40,
+  "planned_without_archived_candidate": 1960,
   "current_priority_batch": "0001-0012",
   "next_after_acceptance": "0013-0024",
   "batch_0001_0012": {
@@ -1414,6 +1414,7 @@
     "godot4_runtime": "not_run",
     "physical_android_benchmark": "not_run",
     "binary_vfx_in_repo": false,
-    "full_package": "JC_Hell_Vegas_Sprite_Production_Run87_2026-10-26.zip"
+    "full_package": "JC_Hell_Vegas_Sprite_Production_Run87_2026-10-26.zip",
+    "candidate_count_note": "36 prior distinct candidate IDs + 4 new IDs 1725-1728 = 40; development candidates, not release-verified."
   }
 }

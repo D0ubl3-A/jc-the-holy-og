@@ -2,7 +2,7 @@
   "schema": "jc-hell-vegas-sprite-manifest-v1",
   "target": 2000,
   "verified_completed": 0,
-  "generated_unverified": 32,
+  "generated_unverified": 48,
   "next_batch": "0001-0012 independent native JC masters; 0013-0020 only after release gates",
   "counting_rule": "A sprite is verified only after a distinct saved PNG, dimensions and alpha checks, duplicate detection, visual anatomy/frame QA, and Godot mobile QA. Animation atlas counts as one. Concepts and prompts count as zero.",
   "canonical_identity": "JC: normal-height adult male, uncovered long wavy brown hair, beard, white hoodie, ripped white jeans, white sneakers and dual gold pistols; NO cap, sunglasses or armor. Maintain facial identity and scale across five routes.",
@@ -48279,7 +48279,7 @@
       "id": "1721",
       "category": "effects",
       "title": "golden muzzle flash — start",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48300,13 +48300,19 @@
         1024,
         1024
       ],
-      "slug": "golden_muzzle_flash_start"
+      "slug": "golden_muzzle_flash_start",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN82_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1722",
       "category": "effects",
       "title": "golden muzzle flash — loop",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48327,13 +48333,19 @@
         1024,
         1024
       ],
-      "slug": "golden_muzzle_flash_loop"
+      "slug": "golden_muzzle_flash_loop",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN82_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1723",
       "category": "effects",
       "title": "golden muzzle flash — impact",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48354,13 +48366,19 @@
         1024,
         1024
       ],
-      "slug": "golden_muzzle_flash_impact"
+      "slug": "golden_muzzle_flash_impact",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN82_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1724",
       "category": "effects",
       "title": "golden muzzle flash — fade",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48381,13 +48399,19 @@
         1024,
         1024
       ],
-      "slug": "golden_muzzle_flash_fade"
+      "slug": "golden_muzzle_flash_fade",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN82_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1725",
       "category": "effects",
       "title": "divine bullet trail — start",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48408,13 +48432,19 @@
         1024,
         1024
       ],
-      "slug": "divine_bullet_trail_start"
+      "slug": "divine_bullet_trail_start",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN87_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1726",
       "category": "effects",
       "title": "divine bullet trail — loop",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48435,13 +48465,19 @@
         1024,
         1024
       ],
-      "slug": "divine_bullet_trail_loop"
+      "slug": "divine_bullet_trail_loop",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN87_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1727",
       "category": "effects",
       "title": "divine bullet trail — impact",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48462,13 +48498,19 @@
         1024,
         1024
       ],
-      "slug": "divine_bullet_trail_impact"
+      "slug": "divine_bullet_trail_impact",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN87_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1728",
       "category": "effects",
       "title": "divine bullet trail — fade",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48489,13 +48531,19 @@
         1024,
         1024
       ],
-      "slug": "divine_bullet_trail_fade"
+      "slug": "divine_bullet_trail_fade",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN87_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1729",
       "category": "effects",
       "title": "holy shield impact — start",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48516,13 +48564,19 @@
         1024,
         1024
       ],
-      "slug": "holy_shield_impact_start"
+      "slug": "holy_shield_impact_start",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN88_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1730",
       "category": "effects",
       "title": "holy shield impact — loop",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48543,13 +48597,19 @@
         1024,
         1024
       ],
-      "slug": "holy_shield_impact_loop"
+      "slug": "holy_shield_impact_loop",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN88_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1731",
       "category": "effects",
       "title": "holy shield impact — impact",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48570,13 +48630,19 @@
         1024,
         1024
       ],
-      "slug": "holy_shield_impact_impact"
+      "slug": "holy_shield_impact_impact",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN88_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1732",
       "category": "effects",
       "title": "holy shield impact — fade",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48597,13 +48663,19 @@
         1024,
         1024
       ],
-      "slug": "holy_shield_impact_fade"
+      "slug": "holy_shield_impact_fade",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN88_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1733",
       "category": "effects",
       "title": "holy lightning — start",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48624,13 +48696,19 @@
         1024,
         1024
       ],
-      "slug": "holy_lightning_start"
+      "slug": "holy_lightning_start",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN89_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1734",
       "category": "effects",
       "title": "holy lightning — loop",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48651,13 +48729,19 @@
         1024,
         1024
       ],
-      "slug": "holy_lightning_loop"
+      "slug": "holy_lightning_loop",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN89_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1735",
       "category": "effects",
       "title": "holy lightning — impact",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48678,13 +48762,19 @@
         1024,
         1024
       ],
-      "slug": "holy_lightning_impact"
+      "slug": "holy_lightning_impact",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN89_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1736",
       "category": "effects",
       "title": "holy lightning — fade",
-      "status": "planned",
+      "status": "generated_unverified",
       "frames": 1,
       "background": "transparent",
       "route": null,
@@ -48705,7 +48795,13 @@
         1024,
         1024
       ],
-      "slug": "holy_lightning_fade"
+      "slug": "holy_lightning_fade",
+      "run90_candidate_registry_evidence": {
+        "source_report": "production/sprites/RUN89_STATUS_2026-10-26.md",
+        "binary_in_repository": false,
+        "release_verified": false,
+        "archive_not_reaudited_this_run": true
+      }
     },
     {
       "id": "1737",
@@ -55836,8 +55932,8 @@
       "slug": "new_devil_ending_post_game_skyline"
     }
   ],
-  "planned": 1968,
-  "latest_run": 79,
+  "planned": 1952,
+  "latest_run": 90,
   "last_updated_local": "2026-10-24",
   "run16_summary": {
     "verified_game_ready": 0,
@@ -55991,7 +56087,7 @@
     "binary_upload": "pending_local_package_only",
     "next_batch": "0021-0032"
   },
-  "last_updated_utc": "2026-10-25T03:36:15Z",
+  "last_updated_utc": "2026-10-27",
   "run26_summary": {
     "focus": "0001-0012",
     "verified_completed": 0,
@@ -56226,5 +56322,28 @@
     "godot_runtime": "not_executed",
     "physical_android": "not_executed"
   },
-  "run79_manifest_normalization": "IDs 0001-0020 are JC base, not route transformations; preserved 2,000 IDs, existing titles/statuses and 0 release-verified count. Run79."
+  "run79_manifest_normalization": "IDs 0001-0020 are JC base, not route transformations; preserved 2,000 IDs, existing titles/statuses and 0 release-verified count. Run79.",
+  "run90_registry_reconciliation": {
+    "note": "16 original procedural VFX development candidates previously documented in Runs 82,87,88,89 were marked planned in the canonical manifest; statuses now match ledger. Binary files are ZIP-only and were not independently reaudited. No sprite was release-verified.",
+    "candidate_ids": [
+      "1721",
+      "1722",
+      "1723",
+      "1724",
+      "1725",
+      "1726",
+      "1727",
+      "1728",
+      "1729",
+      "1730",
+      "1731",
+      "1732",
+      "1733",
+      "1734",
+      "1735",
+      "1736"
+    ],
+    "verified_completed": 0,
+    "source_ledger_run": 89
+  }
 }

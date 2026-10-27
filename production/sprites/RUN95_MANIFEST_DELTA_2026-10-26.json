@@ -1,0 +1,20 @@
+{
+  "run": 95,
+  "release_verified": 0,
+  "target": 2000,
+  "unverified_candidates": 52,
+  "planned": 1948,
+  "priority": "0001-0012",
+  "following": "0013-0024",
+  "new_procedural_vfx_ids": [
+    "1737",
+    "1738",
+    "1739",
+    "1740"
+  ],
+  "static_vfx_qa": "PASS",
+  "godot_runtime": "NOT_EXECUTED",
+  "android_benchmark": "NOT_EXECUTED",
+  "reference_sheet": "generated_composite_not_release_asset",
+  "binary_upload_to_repo": false
+}

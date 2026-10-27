@@ -1,0 +1,69 @@
+{
+  "run": 96,
+  "project": "JC: The Holy OG — Hell Vegas",
+  "target": 2000,
+  "release_verified": 0,
+  "manifest_unique_ids": 2000,
+  "category_counts": {
+    "jc_base": 20,
+    "jc_route_transformations": 100,
+    "locomotion_combat_flying": 380,
+    "humans": 280,
+    "angels": 190,
+    "demons": 300,
+    "bosses": 100,
+    "vehicles": 150,
+    "las_vegas_locations": 200,
+    "effects": 160,
+    "ui": 70,
+    "five_endings": 50
+  },
+  "current_batch": "0001-0012",
+  "next_batch": "0013-0024",
+  "changes": [
+    {
+      "id": "1741",
+      "category": "effects",
+      "status": "development_binary_unverified",
+      "kind": "start",
+      "native_dimensions": "1024x1024",
+      "release_verified": false,
+      "local_binary_only": true
+    },
+    {
+      "id": "1742",
+      "category": "effects",
+      "status": "development_binary_unverified",
+      "kind": "loop",
+      "native_dimensions": "1024x1024",
+      "release_verified": false,
+      "local_binary_only": true
+    },
+    {
+      "id": "1743",
+      "category": "effects",
+      "status": "development_binary_unverified",
+      "kind": "impact",
+      "native_dimensions": "1024x1024",
+      "release_verified": false,
+      "local_binary_only": true
+    },
+    {
+      "id": "1744",
+      "category": "effects",
+      "status": "development_binary_unverified",
+      "kind": "fade",
+      "native_dimensions": "1024x1024",
+      "release_verified": false,
+      "local_binary_only": true
+    }
+  ],
+  "new_original_vfx": 4,
+  "derived_mobile_lods": 8,
+  "atlas": "1048x1048",
+  "atlas_memory_mib": 4.19,
+  "static_validation": "pass",
+  "godot_runtime": "not tested",
+  "physical_android": "not tested",
+  "reference_composite_boards_rejected": 2
+}

@@ -1,11 +1,11 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 88,
+  "run": 89,
   "date_utc": "2026-10-26",
   "verified_completed": 0,
   "target": 2000,
-  "generated_unverified_archive_candidate_ids": 44,
-  "planned_without_archived_candidate": 1956,
+  "generated_unverified_archive_candidate_ids": 48,
+  "planned_without_archived_candidate": 1952,
   "current_priority_batch": "0001-0012",
   "next_after_acceptance": "0013-0024",
   "batch_0001_0012": {
@@ -1449,5 +1449,41 @@
     "character_visual_signoff": "pending",
     "asset_binaries": "Run88 ZIP only; not uploaded to GitHub",
     "current_priority": "0001-0012"
+  },
+  "run89_summary": {
+    "verified_completed": 0,
+    "new_original_procedural_vfx_development": 4,
+    "new_vfx_ids": [
+      "1733",
+      "1734",
+      "1735",
+      "1736"
+    ],
+    "vfx_source_px": [
+      1024,
+      1024
+    ],
+    "vfx_lod_512": 4,
+    "vfx_lod_256": 4,
+    "atlas_px": [
+      1072,
+      1072
+    ],
+    "atlas_rgba8_mib": 4.38,
+    "unique_sha256_pass": 4,
+    "true_alpha_pass": 4,
+    "safe_margin_48px_pass": 4,
+    "atlas_pixel_integrity_pass": true,
+    "manifest_unique_contiguous_ids": 2000,
+    "manifest_categories": 12,
+    "independent_native_jc_character_masters": 0,
+    "character_development_binaries_reaudited": 4,
+    "character_reference_board_rejected": 1,
+    "godot4_runtime_executed": false,
+    "physical_android_benchmark_executed": false,
+    "character_visual_signoff": "pending",
+    "asset_binaries": "Run89 ZIP only; not uploaded to GitHub",
+    "current_priority": "0001-0012",
+    "following_batch": "0013-0024"
   }
 }

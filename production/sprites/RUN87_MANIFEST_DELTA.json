@@ -1,0 +1,38 @@
+{
+  "run": 87,
+  "date": "2026-10-26",
+  "verified_completed": 0,
+  "manifest_total": 2000,
+  "priority_batch": "0001-0012",
+  "following_batch": "0013-0024",
+  "new_assets": [
+    {
+      "id": "1725",
+      "status": "development_binary_unverified",
+      "type": "divine bullet trail — start",
+      "sha256": "993a43e709d2"
+    },
+    {
+      "id": "1726",
+      "status": "development_binary_unverified",
+      "type": "divine bullet trail — loop",
+      "sha256": "6d2e276075ac"
+    },
+    {
+      "id": "1727",
+      "status": "development_binary_unverified",
+      "type": "divine bullet trail — impact",
+      "sha256": "71bce77591a4"
+    },
+    {
+      "id": "1728",
+      "status": "development_binary_unverified",
+      "type": "divine bullet trail — fade",
+      "sha256": "fe2503fba659"
+    }
+  ],
+  "asset_binary_uploaded_to_repo": false,
+  "static_qa": "passed",
+  "godot4_runtime": "not_run",
+  "android_benchmark": "not_run"
+}

@@ -4,7 +4,7 @@ import argparse, collections, hashlib, json, re, sys
 from pathlib import Path
 
 TARGET=2000
-CATEGORIES={"jc_route_transformations":120,"locomotion_combat_flying":380,"humans":280,"angels":190,"demons":300,"bosses":100,"vehicles":150,"las_vegas_locations":200,"effects":160,"ui":70,"five_endings":50}
+CATEGORIES={"jc_base":20,"jc_route_transformations":100,"locomotion_combat_flying":380,"humans":280,"angels":190,"demons":300,"bosses":100,"vehicles":150,"las_vegas_locations":200,"effects":160,"ui":70,"five_endings":50}
 VISUAL=("anatomy","no_cutoff_limbs","frame_consistency","canonical_identity","correct_camera")
 VALID={"planned","generated_unverified","verified"}
 

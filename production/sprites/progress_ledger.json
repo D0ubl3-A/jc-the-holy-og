@@ -1,7 +1,7 @@
 {
   "project": "JC: The Holy OG — Hell Vegas",
-  "run": 90,
-  "date_utc": "2026-10-27",
+  "run": 101,
+  "date_utc": "2026-10-30",
   "verified_completed": 0,
   "target": 2000,
   "generated_unverified_archive_candidate_ids": 48,
@@ -1505,5 +1505,27 @@
     "source_vfx_binaries_reaudited": false,
     "priority": "0001-0012",
     "next_after_full_acceptance": "0013-0024"
+  },
+  "run101_cumulative_archive": {
+    "status": "available-files-only ZIP created and SHA-256 tested in ChatGPT workspace; not uploaded to GitHub",
+    "zip_name": "JC_Hell_Vegas_Run101_Cumulative_Available_Files.zip",
+    "zip_sha256": "a1a4fc0f0c4094573e43753fd63b574b31b88a24999a5882e181ba251dca38af",
+    "zip_entries": 57,
+    "source_character_pngs_available": 4,
+    "registry_generated_unverified": 48,
+    "registry_candidate_binaries_unavailable": 44,
+    "verified": 0,
+    "new_independent_native_masters": 0,
+    "derivatives_mobile_512": 4,
+    "atlases_unverified": 2,
+    "animated_preview_files_unverified": 4,
+    "next_batch": "0001-0012",
+    "issues": [
+      "Original four are 1024x1024, not 1024x1536",
+      "Four candidates wear baseball caps conflicting with uncovered-hair identity",
+      "October 23 face reference unavailable for direct approval",
+      "Godot 4 and physical Android QA not executed"
+    ],
+    "source_manifest_note": "Run100 working manifest; GitHub manifest blob accessible by SHA but not fully retrieved through connector"
   }
 }

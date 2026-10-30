@@ -39,8 +39,8 @@ jobs:
           assert not module.check(source)[0]
           altered=copy.deepcopy(source)
           altered['assets'][0]['status']='verified'
-          altered['verified']=source['verified']+1
-          altered['candidate_unverified']=source['candidate_unverified']-1
+          altered['verified_completed']=source['verified_completed']+1
+          altered['generated_unverified']=source['generated_unverified']-1
           assert module.check(altered)[0], 'Gate improperly accepted unverified asset'
           print('PASS: premature verification rejected')
           PY

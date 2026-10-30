@@ -3,7 +3,7 @@
 import collections, hashlib, json, re, sys
 from PIL import Image
 from pathlib import Path
-CATS={'jc_route_transformations':120,'locomotion_combat_flying':380,'humans':280,'angels':190,'demons':300,'bosses':100,'vehicles':150,'las_vegas_locations':200,'effects':160,'ui':70,'five_endings':50}
+CATS={'jc_base':20,'jc_route_transformations':100,'locomotion_combat_flying':380,'humans':280,'angels':190,'demons':300,'bosses':100,'vehicles':150,'las_vegas_locations':200,'effects':160,'ui':70,'five_endings':50}
 ROUTES={None,'Savior','King','Destroyer','Liberator','New Devil'}
 FLAGS=['independent_native_render','canonical_identity_approved','anatomy_and_weapons_approved','camera_orientation_approved','frame_consistency_approved','godot4_import_passed','physical_android_benchmark_passed']
 def check(d):
@@ -11,7 +11,7 @@ def check(d):
  if len(a)!=2000 or [x['id'] for x in a]!=[f'{i:04d}' for i in range(1,2001)]:e.append('IDs not exactly 0001-2000')
  if len({x['slug'] for x in a})!=2000:e.append('duplicate slugs')
  if c!=CATS or d['category_targets']!=CATS:e.append('category totals mismatch')
- if d.get('target')!=2000 or d.get('verified')!=s['verified'] or d.get('candidate_unverified')!=s['generated_unverified'] or d.get('planned')!=s['planned']:e.append('aggregate mismatch')
+ if d.get('target')!=2000 or d.get('verified_completed')!=s['verified'] or d.get('generated_unverified')!=s['generated_unverified'] or d.get('planned')!=s['planned']:e.append('aggregate mismatch')
  seen_verified_hashes=set()
  for x in a:
   i=x['id'];g=x['grid'];cell=x['cell_px'];m=x['master_px']

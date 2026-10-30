@@ -57,7 +57,7 @@ jobs:
               '    print("JC_GODOT_IMPORT_SMOKE_PASS synthetic fixture only")',
               '    quit(0)',
           ]
-          (root/'scripts/smoke.gd').write_text('\\n'.join(script)+'\\n')
+          (root/'scripts/smoke.gd').write_text(chr(10).join(script)+chr(10))
           PY
       - name: Godot 4 headless import and ImageTexture smoke
         run: |

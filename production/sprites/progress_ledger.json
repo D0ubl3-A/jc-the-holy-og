@@ -9,17 +9,17 @@
   "current_priority_batch": "0001-0012",
   "next_after_acceptance": "0013-0024",
   "batch_0001_0012": {
-    "archived_candidates": 12,
-    "sha256_unique": 12,
-    "real_alpha_pass": 12,
-    "safe_margin_48px_pass": 0,
-    "native_master_1024x1536_pass": 0,
-    "independent_native_render_provenance_pass": 0,
-    "canonical_identity_signoff_pass": 0,
-    "godot4_runtime_import_verified": 0,
-    "physical_mobile_benchmark_verified": 0,
-    "fully_verified": 0,
-    "fully_opaque_foreground_pass": 0
+    "registered_candidate_ids": 12,
+    "accessible_original_pngs": 4,
+    "missing_registered_original_pngs": 8,
+    "sha256_unique_accessible": 4,
+    "true_alpha_accessible": 4,
+    "transparent_margin_48px_accessible": 4,
+    "native_1024x1536_accessible": 0,
+    "canonical_face_photo_signoff": 0,
+    "godot4_runtime_verified": 0,
+    "physical_android_verified": 0,
+    "fully_release_verified": 0
   },
   "acceptance_policy": "Verified only after native independent rendering, anatomy/identity/camera/alpha approval, unique SHA-256, Godot 4 import and measured physical mobile performance.",
   "new_native_independent_sprite_files": 0,
@@ -1545,5 +1545,18 @@
     "archive_file_count": 66,
     "archive_integrity": "ZIP CRC PASS; SHA256 unique 66/66",
     "next_priority": "0001-0012"
+  },
+  "legacy_batch_0001_0012_summary_pre_run102": {
+    "archived_candidates": 12,
+    "sha256_unique": 12,
+    "real_alpha_pass": 12,
+    "safe_margin_48px_pass": 0,
+    "native_master_1024x1536_pass": 0,
+    "independent_native_render_provenance_pass": 0,
+    "canonical_identity_signoff_pass": 0,
+    "godot4_runtime_import_verified": 0,
+    "physical_mobile_benchmark_verified": 0,
+    "fully_verified": 0,
+    "fully_opaque_foreground_pass": 0
   }
 }

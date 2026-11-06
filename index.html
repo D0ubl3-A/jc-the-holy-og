@@ -33,9 +33,17 @@ try{
  const player=new THREE.Group();const robe=new THREE.Mesh(new THREE.CylinderGeometry(.55,.9,2.2,8),new THREE.MeshLambertMaterial({color:0xf0eee4}));robe.position.y=1.1;player.add(robe);const head=new THREE.Mesh(new THREE.SphereGeometry(.48,10,8),new THREE.MeshLambertMaterial({color:0xc58a66}));head.position.y=2.65;player.add(head);const halo=new THREE.Mesh(new THREE.TorusGeometry(.55,.06,6,16),new THREE.MeshBasicMaterial({color:0xffd45a}));halo.rotation.x=Math.PI/2;halo.position.y=3.35;player.add(halo);scene.add(player);
  player.position.set(0,0,120);camera.position.set(0,5.7,132);
  window.JC_GAME={scene,camera,renderer,player,keys,version:'replit-combined-v1'};
+ let stripAtlas=null;
+ const stripEnabled=new URLSearchParams(location.search).get('stripAtlas')==='1';
+ if(stripEnabled){
+   import('./jc-the-holy-og-assets/strip-night-atlas-prototype.js')
+     .then(m=>m.installStripNightPrototype(THREE,window.JC_GAME))
+     .then(instance=>{stripAtlas=instance;console.info('JC Strip atlas prototype ready',instance.frameCount)})
+     .catch(err=>console.warn('Optional Strip atlas unavailable',err));
+ }
  const vel=new THREE.Vector3(),forward=new THREE.Vector3(),right=new THREE.Vector3();let prev=performance.now(),frames=0,fpsTime=prev;
  function update(dt){if(!playing)return;const speed=(keys.ShiftLeft?24:12)*dt;forward.set(Math.sin(yaw),0,-Math.cos(yaw));right.set(Math.cos(yaw),0,Math.sin(yaw));vel.set(0,0,0);if(keys.KeyW||keys.ArrowUp)vel.add(forward);if(keys.KeyS||keys.ArrowDown)vel.sub(forward);if(keys.KeyD||keys.ArrowRight)vel.add(right);if(keys.KeyA||keys.ArrowLeft)vel.sub(right);if(vel.lengthSq())player.position.addScaledVector(vel.normalize(),speed);camera.position.lerp(new THREE.Vector3(player.position.x-Math.sin(yaw)*11,5.8,player.position.z+Math.cos(yaw)*11),.12);camera.lookAt(player.position.x,2.1,player.position.z);}
- function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-prev)/1000);prev=now;update(dt);renderer.render(scene,camera);frames++;if(now-fpsTime>1000){$('fps').textContent=frames;frames=0;fpsTime=now}}
+ function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-prev)/1000);prev=now;update(dt);stripAtlas?.update(now);renderer.render(scene,camera);frames++;if(now-fpsTime>1000){$('fps').textContent=frames;frames=0;fpsTime=now}}
  requestAnimationFrame(loop);
  addEventListener('keydown',e=>keys[e.code]=true);addEventListener('keyup',e=>keys[e.code]=false);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
  renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY});addEventListener('pointerup',()=>drag=false);addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-lastX)*.004;pitch=Math.max(-.8,Math.min(.3,pitch-(e.clientY-lastY)*.003));lastX=e.clientX;lastY=e.clientY});
